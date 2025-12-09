@@ -1,7 +1,17 @@
 cmake_minimum_required(VERSION 4.0)
 project(firstproject)
 
-add_executable(firstgame main.cpp)
-add_library(lib1 SHARED f1.cpp)
+# Compiler
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-target_link_libraries(firstgame PRIVATE lib1)
+# Executable
+set(TARGET_NAME firstGame)
+add_executable(${TARGET_NAME} main.cpp)
+
+# including headers
+target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+add_subdirectory(libs)
+target_link_libraries(${TARGET_NAME} lib1)
