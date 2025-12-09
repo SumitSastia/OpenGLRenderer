@@ -1,4 +1,3 @@
 C:/Users/sumit/Documents/GitHub/OpenGLRenderer/build/CMakeFiles/firstGame.dir
 C:/Users/sumit/Documents/GitHub/OpenGLRenderer/build/CMakeFiles/ALL_BUILD.dir
 C:/Users/sumit/Documents/GitHub/OpenGLRenderer/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/sumit/Documents/GitHub/OpenGLRenderer/build/libs/CMakeFiles/lib1.dir

@@ -182,10 +182,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{430D56C5-734D-34FD-AFA0-6EC4D5CC5A06}</Project>
       <Name>firstGame</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\build\libs\lib1.vcxproj">
-      <Project>{D6B6B8CA-2244-3DE9-AA16-B48819146F85}</Project>
-      <Name>lib1</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

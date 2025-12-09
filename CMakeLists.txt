@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.0)
-project(firstproject)
+project(GLFWproject)
 
 # Compiler
 set(CMAKE_CXX_STANDARD 17)
@@ -10,8 +10,10 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(TARGET_NAME firstGame)
 add_executable(${TARGET_NAME} main.cpp)
 
-# including headers
-target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+# including headers & linkers
+target_include_directories(${TARGET_NAME} PRIVATE include)
+target_link_directories(${TARGET_NAME} PRIVATE libs)
 
-add_subdirectory(libs)
-target_link_libraries(${TARGET_NAME} lib1)
+# libraries
+# add_subdirectory(libs)
+target_link_libraries(${TARGET_NAME} glfw3 opengl32)
