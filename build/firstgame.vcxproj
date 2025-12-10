@@ -370,6 +370,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\main.cpp" />
     <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\glad.c" />
+    <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\engine.cpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

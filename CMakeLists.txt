@@ -12,6 +12,7 @@ set(TARGET_NAME firstGame)
 add_executable(${TARGET_NAME} 
     src/main.cpp
     src/glad.c
+    src/engine.cpp
 )
 
 # including headers & linkers
