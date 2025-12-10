@@ -8,7 +8,11 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Executable
 set(TARGET_NAME firstGame)
-add_executable(${TARGET_NAME} main.cpp)
+
+add_executable(${TARGET_NAME} 
+    src/main.cpp
+    src/glad.c
+)
 
 # including headers & linkers
 target_include_directories(${TARGET_NAME} PRIVATE include)
