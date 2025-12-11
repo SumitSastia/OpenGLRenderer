@@ -91,18 +91,25 @@ int main(){
     float vertices[] = {
 
         // Position       // Color
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Top-right
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // Bottom-right
+        -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Top-left
 
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f
+        // 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f // Bottom-left
+        // -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f
     };
 
-    engine::get_instance()->init(vertices,sizeof(vertices));
+    unsigned int indices[] = {
+        0,1,2,
+        1,2,3
+    };
+
+    engine::get_instance()->init(vertices, sizeof(vertices), indices, sizeof(indices));
 
     unsigned int VAO = engine::get_instance()->get_VAO();
+    unsigned int EBO = engine::get_instance()->get_EBO();
+
     unsigned int shaderProgram = engine::get_instance()->get_program();
     
     // OPENGL LOOP --------------------------------------------------------------------//
@@ -116,10 +123,14 @@ int main(){
 
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT);
-
         glUseProgram(shaderProgram);
+
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES,0,6);
+        // glDrawArrays(GL_TRIANGLES,0,6);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
         // Events //
         glfwPollEvents();

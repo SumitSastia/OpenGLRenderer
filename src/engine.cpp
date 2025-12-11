@@ -72,15 +72,19 @@ engine::engine(){
     glDeleteShader(fragmentShader);
 }
 
-void engine::init(const float* vertices, const size_t size){
+void engine::init(const float* vertices, const size_t size_v, const unsigned int* indices, const size_t size_i){
 
     glGenBuffers(1,&VBO);
+    glGenBuffers(1,&EBO);
     glGenVertexArrays(1,&VAO);
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, size_v, vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices, GL_STATIC_DRAW);
 
     // Position
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 6*sizeof(float), (void*)0);
