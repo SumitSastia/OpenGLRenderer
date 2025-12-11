@@ -1,7 +1,5 @@
-#include <engine.hpp>
 #include <iostream>
-
-engine* engine::pointer = nullptr;
+#include <engine.hpp>
 
 //-------------------------------------------------------------------------------------//
 
@@ -72,7 +70,13 @@ engine::engine(){
     glDeleteShader(fragmentShader);
 }
 
-void engine::init(const float* vertices, const size_t size_v, const unsigned int* indices, const size_t size_i){
+void engine::destroy(){
+    glDeleteProgram(shaderProgram);
+}
+
+//-------------------------------------------------------------------------------------//
+
+void buffer::init(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i){
 
     glGenBuffers(1,&VBO);
     glGenBuffers(1,&EBO);
@@ -95,7 +99,9 @@ void engine::init(const float* vertices, const size_t size_v, const unsigned int
     glEnableVertexAttribArray(1);
 }
 
-void engine::destroy(){
-    delete pointer;
-    pointer = nullptr;
+void buffer::destroy(){
+
+    glDeleteBuffers(1,&VBO);
+    glDeleteBuffers(1,&EBO);
+    glDeleteVertexArrays(1,&VAO);   
 }

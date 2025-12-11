@@ -105,12 +105,15 @@ int main(){
         1,2,3
     };
 
-    engine::get_instance()->init(vertices, sizeof(vertices), indices, sizeof(indices));
+    engine* eng = new engine();
+    
+    buffer b1;
+    b1.init(vertices, sizeof(vertices), indices, sizeof(indices));
 
-    unsigned int VAO = engine::get_instance()->get_VAO();
-    unsigned int EBO = engine::get_instance()->get_EBO();
+    unsigned int VAO = b1.get_VAO();
+    unsigned int EBO = b1.get_EBO();
 
-    unsigned int shaderProgram = engine::get_instance()->get_program();
+    unsigned int shaderProgram = eng->get_program();
     
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -139,9 +142,10 @@ int main(){
 
     // TERMINATION --------------------------------------------------------------------//
 
-    engine::get_instance()->destroy();
+    b1.destroy();
+    eng->destroy();
+    
     stbi_image_free(windowIcon->pixels);
-
     glfwDestroyWindow(window);
     glfwTerminate();
     

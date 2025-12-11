@@ -6,11 +6,19 @@
 
 class engine{
 
-    static engine* pointer;
-
     unsigned int vertexShader;
     unsigned int fragmentShader;
     unsigned int shaderProgram;
+
+public:
+
+    engine();
+    void destroy();
+
+    unsigned int get_program() const { return shaderProgram; }
+};
+
+class buffer{
 
     unsigned int VBO;
     unsigned int VAO;
@@ -18,18 +26,11 @@ class engine{
 
 public:
 
-    engine();
     void destroy();
+    void init(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
 
-    void init(const float* vertices, const size_t size_v, const unsigned int* indices, const size_t size_i);
-    
     unsigned int get_VAO() const { return VAO; }
     unsigned int get_EBO() const { return EBO; }
-    unsigned int get_program() const { return shaderProgram; }
-
-    static engine* get_instance(){
-        return pointer = (pointer != nullptr)? pointer : new engine();
-    }
 };
 
 #endif
