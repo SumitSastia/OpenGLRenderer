@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class engine{
+class shader{
 
     unsigned int vertexShader;
     unsigned int fragmentShader;
@@ -12,7 +12,7 @@ class engine{
 
 public:
 
-    engine();
+    shader();
     void destroy();
 
     std::string loadShader(const char* path);

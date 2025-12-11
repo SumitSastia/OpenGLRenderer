@@ -1,5 +1,5 @@
 #include <iostream>
-#include <engine.hpp>
+#include <shader.hpp>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -24,7 +24,7 @@
 
 //-------------------------------------------------------------------------------------//
 
-engine::engine(){
+shader::shader(){
 
     // Vertex & Fragment Shader //
 
@@ -79,7 +79,7 @@ engine::engine(){
     glDeleteShader(fragmentShader);
 }
 
-std::string engine::loadShader(const char* path){
+std::string shader::loadShader(const char* path){
 
     std::ifstream file(path);
 
@@ -94,7 +94,7 @@ std::string engine::loadShader(const char* path){
     return ss.str();
 }
 
-void engine::destroy(){
+void shader::destroy(){
     glDeleteProgram(shaderProgram);
 }
 

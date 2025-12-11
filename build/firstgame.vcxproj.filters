@@ -7,7 +7,7 @@
     <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\engine.cpp">
+    <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

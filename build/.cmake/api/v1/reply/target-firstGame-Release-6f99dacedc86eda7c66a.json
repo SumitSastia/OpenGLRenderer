@@ -202,7 +202,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/engine.cpp",
+			"path" : "src/shader.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

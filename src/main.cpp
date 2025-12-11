@@ -1,7 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <engine.hpp>
+#include <shader.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -84,7 +84,7 @@ int main(){
     // MISC ---------------------------------------------------------------------------//
     
     glViewport(0,0,WIN_W,WIN_H);
-    glClearColor(0.26f,0.0f,0.4f,1.0f);
+    glClearColor(0.13f,0.0f,0.2f,1.0f);
 
     glfwSwapInterval(1);
     
@@ -107,13 +107,13 @@ int main(){
         1,2,3
     };
     
-    engine* eng = new engine();
+    shader* s1 = new shader();
     
     buffer b1;
     b1.init(vertices, sizeof(vertices), indices, sizeof(indices));
 
     unsigned int VAO = b1.get_VAO();
-    unsigned int shaderProgram = eng->get_program();
+    unsigned int shaderProgram = s1->get_program();
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -130,8 +130,8 @@ int main(){
         input_handler(window);
 
         // Updates //
-        float runningTime = glfwGetTime();
-        float colorValue = sin(runningTime)/2.0 + 0.5f;
+        // float runningTime = glfwGetTime();
+        // float colorValue = sin(runningTime)/2.0 + 0.5f;
 
         int alphaLocation = glGetUniformLocation(shaderProgram,"alphaVal");
 
@@ -139,7 +139,7 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        glUniform1f(alphaLocation, colorValue);
+        glUniform1f(alphaLocation, 1.0);
 
         glBindVertexArray(VAO);
 
@@ -159,7 +159,7 @@ int main(){
     // TERMINATION --------------------------------------------------------------------//
 
     b1.destroy();
-    eng->destroy();
+    s1->destroy();
     
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);
