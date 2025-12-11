@@ -13,6 +13,22 @@ using namespace std;
 
 //-----------------------------------------------------------------------------------------------//
 
+const char* vertexShaderSource = "#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"layout(location = 1) in vec3 aColor;\n"
+"out vec3 vColor;"
+"void main(){\n"
+    "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "vColor = aColor;"
+"}\0";
+
+const char* fragmentShaderSource = "#version 330 core\n"
+"in vec3 vColor;\n"
+"out vec4 FragColor;\n"
+"void main(){\n"
+    "FragColor = vec4(vColor, 1.0f);\n"
+"}\0";
+
 GLFWimage* load_image(const char* path){
 
     GLFWimage* img = new GLFWimage();
@@ -99,11 +115,61 @@ int main(){
         -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
         -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f
     };
+    
+    // Vertex Shader //
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader,1, &vertexShaderSource, nullptr);
+    glCompileShader(vertexShader);
 
-    engine::get_instance()->init(vertices,sizeof(vertices));
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 
-    unsigned int VAO = engine::get_instance()->get_VAO();
-    unsigned int shaderProgram = engine::get_instance()->get_program();
+    if(!success){
+        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
+        cout << "ERROR: SHADER COMPILATION FAILED!\n" << infoLog << endl;
+    }
+
+    // Fragment Shader //
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader,1, &fragmentShaderSource, nullptr);
+    glCompileShader(fragmentShader);
+    
+    // Shader Program //
+    unsigned int shaderProgram = glCreateProgram();
+
+    glAttachShader(shaderProgram,vertexShader);
+    glAttachShader(shaderProgram,fragmentShader);
+
+    glLinkProgram(shaderProgram);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+
+    if(!success){
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+        cout << "ERROR: SHADER-PROGRAM LINKING FAILED!\n" << infoLog << endl;
+    }
+
+    // Vertex Buffer Object //
+    unsigned int VBO;
+    glGenBuffers(1,&VBO);
+
+    // Vertex Array Object //
+    unsigned int VAO;
+    glGenVertexArrays(1,&VAO);
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Vertex Attribute //
+
+    // Position
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 6*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Color
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
     
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -128,9 +194,7 @@ int main(){
 
     // TERMINATION --------------------------------------------------------------------//
 
-    engine::get_instance()->destroy();
     stbi_image_free(windowIcon->pixels);
-
     glfwDestroyWindow(window);
     glfwTerminate();
     
