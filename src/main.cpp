@@ -22,7 +22,7 @@ GLFWimage* load_image(const char* path){
 
 void input_handler(GLFWwindow* window){
 
-    if(glfwGetKey(window,GLFW_KEY_ESCAPE) == GLFW_PRESS){
+    if(glfwGetKey(window,GLFW_KEY_ESCAPE)){
         glfwSetWindowShouldClose(window,GLFW_TRUE);
     }
 }
@@ -84,9 +84,11 @@ int main(){
     // MISC ---------------------------------------------------------------------------//
     
     glViewport(0,0,WIN_W,WIN_H);
-    glClearColor(0.52f,0.0f,0.8f,0.8f);
+    glClearColor(0.26f,0.0f,0.4f,1.0f);
+
+    glfwSwapInterval(1);
     
-    bool PAUSE = false;
+    // BUFFER -------------------------------------------------------------------------//
     
     float vertices[] = {
 
@@ -104,33 +106,47 @@ int main(){
         0,1,2,
         1,2,3
     };
-
+    
     engine* eng = new engine();
     
     buffer b1;
     b1.init(vertices, sizeof(vertices), indices, sizeof(indices));
 
     unsigned int VAO = b1.get_VAO();
-    unsigned int EBO = b1.get_EBO();
-
     unsigned int shaderProgram = eng->get_program();
+
+    // LOOP CONTROLLERS ---------------------------------------------------------------//
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    bool isRunning = true;
     
     // OPENGL LOOP --------------------------------------------------------------------//
 
-    while(!glfwWindowShouldClose(window)){
+    while(!glfwWindowShouldClose(window) && isRunning){
 
         // Inputs //
         input_handler(window);
 
         // Updates //
+        float runningTime = glfwGetTime();
+        float colorValue = sin(runningTime)/2.0 + 0.5f;
+
+        int alphaLocation = glGetUniformLocation(shaderProgram,"alphaVal");
 
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
+        glUniform1f(alphaLocation, colorValue);
+
         glBindVertexArray(VAO);
+
+        // Drawing using VAO //
         // glDrawArrays(GL_TRIANGLES,0,6);
 
+        // Drawing using EBO //
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);

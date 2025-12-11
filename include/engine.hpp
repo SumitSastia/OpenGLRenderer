@@ -15,6 +15,7 @@ public:
     engine();
     void destroy();
 
+    std::string loadShader(const char* path);
     unsigned int get_program() const { return shaderProgram; }
 };
 

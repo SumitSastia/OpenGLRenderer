@@ -1,29 +1,38 @@
 #include <iostream>
 #include <engine.hpp>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 //-------------------------------------------------------------------------------------//
 
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout(location = 1) in vec3 aColor;\n"
-"out vec3 vColor;"
-"void main(){\n"
-    "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "vColor = aColor;"
-"}\0";
+// const char* vertexShaderSource = "#version 330 core\n"
+// "layout (location = 0) in vec3 aPos;\n"
+// "layout(location = 1) in vec3 aColor;\n"
+// "out vec3 vColor;"
+// "void main(){\n"
+//     "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+//     "vColor = aColor;"
+// "}\0";
 
-const char* fragmentShaderSource = "#version 330 core\n"
-"in vec3 vColor;\n"
-"out vec4 FragColor;\n"
-"void main(){\n"
-    "FragColor = vec4(vColor, 1.0f);\n"
-"}\0";
+// const char* fragmentShaderSource = "#version 330 core\n"
+// "in vec3 vColor;\n"
+// "out vec4 FragColor;\n"
+// "void main(){\n"
+//     "FragColor = vec4(vColor, 1.0f);\n"
+// "}\0";
 
 //-------------------------------------------------------------------------------------//
 
 engine::engine(){
 
     // Vertex & Fragment Shader //
+
+    std::string vertexStr = loadShader("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.vert");
+    std::string fragmentStr = loadShader("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.frag");
+
+    const char* vertexShaderSource = vertexStr.c_str();
+    const char* fragmentShaderSource = fragmentStr.c_str();
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -68,6 +77,21 @@ engine::engine(){
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+std::string engine::loadShader(const char* path){
+
+    std::ifstream file(path);
+
+    if(!file){
+        std::cerr << "Failed to open the File!" << std::endl;
+        return nullptr;
+    }
+
+    std::stringstream ss;
+    ss << file.rdbuf();
+
+    return ss.str();
 }
 
 void engine::destroy(){
