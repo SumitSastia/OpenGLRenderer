@@ -4,23 +4,8 @@
 #include <sstream>
 #include <string>
 
-//-------------------------------------------------------------------------------------//
-
-// const char* vertexShaderSource = "#version 330 core\n"
-// "layout (location = 0) in vec3 aPos;\n"
-// "layout(location = 1) in vec3 aColor;\n"
-// "out vec3 vColor;"
-// "void main(){\n"
-//     "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-//     "vColor = aColor;"
-// "}\0";
-
-// const char* fragmentShaderSource = "#version 330 core\n"
-// "in vec3 vColor;\n"
-// "out vec4 FragColor;\n"
-// "void main(){\n"
-//     "FragColor = vec4(vColor, 1.0f);\n"
-// "}\0";
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 //-------------------------------------------------------------------------------------//
 
@@ -115,12 +100,16 @@ void buffer::init(const float* vertices, size_t size_v, const unsigned int* indi
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices, GL_STATIC_DRAW);
 
     // Position
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 6*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // Color
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Texture
+    glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
 }
 
 void buffer::destroy(){
@@ -128,4 +117,41 @@ void buffer::destroy(){
     glDeleteBuffers(1,&VBO);
     glDeleteBuffers(1,&EBO);
     glDeleteVertexArrays(1,&VAO);   
+}
+
+//-------------------------------------------------------------------------------------//
+
+texture::texture(){
+
+    textureID = 0;
+    width = 0;
+    height = 0;
+    nrChannels = 0;
+    pixelData = nullptr;
+}
+
+texture::~texture(){
+    stbi_image_free(pixelData);
+}
+
+void texture::load(const char* path){
+
+    pixelData = stbi_load(path, &width, &height, nullptr, 4);
+
+    if(!pixelData){
+        std::cerr << "Failed to Load Image!\n" << path << std::endl;
+        return;
+    }
+
+    glGenTextures(1,&textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }

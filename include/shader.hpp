@@ -34,4 +34,22 @@ public:
     unsigned int get_EBO() const { return EBO; }
 };
 
+class texture{
+
+    int width;
+    int height;
+    int nrChannels;
+
+    unsigned int textureID;
+    unsigned char* pixelData;
+
+public:
+
+    texture();
+    ~texture();
+
+    void load(const char* path);
+    unsigned int getID() const { return textureID; }
+};
+
 #endif

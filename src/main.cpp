@@ -2,8 +2,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <shader.hpp>
-
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #define WIN_W 800
@@ -92,19 +90,14 @@ int main(){
     
     float vertices[] = {
 
-        // Position       // Color
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Top-right
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // Bottom-right
-        -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Top-left
-
-        // 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f // Bottom-left
-        // -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f
+        // Position       // Color        // TextureCords
+        0.0f,0.5f,0.0f,   1.0f,0.0f,0.0f, 0.5f, 0.0f,
+        -0.5f,-0.5f,0.0f, 0.0f,1.0f,0.0f, 0.0f, 1.0f,
+        0.5f,-0.5f,0.0f,  0.0f,0.0f,1.0f, 1.0f, 1.0f
     };
 
     unsigned int indices[] = {
-        0,1,2,
-        1,2,3
+        0,1,2
     };
     
     shader* s1 = new shader();
@@ -115,10 +108,18 @@ int main(){
     unsigned int VAO = b1.get_VAO();
     unsigned int shaderProgram = s1->get_program();
 
-    // LOOP CONTROLLERS ---------------------------------------------------------------//
+    // Textures -----------------------------------------------------------------------//
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    texture t1;
+    t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wooden.jpg");
+    
+    // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
     
@@ -130,26 +131,23 @@ int main(){
         input_handler(window);
 
         // Updates //
-        // float runningTime = glfwGetTime();
-        // float colorValue = sin(runningTime)/2.0 + 0.5f;
-
-        int alphaLocation = glGetUniformLocation(shaderProgram,"alphaVal");
 
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        glUniform1f(alphaLocation, 1.0);
-
-        glBindVertexArray(VAO);
-
         // Drawing using VAO //
         // glDrawArrays(GL_TRIANGLES,0,6);
-
+        
         // Drawing using EBO //
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, t1.getID());
+        glBindVertexArray(VAO);
+        
+        // cout << "here";
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
 
         // Events //
         glfwPollEvents();
