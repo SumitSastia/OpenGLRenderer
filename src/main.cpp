@@ -11,6 +11,11 @@ using namespace std;
 
 //-----------------------------------------------------------------------------------------------//
 
+bool isRunning = true;
+float balanceVal = 0.5;
+
+//-----------------------------------------------------------------------------------------------//
+
 GLFWimage* load_image(const char* path){
 
     GLFWimage* img = new GLFWimage();
@@ -22,6 +27,14 @@ void input_handler(GLFWwindow* window){
 
     if(glfwGetKey(window,GLFW_KEY_ESCAPE)){
         glfwSetWindowShouldClose(window,GLFW_TRUE);
+    }
+
+    if(glfwGetKey(window,GLFW_KEY_UP)){
+        if(balanceVal < 1.0) balanceVal += 0.01;
+    }
+
+    if(glfwGetKey(window,GLFW_KEY_DOWN)){
+        if(balanceVal > 0.0) balanceVal -= 0.01;
     }
 }
 
@@ -91,13 +104,15 @@ int main(){
     float vertices[] = {
 
         // Position       // Color        // TextureCords
-        0.0f,0.5f,0.0f,   1.0f,0.0f,0.0f, 0.5f, 0.0f,
+        -0.5f,0.5f,0.0f,   1.0f,0.0f,0.0f, 0.0f, 0.0f,
         -0.5f,-0.5f,0.0f, 0.0f,1.0f,0.0f, 0.0f, 1.0f,
+        0.5f,0.5f,0.0f,  0.0f,0.0f,1.0f, 1.0f, 0.0f,
         0.5f,-0.5f,0.0f,  0.0f,0.0f,1.0f, 1.0f, 1.0f
     };
 
     unsigned int indices[] = {
-        0,1,2
+        0,1,2,
+        1,2,3
     };
     
     shader* s1 = new shader();
@@ -117,11 +132,14 @@ int main(){
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     texture t1;
+    texture t2;
+
     t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wooden.jpg");
+    t2.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\ceramic_stones.jpg");
     
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
-    bool isRunning = true;
+    
     
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -144,6 +162,15 @@ int main(){
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, t1.getID());
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, t2.getID());
+
+        glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture1"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture2"), 1);
+
+        glUniform1f(glGetUniformLocation(shaderProgram,"balance"), balanceVal);
+
         glBindVertexArray(VAO);
         
         // cout << "here";
