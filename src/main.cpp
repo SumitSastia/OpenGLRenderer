@@ -111,7 +111,7 @@ int main(){
         -0.5f,0.5f,0.0f,   1.0f,0.0f,0.0f, 0.0f, 0.0f,
         -0.5f,-0.5f,0.0f, 0.0f,1.0f,0.0f, 0.0f, 1.0f,
         0.5f,0.5f,0.0f,  0.0f,0.0f,1.0f, 1.0f, 0.0f,
-        0.5f,-0.5f,0.0f,  0.0f,0.0f,1.0f, 1.0f, 1.0f
+        0.5f,-0.5f,0.0f,  1.0f,1.0f,0.0f, 1.0f, 1.0f
     };
     
     unsigned int indices[] = {
@@ -132,25 +132,19 @@ int main(){
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-    
-    texture t1;
-    texture t2;
-    
-    t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wooden.jpg");
-    t2.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\ceramic_stones.jpg");
+    // float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
+    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
     
     // GL MATHEMATICS -----------------------------------------------------------------//
     
-    glm::mat4 trans = glm::mat4(1.0f);
-    
-    // Translation
-    trans = glm::rotate(trans, glm::radians(45.0f), glm::vec3(0.0f,0.0f,1.0f));
-    // trans = glm::translate(trans, glm::vec3(0.0f,1.0f,0.0f));
-    // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    glm::mat4 model(1.0f);
+    glm::mat4 view(1.0f);
+    glm::mat4 projection;
 
-    
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f,0.0f,0.0f));
+    view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
+    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+
     bool isRunning = true;
     
     // OPENGL LOOP --------------------------------------------------------------------//
@@ -165,31 +159,12 @@ int main(){
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
+
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"projection"), 1, GL_FALSE, glm::value_ptr(projection));
         
-        // Drawing using VAO //
         glBindVertexArray(VAO);
-        // glDrawArrays(GL_TRIANGLES,0,6);
-        
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, t1.getID());
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, t2.getID());
-
-        glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture1"), 0);
-        glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture2"), 1);
-        
-        glUniform1f(glGetUniformLocation(shaderProgram,"balance"), balanceVal);
-        
-        trans = glm::rotate(trans, (float)(sin(glfwGetTime())/5.0), glm::vec3(0.0f,0.0f,1.0f));
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"transform"), 1, GL_FALSE, glm::value_ptr(trans));
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        glm::mat4 trans2 = glm::mat4(1.0f);
-        // // trans = glm::translate(trans, glm::vec3(0.1f,0.1f,0.0f));
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"transform"), 1, GL_FALSE, glm::value_ptr(trans2));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Events //
