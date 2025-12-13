@@ -106,17 +106,53 @@ int main(){
     // BUFFER -------------------------------------------------------------------------//
     
     float vertices[] = {
-        
-        // Position       // Color        // TextureCords
-        -0.5f,0.5f,0.0f,   1.0f,0.0f,0.0f, 0.0f, 0.0f,
-        -0.5f,-0.5f,0.0f, 0.0f,1.0f,0.0f, 0.0f, 1.0f,
-        0.5f,0.5f,0.0f,  0.0f,0.0f,1.0f, 1.0f, 0.0f,
-        0.5f,-0.5f,0.0f,  1.0f,1.0f,0.0f, 1.0f, 1.0f
+        -0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f, 1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f, 1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f, 0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f,1.0f,0.0f, 0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,1.0f,0.0f, 1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f, 1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,1.0f,0.0f, 0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,0.0f,1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,0.0f,1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,0.0f,1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f, 1.0f, 0.0f,
+
+        0.5f,  0.5f,  0.5f,  1.0f,1.0f,0.0f, 1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,1.0f,0.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,1.0f,0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,1.0f,0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f,1.0f,0.0f, 0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,1.0f,0.0f, 1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f,1.0f,1.0f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f,1.0f,1.0f, 1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,1.0f,1.0f, 1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,1.0f,1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,1.0f,1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,1.0f,1.0f, 0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  1.0f,0.0f,1.0f, 0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,0.0f,1.0f, 1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,0.0f,1.0f, 1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,0.0f,1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f,0.0f,1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f,0.0f,1.0f, 0.0f, 1.0f
     };
     
     unsigned int indices[] = {
-        0,1,2,
-        1,2,3
+        // 0,1,2,
+        // 1,2,3
+        0
     };
     
     shader* s1 = new shader();
@@ -131,9 +167,13 @@ int main(){
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
     
-    // float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
-    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    texture t1;
+    t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wooden.jpg");
     
     // GL MATHEMATICS -----------------------------------------------------------------//
     
@@ -155,17 +195,25 @@ int main(){
         input_handler(window);
 
         // Updates //
+        model = glm::mat4(1.0f);
+        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));  
 
         // Rendering //
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, t1.getID());
+
+        // glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture1"), 0);
 
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"projection"), 1, GL_FALSE, glm::value_ptr(projection));
         
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Events //
         glfwPollEvents();
