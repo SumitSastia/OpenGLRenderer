@@ -16,31 +16,21 @@ using namespace std;
 
 //-----------------------------------------------------------------------------------------------//
 
-float balanceVal = 0.5;
+float balanceVal = 0.5f;
+
+bool isPaused = false;
+float lastTime = 0.0f;
+float deltaTime = 0.0f;
+
+double cursor_dx = 0.0;
+double cursor_dy = 0.0;
 
 //-----------------------------------------------------------------------------------------------//
 
-GLFWimage* load_image(const char* path){
-    
-    GLFWimage* img = new GLFWimage();
-    img->pixels = stbi_load(path,&img->width,&img->height,nullptr,4);
-    return img;
-}
+GLFWimage* load_image(const char* path);
 
-void input_handler(GLFWwindow* window){
-    
-    if(glfwGetKey(window,GLFW_KEY_ESCAPE)){
-        glfwSetWindowShouldClose(window,GLFW_TRUE);
-    }
-    
-    if(glfwGetKey(window,GLFW_KEY_UP)){
-        if(balanceVal < 1.0) balanceVal += 0.01;
-    }
-    
-    if(glfwGetKey(window,GLFW_KEY_DOWN)){
-        if(balanceVal > 0.0) balanceVal -= 0.01;
-    }
-}
+void input_callback(GLFWwindow* window, int key, int scancode, int action, int modes);
+void track_mouse(GLFWwindow* window);
 
 //-----------------------------------------------------------------------------------------------//
 
@@ -102,43 +92,94 @@ int main(){
     glClearColor(0.13f,0.0f,0.2f,1.0f);
     
     glfwSwapInterval(1);
+
+    glfwSetKeyCallback(window, input_callback);
     
     // BUFFER -------------------------------------------------------------------------//
     
+    // float vertices[] = {
+
+    //     // Front
+    //     -0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,0.0,
+    //      0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,0.0,
+    //     -0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
+         
+    //     // Back
+    //     -0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
+    //      0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
+    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0,
+    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,1.0,
+
+    //     // Left
+    //     -0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
+    //     -0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,0.0,
+    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,1.0,
+    //     -0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
+
+    //     // Right
+    //      0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
+    //      0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,0.0,
+    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
+
+    //     // Top
+    //     -0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
+    //      0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
+    //     -0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
+    //      0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
+
+    //     // Bottom
+    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
+    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
+    //     -0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
+    // };
+
     float vertices[] = {
 
         // Position //
 
         // Front
-        -0.75, 0.45, 0.001,  1.0,1.0,1.0,  0.0,0.0,
-         0.75, 0.45, 0.001,  1.0,1.0,1.0,  1.0,0.0,
-        -0.75,-0.45, 0.001,  1.0,1.0,1.0,  0.0,1.0,
-         0.75,-0.45, 0.001,  1.0,1.0,1.0,  1.0,1.0,
+        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
+         0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
+        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
+         0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
          
         // Back
-        -0.75, 0.45,-0.001,  1.0,1.0,1.0,  1.0,0.0,
-         0.75, 0.45,-0.001,  1.0,1.0,1.0,  0.0,0.0,
-        -0.75,-0.45,-0.001,  1.0,1.0,1.0,  1.0,1.0,
-         0.75,-0.45,-0.001,  1.0,1.0,1.0,  0.0,1.0
+        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
+         0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
+        -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
+         0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
     };
-
-    // float vertices[] = {
-
-    //     // Position //
+    
+    // unsigned int indices[] = {
 
     //     // Front
-    //     -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
-    //      0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
-    //     -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
-    //      0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
-         
+    //     0,1,2,
+    //     1,2,3,
+
     //     // Back
-    //     -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
-    //      0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
-    //     -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
-    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
+    //     4,5,6,
+    //     5,6,7,
+
+    //     // Left
+    //     8,9,10,
+    //     9,10,11,
+
+    //     // Right
+    //     12,13,14,
+    //     13,14,15,
+
+    //     // Top
+    //     16,17,18,
+    //     17,18,19,
+
+    //     // Bottom
+    //     20,21,22,
+    //     21,22,23
     // };
-    
+
     unsigned int indices[] = {
 
         // Front
@@ -195,7 +236,7 @@ int main(){
     glm::mat4 view(1.0f);
     glm::mat4 projection;
 
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f,0.0f,0.0f));
+    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f,0.0f,0.0f));
     view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
     projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
@@ -213,24 +254,43 @@ int main(){
     };
 
     bool isRunning = true;
-    
+    float angle = 0.0f;
+
     // OPENGL LOOP --------------------------------------------------------------------//
 
     while(!glfwWindowShouldClose(window) && isRunning){
 
-        // Inputs //
-        input_handler(window);
+        float currentTime = glfwGetTime();
+        deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
         // Updates //
-        model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));  
+        if(!isPaused){
 
+            track_mouse(window);
+
+            float rotation_speed = 0.5f;
+            float angle = 0.0f;
+
+            if(cursor_dx != 0){
+                angle = rotation_speed * cursor_dx;
+                model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0,1.0,0.0)) * model;
+            }
+
+            if(cursor_dy != 0){
+                angle = rotation_speed * cursor_dy;
+                model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0,0.0,0.0)) * model;
+            }
+            
+        }
+        
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        // glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);
         
+        glUniform1i(glGetUniformLocation(shaderProgram,"useTexture"), 0);
         glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture1"), 0);
         
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"model"), 1, GL_FALSE, glm::value_ptr(model));
@@ -239,11 +299,15 @@ int main(){
         
         glBindVertexArray(VAO);
         
-        glBindTexture(GL_TEXTURE_2D, t1.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // 2D Paper
+        // glBindTexture(GL_TEXTURE_2D, t1.getID());
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        glBindTexture(GL_TEXTURE_2D, t2.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));
+        // glBindTexture(GL_TEXTURE_2D, t2.getID());
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));
+
+        // 3D Cube
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
         // Events //
         glfwPollEvents();
@@ -260,4 +324,67 @@ int main(){
     glfwTerminate();
     
     return 0;
+}
+
+//-----------------------------------------------------------------------------------------------//
+
+GLFWimage* load_image(const char* path){
+    
+    GLFWimage* img = new GLFWimage();
+    img->pixels = stbi_load(path,&img->width,&img->height,nullptr,4);
+    return img;
+}
+
+void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+
+    if(glfwGetKey(window,GLFW_KEY_ESCAPE)){
+        glfwSetWindowShouldClose(window,GLFW_TRUE);
+    }
+    
+    if(glfwGetKey(window,GLFW_KEY_UP)){
+        if(balanceVal < 1.0) balanceVal += 0.01;
+    }
+    
+    if(glfwGetKey(window,GLFW_KEY_DOWN)){
+        if(balanceVal > 0.0) balanceVal -= 0.01;
+    }
+
+    if(glfwGetKey(window,GLFW_KEY_F)){
+        isPaused = !isPaused;
+    }
+}
+
+void track_mouse(GLFWwindow* window){
+
+    static bool mouse_click_hold = false;
+
+    if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE){
+
+        cursor_dx = 0.0;
+        cursor_dy = 0.0;
+        mouse_click_hold = false;
+        return;
+    }
+
+    double pos_x;
+    double pos_y;
+
+    glfwGetCursorPos(window, &pos_x, &pos_y);
+
+    static double prev_x = pos_x;
+    static double prev_y = pos_y;
+
+    if(!mouse_click_hold){
+        prev_x = pos_x;
+        prev_y = pos_y;
+        mouse_click_hold = true;
+    }
+
+    cursor_dx = pos_x - prev_x;
+    cursor_dy = pos_y - prev_y;
+
+    prev_x = pos_x;
+    prev_y = pos_y;
+
+    // cout << "X:" << cursor_dx << ",Y:" << cursor_dy << endl;
 }
