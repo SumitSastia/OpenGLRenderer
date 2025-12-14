@@ -281,6 +281,9 @@ int main(){
         deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
+        // Inputs
+        cam.input_handler(window,deltaTime);
+
         // Updates //
         if(!isPaused){
 
@@ -301,10 +304,8 @@ int main(){
 
             float camX = sin(glfwGetTime()) * radius;
             float camZ = cos(glfwGetTime()) * radius;
-
-            // view = glm::lookAt(glm::vec3(camX,0.0,camZ), glm::vec3(0.0), glm::vec3(0.0,1.0,0.0));
             
-            cam.set_position(glm::vec3(camX,0.0,camZ));
+            cam.set_target(glm::vec3(cam.getPos().x,cam.getPos().y,cam.getPos().z - 5));
             cam.look_at();
 
             view = cam.getView();
