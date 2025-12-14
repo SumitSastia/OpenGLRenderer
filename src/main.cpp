@@ -104,86 +104,40 @@ int main(){
     glfwSwapInterval(1);
     
     // BUFFER -------------------------------------------------------------------------//
-
-    // float vertices[] = {
-        
-    //     // Position       // Color        // TextureCords
-    //     -0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f, 0.0f, 0.0f,
-    //     0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f, 1.0f, 0.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f, 1.0f, 1.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f, 1.0f, 1.0f,
-    //     -0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f, 0.0f, 1.0f,
-    //     -0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f, 0.0f, 0.0f,
-
-    //     -0.5f, -0.5f,  0.5f,  0.0f,1.0f,0.0f, 0.0f, 0.0f,
-    //     0.5f, -0.5f,  0.5f,  0.0f,1.0f,0.0f, 1.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f, 1.0f, 1.0f,
-    //     0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f, 1.0f, 1.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f, 0.0f, 1.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f,1.0f,0.0f, 0.0f, 0.0f,
-
-    //     -0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f, 1.0f, 0.0f,
-    //     -0.5f,  0.5f, -0.5f,  0.0f,0.0f,1.0f, 1.0f, 1.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f,0.0f,1.0f, 0.0f, 1.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f,0.0f,1.0f, 0.0f, 1.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f, 0.0f, 0.0f,
-    //     -0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f, 1.0f, 0.0f,
-
-    //     0.5f,  0.5f,  0.5f,  1.0f,1.0f,0.0f, 1.0f, 0.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f,1.0f,0.0f, 1.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  1.0f,1.0f,0.0f, 0.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  1.0f,1.0f,0.0f, 0.0f, 1.0f,
-    //     0.5f, -0.5f,  0.5f,  1.0f,1.0f,0.0f, 0.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f,1.0f,0.0f, 1.0f, 0.0f,
-
-    //     -0.5f, -0.5f, -0.5f,  0.0f,1.0f,1.0f, 0.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  0.0f,1.0f,1.0f, 1.0f, 1.0f,
-    //     0.5f, -0.5f,  0.5f,  0.0f,1.0f,1.0f, 1.0f, 0.0f,
-    //     0.5f, -0.5f,  0.5f,  0.0f,1.0f,1.0f, 1.0f, 0.0f,
-    //     -0.5f, -0.5f,  0.5f,  0.0f,1.0f,1.0f, 0.0f, 0.0f,
-    //     -0.5f, -0.5f, -0.5f,  0.0f,1.0f,1.0f, 0.0f, 1.0f,
-
-    //     -0.5f,  0.5f, -0.5f,  1.0f,0.0f,1.0f, 0.0f, 1.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f,0.0f,1.0f, 1.0f, 1.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f,0.0f,1.0f, 1.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f,0.0f,1.0f, 1.0f, 0.0f,
-    //     -0.5f,  0.5f,  0.5f,  1.0f,0.0f,1.0f, 0.0f, 0.0f,
-    //     -0.5f,  0.5f, -0.5f,  1.0f,0.0f,1.0f, 0.0f, 1.0f
-    // };
     
-    // float vertices[] = {
-
-    //     // Position //
-
-    //     // Front
-    //     -0.75, 0.45, 0.001,  1.0,1.0,1.0,  0.0,0.0,
-    //      0.75, 0.45, 0.001,  1.0,1.0,1.0,  1.0,0.0,
-    //     -0.75,-0.45, 0.001,  1.0,1.0,1.0,  0.0,1.0,
-    //      0.75,-0.45, 0.001,  1.0,1.0,1.0,  1.0,1.0,
-         
-    //     // Back
-    //     -0.75, 0.45,-0.001,  1.0,1.0,1.0,  0.0,0.0,
-    //      0.75, 0.45,-0.001,  1.0,1.0,1.0,  1.0,0.0,
-    //     -0.75,-0.45,-0.001,  1.0,1.0,1.0,  0.0,1.0,
-    //      0.75,-0.45,-0.001,  1.0,1.0,1.0,  1.0,1.0
-    // };
-
     float vertices[] = {
 
         // Position //
 
         // Front
-        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
-         0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
-        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
-         0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
+        -0.75, 0.45, 0.001,  1.0,1.0,1.0,  0.0,0.0,
+         0.75, 0.45, 0.001,  1.0,1.0,1.0,  1.0,0.0,
+        -0.75,-0.45, 0.001,  1.0,1.0,1.0,  0.0,1.0,
+         0.75,-0.45, 0.001,  1.0,1.0,1.0,  1.0,1.0,
          
         // Back
-        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
-         0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
-        -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
-         0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
+        -0.75, 0.45,-0.001,  1.0,1.0,1.0,  1.0,0.0,
+         0.75, 0.45,-0.001,  1.0,1.0,1.0,  0.0,0.0,
+        -0.75,-0.45,-0.001,  1.0,1.0,1.0,  1.0,1.0,
+         0.75,-0.45,-0.001,  1.0,1.0,1.0,  0.0,1.0
     };
+
+    // float vertices[] = {
+
+    //     // Position //
+
+    //     // Front
+    //     -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
+    //      0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
+    //     -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
+         
+    //     // Back
+    //     -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
+    //      0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
+    //     -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
+    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
+    // };
     
     unsigned int indices[] = {
 
@@ -226,11 +180,14 @@ int main(){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     
-    // float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
-    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-    // texture t1;
-    // t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-front.png");
+    texture t1;
+    texture t2;
+
+    t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-front.png");
+    t2.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-back.png");
     
     // GL MATHEMATICS -----------------------------------------------------------------//
     
@@ -273,17 +230,20 @@ int main(){
         glUseProgram(shaderProgram);
 
         // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, t1.getID());
-
-        // glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture1"), 0);
-
+        
+        glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture1"), 0);
+        
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"projection"), 1, GL_FALSE, glm::value_ptr(projection));
         
         glBindVertexArray(VAO);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        
+        glBindTexture(GL_TEXTURE_2D, t1.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glBindTexture(GL_TEXTURE_2D, t2.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));
 
         // Events //
         glfwPollEvents();
