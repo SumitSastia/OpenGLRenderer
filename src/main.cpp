@@ -5,9 +5,7 @@
 #include <shader.hpp>
 #include <stb_image.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <camera.hpp>
 
 #define WIN_W 800
 #define WIN_H 600
@@ -253,8 +251,27 @@ int main(){
         glm::vec3(-1.3f,  1.0f, -1.5f)  
     };
 
+    // CAMERA -------------------------------------------------------------------------//
+
+    // glm::vec3 cameraPos(0.0f, 0.0f, 3.0f);
+    // glm::vec3 cameraTarget(0.0f, 0.0f, 0.0f);
+    // glm::vec3 cameraDir = glm::normalize(cameraPos - cameraTarget);
+
+    // // right-axis
+    // glm::vec3 up(0.0f, 1.0f, 0.0f);
+    // glm::vec3 cameraRight = glm::normalize(glm::cross(up,cameraDir));
+
+    // // up-axis
+    // glm::vec3 cameraUp = glm::cross(cameraDir,cameraRight);
+
+    camera cam;
+    const float radius = 5.0f;
+
+    // LOOP CONTROLLERS ---------------------------------------------------------------//
+
     bool isRunning = true;
-    float angle = 0.0f;
+
+    glUseProgram(shaderProgram);
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -281,30 +298,27 @@ int main(){
                 angle = rotation_speed * cursor_dy;
                 model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0,0.0,0.0)) * model;
             }
+
+            float camX = sin(glfwGetTime()) * radius;
+            float camZ = cos(glfwGetTime()) * radius;
+
+            // view = glm::lookAt(glm::vec3(camX,0.0,camZ), glm::vec3(0.0), glm::vec3(0.0,1.0,0.0));
             
+            cam.set_position(glm::vec3(camX,0.0,camZ));
+            cam.look_at();
+
+            view = cam.getView();
         }
         
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(shaderProgram);
-
-        glActiveTexture(GL_TEXTURE0);
-        
         glUniform1i(glGetUniformLocation(shaderProgram,"useTexture"), 0);
-        glUniform1i(glGetUniformLocation(shaderProgram,"ourTexture1"), 0);
         
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"projection"), 1, GL_FALSE, glm::value_ptr(projection));
         
         glBindVertexArray(VAO);
-        
-        // 2D Paper
-        // glBindTexture(GL_TEXTURE_2D, t1.getID());
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        // glBindTexture(GL_TEXTURE_2D, t2.getID());
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));
 
         // 3D Cube
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
@@ -340,17 +354,13 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
     if(glfwGetKey(window,GLFW_KEY_ESCAPE)){
         glfwSetWindowShouldClose(window,GLFW_TRUE);
     }
-    
-    if(glfwGetKey(window,GLFW_KEY_UP)){
-        if(balanceVal < 1.0) balanceVal += 0.01;
-    }
-    
-    if(glfwGetKey(window,GLFW_KEY_DOWN)){
-        if(balanceVal > 0.0) balanceVal -= 0.01;
-    }
 
     if(glfwGetKey(window,GLFW_KEY_F)){
         isPaused = !isPaused;
+    }
+
+    if(glfwGetKey(window,GLFW_KEY_W)){
+
     }
 }
 
