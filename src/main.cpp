@@ -7,6 +7,9 @@
 
 #include <camera.hpp>
 
+#include <filesystem>
+#include <cstdlib>
+
 #define WIN_W 800
 #define WIN_H 600
 
@@ -17,6 +20,8 @@ using namespace std;
 float balanceVal = 0.5f;
 
 bool isPaused = false;
+bool mouseInCamera = false;
+
 float lastTime = 0.0f;
 float deltaTime = 0.0f;
 
@@ -29,6 +34,16 @@ GLFWimage* load_image(const char* path);
 
 void input_callback(GLFWwindow* window, int key, int scancode, int action, int modes);
 void track_mouse(GLFWwindow* window);
+
+void checkRestart(){
+
+    if(filesystem::exists("restart.flag")){
+
+        filesystem::remove("restart.flag");
+        system("firstGame.exe");
+        exit(0);
+    }
+}
 
 //-----------------------------------------------------------------------------------------------//
 
@@ -228,66 +243,41 @@ int main(){
     t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-front.png");
     t2.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-back.png");
     
+    // CAMERA -------------------------------------------------------------------------//
+    
+    camera cam;
+    const float radius = 5.0f;
+    
     // GL MATHEMATICS -----------------------------------------------------------------//
     
     glm::mat4 model(1.0f);
-    glm::mat4 view(1.0f);
+    glm::mat4 view;
     glm::mat4 projection;
 
-    model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f,0.0f,0.0f));
-    view = glm::translate(view, glm::vec3(0.0f,0.0f,-3.0f));
-    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
-
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f), 
-        glm::vec3( 2.0f,  5.0f, -15.0f), 
-        glm::vec3(-1.5f, -2.2f, -2.5f),  
-        glm::vec3(-3.8f, -2.0f, -12.3f),  
-        glm::vec3( 2.4f, -0.4f, -3.5f),  
-        glm::vec3(-1.7f,  3.0f, -7.5f),  
-        glm::vec3( 1.3f, -2.0f, -2.5f),  
-        glm::vec3( 1.5f,  2.0f, -2.5f), 
-        glm::vec3( 1.5f,  0.2f, -1.5f), 
-        glm::vec3(-1.3f,  1.0f, -1.5f)  
-    };
-
-    // CAMERA -------------------------------------------------------------------------//
-
-    // glm::vec3 cameraPos(0.0f, 0.0f, 3.0f);
-    // glm::vec3 cameraTarget(0.0f, 0.0f, 0.0f);
-    // glm::vec3 cameraDir = glm::normalize(cameraPos - cameraTarget);
-
-    // // right-axis
-    // glm::vec3 up(0.0f, 1.0f, 0.0f);
-    // glm::vec3 cameraRight = glm::normalize(glm::cross(up,cameraDir));
-
-    // // up-axis
-    // glm::vec3 cameraUp = glm::cross(cameraDir,cameraRight);
-
-    camera cam;
-    const float radius = 5.0f;
+    projection = cam.getPerspective();
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
-
     glUseProgram(shaderProgram);
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
     while(!glfwWindowShouldClose(window) && isRunning){
 
+        checkRestart();
+
         float currentTime = glfwGetTime();
         deltaTime = currentTime - lastTime;
         lastTime = currentTime;
-
-        // Inputs
-        cam.input_handler(window,deltaTime);
-
+        
         // Updates //
         if(!isPaused){
-
+    
+            // Inputs
             track_mouse(window);
+            cam.input_handler(window,deltaTime);
+            cam.mouse_handler(window);
 
             float rotation_speed = 0.5f;
             float angle = 0.0f;
@@ -305,7 +295,7 @@ int main(){
             float camX = sin(glfwGetTime()) * radius;
             float camZ = cos(glfwGetTime()) * radius;
             
-            cam.set_target(glm::vec3(cam.getPos().x,cam.getPos().y,cam.getPos().z - 5));
+            // cam.set_target(glm::vec3(cam.getPos().x,cam.getPos().y,cam.getPos().z - 5));
             cam.look_at();
 
             view = cam.getView();
@@ -360,8 +350,16 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
         isPaused = !isPaused;
     }
 
-    if(glfwGetKey(window,GLFW_KEY_W)){
+    if(glfwGetKey(window,GLFW_KEY_E)){
 
+        if(!mouseInCamera){
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        else{
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+
+        mouseInCamera = !mouseInCamera;
     }
 }
 
@@ -396,6 +394,4 @@ void track_mouse(GLFWwindow* window){
 
     prev_x = pos_x;
     prev_y = pos_y;
-
-    // cout << "X:" << cursor_dx << ",Y:" << cursor_dy << endl;
 }

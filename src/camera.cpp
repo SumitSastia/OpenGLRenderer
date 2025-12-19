@@ -1,4 +1,5 @@
 #include <camera.hpp>
+#include <iostream>
 
 camera::camera(){
 
@@ -7,10 +8,25 @@ camera::camera(){
     direction = glm::normalize(position - direction);
 
     camSpeed = 1.0f;
+    camSensitivity = 0.1f;
     glm::vec3 up(0.0f, 1.0f, 0.0f);
 
     right_axis = glm::normalize(glm::cross(up, direction));
     up_axis = glm::cross(direction, right_axis);
+
+    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    mouseEnabled = false;
+
+    yaw = -90.0f;
+    pitch = 0.0f;
+
+    glm::vec3 new_direction;
+
+    new_direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    new_direction.y = sin(glm::radians(pitch));
+    new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+    target = glm::normalize(new_direction);
 }
 
 void camera::set_position(const glm::vec3 position){
@@ -31,6 +47,8 @@ void camera::look_at(){
 
 void camera::input_handler(GLFWwindow* window, float deltaTime){
 
+    static bool PRESSED_E = false;
+
     if(glfwGetKey(window,GLFW_KEY_W)){
         position.z -= camSpeed * deltaTime;
     }
@@ -45,4 +63,66 @@ void camera::input_handler(GLFWwindow* window, float deltaTime){
         position.x += camSpeed * deltaTime;
     }
 
+    if(glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)){
+        camSpeed = 2.0f;
+    }
+    else{
+        camSpeed = 1.0f;
+    }
+
+    if(glfwGetKey(window,GLFW_KEY_E)){
+
+        if(!PRESSED_E){
+            if(!mouseEnabled){
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
+            else{
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            }
+
+            mouseEnabled = !mouseEnabled;
+            PRESSED_E = true;
+        }
+    }
+    else{
+        PRESSED_E = false;
+    }
+}
+
+void camera::mouse_handler(GLFWwindow* window){
+
+    if(!mouseEnabled) return;
+
+    double pos_x = 0.0;
+    double pos_y = 0.0;
+
+    glfwGetCursorPos(window, &pos_x, &pos_y);
+
+    static double prev_x = pos_x;
+    static double prev_y = pos_y;
+
+    double cursor_dx = pos_x - prev_x;
+    double cursor_dy = prev_y - pos_y;
+
+    prev_x = pos_x;
+    prev_y = pos_y;
+
+    float offset_x = cursor_dx * camSensitivity;
+    float offset_y = cursor_dy * camSensitivity;
+
+    yaw = glm::mod(yaw+offset_x, 360.0f);
+    pitch += offset_y;
+
+    if(pitch > 89.0f) pitch = 89.0f;
+    if(pitch < -89.0f) pitch = -89.0f;
+
+    glm::vec3 new_direction;
+
+    new_direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    new_direction.y = sin(glm::radians(pitch));
+    new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+    target = glm::normalize(new_direction);
+
+    // std::cout << new_direction.x << std::endl;
 }

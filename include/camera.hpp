@@ -18,8 +18,15 @@ class camera{
     glm::vec3 up_axis;
 
     glm::mat4 viewMatrix;
+    glm::mat4 projection;
 
     float camSpeed;
+    float camSensitivity;
+
+    float yaw; // y-axis rotation
+    float pitch; // x-axis rotation
+
+    bool mouseEnabled;
 
 public:
 
@@ -27,6 +34,7 @@ public:
 
     void look_at();
     void input_handler(GLFWwindow* window, float deltaTime);
+    void mouse_handler(GLFWwindow* window);
 
     void set_speed(const float speed);
     void set_position(const glm::vec3 position);
@@ -34,6 +42,7 @@ public:
 
     glm::vec3 getPos() const { return position; }
     glm::mat4 getView() const { return viewMatrix; }
+    glm::mat4 getPerspective() const { return projection; }
 };
 
 #endif
