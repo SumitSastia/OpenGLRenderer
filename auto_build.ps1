@@ -1,6 +1,5 @@
 $srcDir   = "src"
 $buildDir = "build"
-$exeName  = "firstGame.exe"
 
 $watcher = New-Object System.IO.FileSystemWatcher
 $watcher.Path = $srcDir
@@ -16,7 +15,7 @@ Register-ObjectEvent $watcher Changed -Action {
 
     Write-Host "Change detected → building..."
 
-    cmake --build build --config Debug
+    cmake --build $buildDir --config Debug
 
     # signal running exe
     New-Item -Path "restart.flag" -ItemType File -Force | Out-Null

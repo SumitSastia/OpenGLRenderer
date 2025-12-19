@@ -37,10 +37,10 @@ void track_mouse(GLFWwindow* window);
 
 void checkRestart(){
 
-    if(filesystem::exists("restart.flag")){
+    if(filesystem::exists("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\restart.flag")){
 
-        filesystem::remove("restart.flag");
-        system("firstGame.exe");
+        filesystem::remove("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\restart.flag");
+        system("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\build\\Debug\\firstGame.exe");
         exit(0);
     }
 }
@@ -265,8 +265,6 @@ int main(){
 
     while(!glfwWindowShouldClose(window) && isRunning){
 
-        checkRestart();
-
         float currentTime = glfwGetTime();
         deltaTime = currentTime - lastTime;
         lastTime = currentTime;
@@ -275,7 +273,7 @@ int main(){
         if(!isPaused){
     
             // Inputs
-            track_mouse(window);
+            // track_mouse(window);
             cam.input_handler(window,deltaTime);
             cam.mouse_handler(window);
 

@@ -42,7 +42,7 @@ void camera::set_speed(const float speed){
 }
 
 void camera::look_at(){
-    viewMatrix = glm::lookAt(position, target, up_axis);
+    viewMatrix = glm::lookAt(position, position + target, up_axis);
 }
 
 void camera::input_handler(GLFWwindow* window, float deltaTime){
