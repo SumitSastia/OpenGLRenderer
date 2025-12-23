@@ -28,11 +28,15 @@ float deltaTime = 0.0f;
 double cursor_dx = 0.0;
 double cursor_dy = 0.0;
 
+float scrollOffset = 0.0f;
+
 //-----------------------------------------------------------------------------------------------//
 
 GLFWimage* load_image(const char* path);
 
 void input_callback(GLFWwindow* window, int key, int scancode, int action, int modes);
+void scroll_callback(GLFWwindow* window, double offset_x, double offset_y);
+
 void track_mouse(GLFWwindow* window);
 
 void checkRestart(){
@@ -246,7 +250,7 @@ int main(){
     // CAMERA -------------------------------------------------------------------------//
     
     camera cam;
-    const float radius = 5.0f;
+    glfwSetScrollCallback(window, scroll_callback);
     
     // GL MATHEMATICS -----------------------------------------------------------------//
     
@@ -273,10 +277,11 @@ int main(){
         if(!isPaused){
     
             // Inputs
-            // track_mouse(window);
             cam.input_handler(window,deltaTime);
             cam.mouse_handler(window);
-
+            cam.scroll_handler(scrollOffset);
+            // track_mouse(window);
+            
             float rotation_speed = 0.5f;
             float angle = 0.0f;
 
@@ -289,14 +294,11 @@ int main(){
                 angle = rotation_speed * cursor_dy;
                 model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0,0.0,0.0)) * model;
             }
-
-            float camX = sin(glfwGetTime()) * radius;
-            float camZ = cos(glfwGetTime()) * radius;
             
-            // cam.set_target(glm::vec3(cam.getPos().x,cam.getPos().y,cam.getPos().z - 5));
             cam.look_at();
 
             view = cam.getView();
+            projection = cam.getPerspective();
         }
         
         // Rendering //
@@ -359,6 +361,10 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
 
         mouseInCamera = !mouseInCamera;
     }
+}
+
+void scroll_callback(GLFWwindow* window, double offset_x, double offset_y){
+    scrollOffset = (float)offset_y;
 }
 
 void track_mouse(GLFWwindow* window){

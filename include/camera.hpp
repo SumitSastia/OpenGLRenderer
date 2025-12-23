@@ -26,6 +26,7 @@ class camera{
     float yaw; // y-axis rotation
     float pitch; // x-axis rotation
 
+    float fov;
     bool mouseEnabled;
 
 public:
@@ -35,10 +36,12 @@ public:
     void look_at();
     void input_handler(GLFWwindow* window, float deltaTime);
     void mouse_handler(GLFWwindow* window);
+    void scroll_handler(float &scrollOffset);
 
     void set_speed(const float speed);
     void set_position(const glm::vec3 position);
     void set_target(const glm::vec3 target);
+    void set_fov(const float fov);
 
     glm::vec3 getPos() const { return position; }
     glm::mat4 getView() const { return viewMatrix; }

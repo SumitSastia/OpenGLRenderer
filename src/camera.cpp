@@ -14,7 +14,9 @@ camera::camera(){
     right_axis = glm::normalize(glm::cross(up, direction));
     up_axis = glm::cross(direction, right_axis);
 
-    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    fov = 45.0f;
+
+    projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
     mouseEnabled = false;
 
     yaw = -90.0f;
@@ -39,6 +41,16 @@ void camera::set_target(const glm::vec3 target){
 
 void camera::set_speed(const float speed){
     camSpeed = speed;
+}
+
+void camera::set_fov(const float fov){
+
+    this->fov = fov;
+
+    if(fov > 89.0f) this->fov = 89.0f;
+    if(fov < -89.0f) this->fov = -89.0f;
+
+    projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
 }
 
 void camera::look_at(){
@@ -125,4 +137,10 @@ void camera::mouse_handler(GLFWwindow* window){
     target = glm::normalize(new_direction);
 
     // std::cout << new_direction.x << std::endl;
+}
+
+void camera::scroll_handler(float &scrollOffset){
+    
+    set_fov(fov - scrollOffset);
+    scrollOffset = 0.0f;
 }
