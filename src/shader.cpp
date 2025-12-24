@@ -9,12 +9,12 @@
 
 //-------------------------------------------------------------------------------------//
 
-shader::shader(){
+shader::shader(const char* vertPath, const char* fragPath){
 
     // Vertex & Fragment Shader //
 
-    std::string vertexStr = loadShader("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.vert");
-    std::string fragmentStr = loadShader("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.frag");
+    std::string vertexStr = loadShader(vertPath);
+    std::string fragmentStr = loadShader(fragPath);
 
     const char* vertexShaderSource = vertexStr.c_str();
     const char* fragmentShaderSource = fragmentStr.c_str();

@@ -12,7 +12,7 @@ class shader{
 
 public:
 
-    shader();
+    shader(const char* vertPath, const char* fragPath);
     void destroy();
 
     std::string loadShader(const char* path);

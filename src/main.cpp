@@ -114,39 +114,39 @@ int main(){
     
     // BUFFER -------------------------------------------------------------------------//
 
-    // float vertices[] = {
-
-    //     // Position //
-
-    //     // Front
-    //     -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
-    //      0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
-    //     -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
-    //      0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
-         
-    //     // Back
-    //     -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
-    //      0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
-    //     -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
-    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
-    // };
-
     float vertices[] = {
 
         // Position //
 
         // Front
-        -0.5, 0.5, 0.5,  0.5,0.0,0.0,  0.0,0.0,
-         0.5, 0.5, 0.5,  0.0,0.5,0.0,  1.0,0.0,
-        -0.5,-0.5, 0.5,  0.0,0.0,0.5,  0.0,1.0,
-         0.5,-0.5, 0.5,  0.5,0.5,0.0,  1.0,1.0,
+        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
+         0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
+        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
+         0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
          
         // Back
-        -0.5, 0.5,-0.5,  0.0,0.5,0.5,  0.0,0.0,
-         0.5, 0.5,-0.5,  0.5,0.0,0.5,  1.0,0.0,
-        -0.5,-0.5,-0.5,  0.25,0.5,0.25,  0.0,1.0,
-         0.5,-0.5,-0.5,  0.5,0.5,0.5,  1.0,1.0
+        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
+         0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
+        -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
+         0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
     };
+
+    // float vertices[] = {
+
+    //     // Position //
+
+    //     // Front
+    //     -0.5, 0.5, 0.5,  0.5,0.0,0.0,  0.0,0.0,
+    //      0.5, 0.5, 0.5,  0.0,0.5,0.0,  1.0,0.0,
+    //     -0.5,-0.5, 0.5,  0.0,0.0,0.5,  0.0,1.0,
+    //      0.5,-0.5, 0.5,  0.5,0.5,0.0,  1.0,1.0,
+         
+    //     // Back
+    //     -0.5, 0.5,-0.5,  0.0,0.5,0.5,  0.0,0.0,
+    //      0.5, 0.5,-0.5,  0.5,0.0,0.5,  1.0,0.0,
+    //     -0.5,-0.5,-0.5,  0.25,0.5,0.25,  0.0,1.0,
+    //      0.5,-0.5,-0.5,  0.5,0.5,0.5,  1.0,1.0
+    // };
 
     float vertices2[] = {
 
@@ -192,7 +192,15 @@ int main(){
         7,2,3
     };
     
-    shader* s1 = new shader();
+    shader* s1 = new shader(
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.vert",
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.frag"
+    );
+
+    shader* s2 = new shader(
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.vert",
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\light.frag"
+    );
     
     buffer b1;
     buffer b2; // Light-Source Cube
@@ -204,6 +212,7 @@ int main(){
     unsigned int VAO2 = b2.get_VAO();
 
     unsigned int shaderProgram = s1->get_program();
+    unsigned int lightShader = s2->get_program();
     
     // Textures -----------------------------------------------------------------------//
     
@@ -233,11 +242,6 @@ int main(){
 
     projection = cam.getPerspective();
 
-    // LOOP CONTROLLERS ---------------------------------------------------------------//
-
-    bool isRunning = true;
-    glUseProgram(shaderProgram);
-
     // LIGHTING -----------------------------------------------------------------------//
 
     glm::vec3 light(1.0f, 1.0f, 1.0f);
@@ -249,6 +253,11 @@ int main(){
     lightModel = glm::translate(lightModel, lightPos);
 
     glm::vec3 resultColor = light * coral;
+
+    // LOOP CONTROLLERS ---------------------------------------------------------------//
+
+    bool isRunning = true;
+    glUseProgram(shaderProgram);
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -265,20 +274,6 @@ int main(){
             cam.input_handler(window,deltaTime);
             cam.mouse_handler(window);
             cam.scroll_handler(scrollOffset);
-            // track_mouse(window);
-            
-            float rotation_speed = 0.5f;
-            float angle = 0.0f;
-
-            // if(cursor_dx != 0){
-            //     angle = rotation_speed * cursor_dx;
-            //     model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0,1.0,0.0)) * model;
-            // }
-
-            // if(cursor_dy != 0){
-            //     angle = rotation_speed * cursor_dy;
-            //     model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0,0.0,0.0)) * model;
-            // }
             
             cam.look_at();
 
@@ -295,6 +290,7 @@ int main(){
         glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(light));
 
         // Light-Source
+        glUseProgram(lightShader);
         finalMatrix = projection * view * lightModel;
 
         glUniformMatrix4fv(
@@ -308,6 +304,7 @@ int main(){
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
         // Cube - Object1
+        glUseProgram(shaderProgram);
         finalMatrix = projection * view * model;
 
         glUniformMatrix4fv(
@@ -328,7 +325,10 @@ int main(){
     // TERMINATION --------------------------------------------------------------------//
 
     b1.destroy();
+    b2.destroy();
+
     s1->destroy();
+    s2->destroy();
     
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);
