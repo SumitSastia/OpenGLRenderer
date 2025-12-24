@@ -4,8 +4,8 @@
 camera::camera(){
 
     position = glm::vec3(0.0f, 0.0f, 3.0f);
-    target = glm::vec3(0.0f, 0.0f, 0.0f);
-    direction = glm::normalize(position - direction);
+    target = glm::vec3(0.0f, 0.0f, -1.0f);
+    direction = glm::normalize(position - target);
 
     camSpeed = 1.0f;
     camSensitivity = 0.1f;
@@ -22,13 +22,14 @@ camera::camera(){
     yaw = -90.0f;
     pitch = 0.0f;
 
-    glm::vec3 new_direction;
+    // glm::vec3 new_direction;
 
-    new_direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    new_direction.y = sin(glm::radians(pitch));
-    new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // new_direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // new_direction.y = sin(glm::radians(pitch));
+    // new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-    target = glm::normalize(new_direction);
+    // target = glm::normalize(new_direction);
+    std::cout << target.x << "," << target.y << "," << target.z << std::endl;
 }
 
 void camera::set_position(const glm::vec3 position){
@@ -59,20 +60,21 @@ void camera::look_at(){
 
 void camera::input_handler(GLFWwindow* window, float deltaTime){
 
+    
     static bool PRESSED_E = false;
-
+    
     if(glfwGetKey(window,GLFW_KEY_W)){
-        position.z -= camSpeed * deltaTime;
+        position += target * camSpeed * deltaTime;
     }
     if(glfwGetKey(window,GLFW_KEY_S)){
-        position.z += camSpeed * deltaTime;
+        position -= target * camSpeed * deltaTime;
     }
-
+    
     if(glfwGetKey(window,GLFW_KEY_A)){
-        position.x -= camSpeed * deltaTime;
+        position -= glm::normalize(glm::cross(target,up_axis)) * camSpeed * deltaTime;
     }
     if(glfwGetKey(window,GLFW_KEY_D)){
-        position.x += camSpeed * deltaTime;
+        position += glm::normalize(glm::cross(target,up_axis)) * camSpeed * deltaTime;
     }
 
     if(glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)){

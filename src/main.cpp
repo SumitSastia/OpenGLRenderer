@@ -113,44 +113,22 @@ int main(){
     glfwSetKeyCallback(window, input_callback);
     
     // BUFFER -------------------------------------------------------------------------//
-    
+
     // float vertices[] = {
 
+    //     // Position //
+
     //     // Front
-    //     -0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,0.0,
-    //      0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,0.0,
-    //     -0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
-    //      0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
+    //     -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
+    //      0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
+    //     -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
          
     //     // Back
-    //     -0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
-    //      0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
-    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0,
-    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,1.0,
-
-    //     // Left
-    //     -0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
-    //     -0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,0.0,
-    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,1.0,
-    //     -0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
-
-    //     // Right
-    //      0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
-    //      0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,0.0,
-    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0,
-    //      0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
-
-    //     // Top
-    //     -0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
-    //      0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
-    //     -0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
-    //      0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
-
-    //     // Bottom
-    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
-    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
-    //     -0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
-    //      0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
+    //     -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
+    //      0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
+    //     -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
+    //      0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
     // };
 
     float vertices[] = {
@@ -158,45 +136,35 @@ int main(){
         // Position //
 
         // Front
-        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
-         0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
-        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
-         0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
+        -0.5, 0.5, 0.5,  0.5,0.0,0.0,  0.0,0.0,
+         0.5, 0.5, 0.5,  0.0,0.5,0.0,  1.0,0.0,
+        -0.5,-0.5, 0.5,  0.0,0.0,0.5,  0.0,1.0,
+         0.5,-0.5, 0.5,  0.5,0.5,0.0,  1.0,1.0,
          
         // Back
-        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
-         0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
-        -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
+        -0.5, 0.5,-0.5,  0.0,0.5,0.5,  0.0,0.0,
+         0.5, 0.5,-0.5,  0.5,0.0,0.5,  1.0,0.0,
+        -0.5,-0.5,-0.5,  0.25,0.5,0.25,  0.0,1.0,
+         0.5,-0.5,-0.5,  0.5,0.5,0.5,  1.0,1.0
+    };
+
+    float vertices2[] = {
+
+        // Position //
+
+        // Front
+        -0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,0.0,
+         0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,0.0,
+        -0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
+         0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
+         
+        // Back
+        -0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
+         0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
+        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,1.0,
          0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
     };
     
-    // unsigned int indices[] = {
-
-    //     // Front
-    //     0,1,2,
-    //     1,2,3,
-
-    //     // Back
-    //     4,5,6,
-    //     5,6,7,
-
-    //     // Left
-    //     8,9,10,
-    //     9,10,11,
-
-    //     // Right
-    //     12,13,14,
-    //     13,14,15,
-
-    //     // Top
-    //     16,17,18,
-    //     17,18,19,
-
-    //     // Bottom
-    //     20,21,22,
-    //     21,22,23
-    // };
-
     unsigned int indices[] = {
 
         // Front
@@ -227,9 +195,14 @@ int main(){
     shader* s1 = new shader();
     
     buffer b1;
+    buffer b2; // Light-Source Cube
+
     b1.init(vertices, sizeof(vertices), indices, sizeof(indices));
+    b2.init(vertices2, sizeof(vertices2), indices, sizeof(indices));
     
     unsigned int VAO = b1.get_VAO();
+    unsigned int VAO2 = b2.get_VAO();
+
     unsigned int shaderProgram = s1->get_program();
     
     // Textures -----------------------------------------------------------------------//
@@ -238,14 +211,14 @@ int main(){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     
-    float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    // float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
+    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-    texture t1;
-    texture t2;
+    // texture t1;
+    // texture t2;
 
-    t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-front.png");
-    t2.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-back.png");
+    // t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-front.png");
+    // t2.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-back.png");
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -264,6 +237,18 @@ int main(){
 
     bool isRunning = true;
     glUseProgram(shaderProgram);
+
+    // LIGHTING -----------------------------------------------------------------------//
+
+    glm::vec3 light(1.0f, 1.0f, 1.0f);
+    glm::vec3 coral(1.0f, 0.5f, 0.31f);
+
+    glm::vec3 lightPos(-2.0f, 0.0f, 0.0f);
+    glm::mat4 lightModel(1.0f);
+    
+    lightModel = glm::translate(lightModel, lightPos);
+
+    glm::vec3 resultColor = light * coral;
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -285,15 +270,15 @@ int main(){
             float rotation_speed = 0.5f;
             float angle = 0.0f;
 
-            if(cursor_dx != 0){
-                angle = rotation_speed * cursor_dx;
-                model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0,1.0,0.0)) * model;
-            }
+            // if(cursor_dx != 0){
+            //     angle = rotation_speed * cursor_dx;
+            //     model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0,1.0,0.0)) * model;
+            // }
 
-            if(cursor_dy != 0){
-                angle = rotation_speed * cursor_dy;
-                model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0,0.0,0.0)) * model;
-            }
+            // if(cursor_dy != 0){
+            //     angle = rotation_speed * cursor_dy;
+            //     model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0,0.0,0.0)) * model;
+            // }
             
             cam.look_at();
 
@@ -304,14 +289,35 @@ int main(){
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUniform1i(glGetUniformLocation(shaderProgram,"useTexture"), 0);
-        
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram,"projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        
-        glBindVertexArray(VAO);
 
-        // 3D Cube
+        glm::mat4 finalMatrix = projection * view * model;
+
+        glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(light));
+
+        // Light-Source
+        finalMatrix = projection * view * lightModel;
+
+        glUniformMatrix4fv(
+            glGetUniformLocation(shaderProgram, "finalMatrix"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(finalMatrix)
+        );
+
+        glBindVertexArray(VAO2);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+
+        // Cube - Object1
+        finalMatrix = projection * view * model;
+
+        glUniformMatrix4fv(
+            glGetUniformLocation(shaderProgram, "finalMatrix"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(finalMatrix)
+        );
+
+        glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
         // Events //
