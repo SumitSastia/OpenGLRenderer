@@ -29,7 +29,6 @@ camera::camera(){
     // new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
     // target = glm::normalize(new_direction);
-    std::cout << target.x << "," << target.y << "," << target.z << std::endl;
 }
 
 void camera::set_position(const glm::vec3 position){
@@ -77,6 +76,13 @@ void camera::input_handler(GLFWwindow* window, float deltaTime){
         position += glm::normalize(glm::cross(target,up_axis)) * camSpeed * deltaTime;
     }
 
+    if(glfwGetKey(window,GLFW_KEY_SPACE)){
+        position.y += camSpeed * deltaTime;
+    }
+    if(glfwGetKey(window,GLFW_KEY_LEFT_CONTROL)){
+        position.y -= camSpeed * deltaTime;
+    }
+
     if(glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)){
         camSpeed = 2.0f;
     }
@@ -104,16 +110,20 @@ void camera::input_handler(GLFWwindow* window, float deltaTime){
 }
 
 void camera::mouse_handler(GLFWwindow* window){
-
-    if(!mouseEnabled) return;
-
+    
     double pos_x = 0.0;
     double pos_y = 0.0;
-
+    
     glfwGetCursorPos(window, &pos_x, &pos_y);
-
+    
     static double prev_x = pos_x;
     static double prev_y = pos_y;
+
+    if(!mouseEnabled){
+        prev_x = pos_x;
+        prev_y = pos_y;
+        return;
+    }
 
     double cursor_dx = pos_x - prev_x;
     double cursor_dy = prev_y - pos_y;

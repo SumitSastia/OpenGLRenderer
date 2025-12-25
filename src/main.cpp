@@ -116,56 +116,88 @@ int main(){
 
     float vertices[] = {
 
-        // Position //
-
         // Front
-        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,
-         0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,
-        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,1.0,
-         0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,1.0,
+        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,1.0,
+         0.5, 0.5, 0.5,  0.0,1.0,0.0,  0.0,0.0,1.0,
+        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,0.0,1.0,
+         0.5,-0.5, 0.5,  1.0,1.0,0.0,  0.0,0.0,1.0,
          
         // Back
-        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,
-         0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,
-        -0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,1.0,
-         0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
+        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,-1.0,
+         0.5, 0.5,-0.5,  1.0,0.0,1.0,  0.0,0.0,-1.0,
+        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,-1.0,
+         0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,0.0,-1.0,
+
+        // Left
+        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  -1.0,0.0,0.0,
+        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  -1.0,0.0,0.0,
+        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  -1.0,0.0,0.0,
+        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  -1.0,0.0,0.0,
+
+        // Right
+         0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,0.0,
+         0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,0.0,
+         0.5,-0.5,-0.5,  0.5,1.0,0.5,  1.0,0.0,0.0,
+         0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,0.0,0.0,
+
+        // Top
+        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,1.0,0.0,
+         0.5, 0.5,-0.5,  1.0,0.0,1.0,  0.0,1.0,0.0,
+        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,1.0,0.0,
+         0.5, 0.5, 0.5,  0.0,1.0,0.0,  0.0,1.0,0.0,
+
+        // Bottom
+        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,-1.0,0.0,
+         0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,-1.0,0.0,
+        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,-1.0,0.0,
+         0.5,-0.5, 0.5,  1.0,1.0,0.0,  0.0,-1.0,0.0,
     };
 
-    // float vertices[] = {
+    unsigned int indices[] = {
 
-    //     // Position //
+        // Front
+        0,1,2,
+        1,2,3,
 
-    //     // Front
-    //     -0.5, 0.5, 0.5,  0.5,0.0,0.0,  0.0,0.0,
-    //      0.5, 0.5, 0.5,  0.0,0.5,0.0,  1.0,0.0,
-    //     -0.5,-0.5, 0.5,  0.0,0.0,0.5,  0.0,1.0,
-    //      0.5,-0.5, 0.5,  0.5,0.5,0.0,  1.0,1.0,
-         
-    //     // Back
-    //     -0.5, 0.5,-0.5,  0.0,0.5,0.5,  0.0,0.0,
-    //      0.5, 0.5,-0.5,  0.5,0.0,0.5,  1.0,0.0,
-    //     -0.5,-0.5,-0.5,  0.25,0.5,0.25,  0.0,1.0,
-    //      0.5,-0.5,-0.5,  0.5,0.5,0.5,  1.0,1.0
-    // };
+        // Back
+        4,5,6,
+        5,6,7,
+
+        // Left
+        8,9,10,
+        9,10,11,
+
+        // Right
+        12,13,14,
+        13,14,15,
+
+        // Top
+        16,17,18,
+        17,18,19,
+
+        // Bottom
+        20,21,22,
+        21,22,23
+    };
 
     float vertices2[] = {
 
         // Position //
 
         // Front
-        -0.5, 0.5, 0.5,  1.0,1.0,1.0,  0.0,0.0,
-         0.5, 0.5, 0.5,  1.0,1.0,1.0,  1.0,0.0,
-        -0.5,-0.5, 0.5,  1.0,1.0,1.0,  0.0,1.0,
-         0.5,-0.5, 0.5,  1.0,1.0,1.0,  1.0,1.0,
+        -0.5, 0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
+         0.5, 0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
+        -0.5,-0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
+         0.5,-0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
          
         // Back
-        -0.5, 0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,
-         0.5, 0.5,-0.5,  1.0,1.0,1.0,  1.0,0.0,
-        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,1.0,
-         0.5,-0.5,-0.5,  1.0,1.0,1.0,  1.0,1.0
+        -0.5, 0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
+         0.5, 0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
+        -0.5,-0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
+         0.5,-0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
     };
     
-    unsigned int indices[] = {
+    unsigned int indices2[] = {
 
         // Front
         0,1,2,
@@ -198,7 +230,7 @@ int main(){
     );
 
     shader* s2 = new shader(
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.vert",
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\light.vert",
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\light.frag"
     );
     
@@ -206,7 +238,7 @@ int main(){
     buffer b2; // Light-Source Cube
 
     b1.init(vertices, sizeof(vertices), indices, sizeof(indices));
-    b2.init(vertices2, sizeof(vertices2), indices, sizeof(indices));
+    b2.init(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
     
     unsigned int VAO = b1.get_VAO();
     unsigned int VAO2 = b2.get_VAO();
@@ -219,15 +251,6 @@ int main(){
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
-    
-    // float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
-    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-    // texture t1;
-    // texture t2;
-
-    // t1.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-front.png");
-    // t2.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\500-note-back.png");
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -247,7 +270,7 @@ int main(){
     glm::vec3 light(1.0f, 1.0f, 1.0f);
     glm::vec3 coral(1.0f, 0.5f, 0.31f);
 
-    glm::vec3 lightPos(-2.0f, 0.0f, 0.0f);
+    glm::vec3 lightPos(-2.0f, 2.0f, 2.0f);
     glm::mat4 lightModel(1.0f);
     
     lightModel = glm::translate(lightModel, lightPos);
@@ -257,7 +280,6 @@ int main(){
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
-    glUseProgram(shaderProgram);
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -283,18 +305,16 @@ int main(){
         
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUniform1i(glGetUniformLocation(shaderProgram,"useTexture"), 0);
-
-        glm::mat4 finalMatrix = projection * view * model;
-
+        
         glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(light));
-
+        glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
+        
         // Light-Source
         glUseProgram(lightShader);
-        finalMatrix = projection * view * lightModel;
-
+        glm::mat4 finalMatrix = projection * view * lightModel;
+        
         glUniformMatrix4fv(
-            glGetUniformLocation(shaderProgram, "finalMatrix"),
+            glGetUniformLocation(lightShader, "finalMatrix"),
             1,
             GL_FALSE,
             glm::value_ptr(finalMatrix)
@@ -305,13 +325,24 @@ int main(){
 
         // Cube - Object1
         glUseProgram(shaderProgram);
-        finalMatrix = projection * view * model;
 
         glUniformMatrix4fv(
-            glGetUniformLocation(shaderProgram, "finalMatrix"),
+            glGetUniformLocation(shaderProgram, "projection"),
             1,
             GL_FALSE,
-            glm::value_ptr(finalMatrix)
+            glm::value_ptr(projection)
+        );
+        glUniformMatrix4fv(
+            glGetUniformLocation(shaderProgram, "view"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(view)
+        );
+        glUniformMatrix4fv(
+            glGetUniformLocation(shaderProgram, "model"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(model)
         );
 
         glBindVertexArray(VAO);

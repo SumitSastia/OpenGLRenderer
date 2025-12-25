@@ -2,15 +2,21 @@
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec2 aTexCords;
+layout (location = 2) in vec3 aNormal;
 
 out vec3 vColor;
-out vec2 vTexCords;
+out vec3 vNormal;
+out vec3 fragPos;
 
-uniform mat4 finalMatrix;
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 
 void main(){
-    gl_Position = finalMatrix * vec4(aPos, 1.0);
+
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
     vColor = aColor;
-    vTexCords = aTexCords;
+
+    fragPos = vec3(model * vec4(aPos, 1.0));
+    vNormal = aNormal;
 }
