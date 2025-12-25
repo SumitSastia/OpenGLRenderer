@@ -269,7 +269,7 @@ int main(){
     glm::vec3 light(1.0f, 1.0f, 1.0f);
     glm::vec3 coral(1.0f, 0.5f, 0.31f);
 
-    glm::vec3 lightPos(-2.0f, 2.0f, 2.0f);
+    glm::vec3 lightPos(-3.0f, 1.5f, 3.0f);
     glm::mat4 lightModel(1.0f);
     
     lightModel = glm::translate(lightModel, lightPos);
@@ -298,6 +298,12 @@ int main(){
 
             view = cam.getView();
             projection = cam.getPerspective();
+
+            // Light-Rotation
+            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0,1.0,0.0)) * lightModel;
+
+            lightPos = glm::vec3(-3.0f, 1.5f, 3.0f);
+            lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
         }
         
         // Rendering //
