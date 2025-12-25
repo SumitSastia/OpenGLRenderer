@@ -106,10 +106,9 @@ int main(){
     // MISC ---------------------------------------------------------------------------//
     
     glViewport(0,0,WIN_W,WIN_H);
-    glClearColor(0.13f,0.0f,0.2f,1.0f);
+    glClearColor(0.13f,0.0f,0.2f,0.5f);
     
     glfwSwapInterval(1);
-
     glfwSetKeyCallback(window, input_callback);
     
     // BUFFER -------------------------------------------------------------------------//
@@ -275,8 +274,6 @@ int main(){
     
     lightModel = glm::translate(lightModel, lightPos);
 
-    glm::vec3 resultColor = light * coral;
-
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
@@ -343,6 +340,12 @@ int main(){
             1,
             GL_FALSE,
             glm::value_ptr(model)
+        );
+        glUniform3f(
+            glGetUniformLocation(shaderProgram, "viewPos"),
+            cam.getPos().x,
+            cam.getPos().y,
+            cam.getPos().z
         );
 
         glBindVertexArray(VAO);
