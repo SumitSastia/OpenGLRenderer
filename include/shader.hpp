@@ -4,6 +4,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 class shader{
 
     unsigned int vertexShader;
@@ -31,8 +35,27 @@ public:
     void init(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
     void init2(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
 
+    unsigned int get_VBO() const { return VBO; }
     unsigned int get_VAO() const { return VAO; }
     unsigned int get_EBO() const { return EBO; }
+};
+
+class line{
+
+    unsigned int VBO;
+    unsigned int VAO;
+
+    float vertices[6];
+
+public:
+
+    ~line();
+
+    void initLines(const glm::vec3 startPos, const glm::vec3 endPos);
+    void updateLines(const glm::vec3 startPos, const glm::vec3 endPos);
+
+    unsigned int get_VBO() const { return VBO; }
+    unsigned int get_VAO() const { return VAO; }
 };
 
 class texture{

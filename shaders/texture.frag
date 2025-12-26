@@ -1,8 +1,8 @@
 #version 450 core
 
+in vec3 vPos;
 in vec2 vTextureCords;
 in vec3 vNormal;
-in vec3 fragPos;
 
 out vec4 FragColor;
 
@@ -24,13 +24,13 @@ void main(){
 
     // Diffuse
     vec3 normal = normalize(vNormal);
-    vec3 lightDirection = normalize(lightPos - fragPos);
+    vec3 lightDirection = normalize(lightPos - vPos);
 
     float diff = max(dot(normal, lightDirection), 0.0);
     vec3 diffuseLight = diff * lightColor;
 
     // Specular
-    vec3 viewDirection = normalize(viewPos - fragPos);
+    vec3 viewDirection = normalize(viewPos - vPos);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
@@ -42,5 +42,5 @@ void main(){
     // FragColor = vec4(resultColor, 1.0);
 
     FragColor = texture(texture1, vTextureCords) * vec4(resultColor, 1.0);
-    // FragColor = vec4(temp,1.0);
+    // FragColor = vec4(resultColor,1.0);
 }

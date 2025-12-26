@@ -7,9 +7,6 @@
 
 #include <camera.hpp>
 
-#include <filesystem>
-#include <cstdlib>
-
 #define WIN_W 800
 #define WIN_H 600
 
@@ -38,16 +35,6 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
 void scroll_callback(GLFWwindow* window, double offset_x, double offset_y);
 
 void track_mouse(GLFWwindow* window);
-
-void checkRestart(){
-
-    if(filesystem::exists("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\restart.flag")){
-
-        filesystem::remove("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\restart.flag");
-        system("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\build\\Debug\\firstGame.exe");
-        exit(0);
-    }
-}
 
 //-----------------------------------------------------------------------------------------------//
 
@@ -155,40 +142,40 @@ int main(){
     float vertices[] = {
 
         // Front
-        -0.5, 0.5, 0.5,  0.0,0.0,  0.0,0.0,1.0,
-         0.5, 0.5, 0.5,  1.0,0.0,  0.0,0.0,1.0,
-        -0.5,-0.5, 0.5,  0.0,1.0,  0.0,0.0,1.0,
-         0.5,-0.5, 0.5,  1.0,1.0,  0.0,0.0,1.0,
+        -0.5, 0.5, 0.5,  0.0,      0.0,  0.0,0.0,1.0,
+         0.5, 0.5, 0.5,  (1.0/3.0),0.0,  0.0,0.0,1.0,
+        -0.5,-0.5, 0.5,  0.0,      0.5,  0.0,0.0,1.0,
+         0.5,-0.5, 0.5,  (1.0/3.0),0.5,  0.0,0.0,1.0,
          
         // Back
-        -0.5, 0.5,-0.5,  1.0,0.0,  0.0,0.0,-1.0,
-         0.5, 0.5,-0.5,  0.0,0.0,  0.0,0.0,-1.0,
-        -0.5,-0.5,-0.5,  1.0,1.0,  0.0,0.0,-1.0,
-         0.5,-0.5,-0.5,  0.0,1.0,  0.0,0.0,-1.0,
+         0.5, 0.5,-0.5,  0.0,      0.5,  0.0,0.0,-1.0,
+        -0.5, 0.5,-0.5,  (1.0/3.0),0.5,  0.0,0.0,-1.0,
+         0.5,-0.5,-0.5,  0.0,      1.0,  0.0,0.0,-1.0,
+        -0.5,-0.5,-0.5,  (1.0/3.0),1.0,  0.0,0.0,-1.0,
 
         // Left
-        -0.5, 0.5,-0.5,  0.0,0.0,  -1.0,0.0,0.0,
-        -0.5, 0.5, 0.5,  1.0,0.0,  -1.0,0.0,0.0,
-        -0.5,-0.5,-0.5,  0.0,1.0,  -1.0,0.0,0.0,
-        -0.5,-0.5, 0.5,  1.0,1.0,  -1.0,0.0,0.0,
+        -0.5, 0.5,-0.5,  (1.0/3.0),0.0,  -1.0,0.0,0.0,
+        -0.5, 0.5, 0.5,  (2.0/3.0),0.0,  -1.0,0.0,0.0,
+        -0.5,-0.5,-0.5,  (1.0/3.0),0.5,  -1.0,0.0,0.0,
+        -0.5,-0.5, 0.5,  (2.0/3.0),0.5,  -1.0,0.0,0.0,
 
         // Right
-         0.5, 0.5,-0.5,  1.0,0.0,  1.0,0.0,0.0,
-         0.5, 0.5, 0.5,  0.0,0.0,  1.0,0.0,0.0,
-         0.5,-0.5,-0.5,  1.0,1.0,  1.0,0.0,0.0,
-         0.5,-0.5, 0.5,  0.0,1.0,  1.0,0.0,0.0,
+         0.5, 0.5, 0.5,  (1.0/3.0),0.5,  1.0,0.0,0.0,
+         0.5, 0.5,-0.5,  (2.0/3.0),0.5,  1.0,0.0,0.0,
+         0.5,-0.5, 0.5,  (1.0/3.0),1.0,  1.0,0.0,0.0,
+         0.5,-0.5,-0.5,  (2.0/3.0),1.0,  1.0,0.0,0.0,
 
         // Top
-        -0.5, 0.5,-0.5,  0.0,0.0,  0.0,1.0,0.0,
-         0.5, 0.5,-0.5,  1.0,0.0,  0.0,1.0,0.0,
-        -0.5, 0.5, 0.5,  0.0,1.0,  0.0,1.0,0.0,
-         0.5, 0.5, 0.5,  1.0,1.0,  0.0,1.0,0.0,
+        -0.5, 0.5,-0.5,  (2.0/3.0),0.0,  0.0,1.0,0.0,
+         0.5, 0.5,-0.5,  1.0,      0.0,  0.0,1.0,0.0,
+        -0.5, 0.5, 0.5,  (2.0/3.0),0.5,  0.0,1.0,0.0,
+         0.5, 0.5, 0.5,  1.0,      0.5,  0.0,1.0,0.0,
 
         // Bottom
-        -0.5,-0.5,-0.5,  1.0,0.0,  0.0,-1.0,0.0,
-         0.5,-0.5,-0.5,  0.0,0.0,  0.0,-1.0,0.0,
-        -0.5,-0.5, 0.5,  1.0,1.0,  0.0,-1.0,0.0,
-         0.5,-0.5, 0.5,  0.0,1.0,  0.0,-1.0,0.0,
+         0.5,-0.5,-0.5,  (2.0/3.0),0.5,  0.0,-1.0,0.0,
+        -0.5,-0.5,-0.5,  1.0,      0.5,  0.0,-1.0,0.0,
+         0.5,-0.5, 0.5,  (2.0/3.0),1.0,  0.0,-1.0,0.0,
+        -0.5,-0.5, 0.5,  1.0,      1.0,  0.0,-1.0,0.0,
     };
 
     unsigned int indices[] = {
@@ -262,9 +249,14 @@ int main(){
         7,2,3
     };
     
+    float lineVertices[] = {
+        0.0f,0.0f,0.0f,
+        1.0f,1.0f,1.0f
+    };
+
     shader* s1 = new shader(
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.vert",
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\basic.frag"
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\lines.vert",
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\lines.frag"
     );
 
     shader* s2 = new shader(
@@ -286,7 +278,7 @@ int main(){
     unsigned int VAO = b1.get_VAO();
     unsigned int VAO2 = b2.get_VAO();
 
-    unsigned int shaderProgram = s1->get_program();
+    unsigned int lineShader = s1->get_program();
     unsigned int lightShader = s2->get_program();
     unsigned int textureShader = s3->get_program();
     
@@ -296,16 +288,8 @@ int main(){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
 
-    texture white_, yellow_, red_, orange_, blue_, green_;
-
-    white_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\white.png");
-    yellow_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\yellow.png");
-    red_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\red.png");
-    orange_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\orange.png");
-    blue_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\blue.png");
-    green_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\green.png");
-
-
+    texture rubix_texture;
+    rubix_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\all_in_one.png");
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -329,6 +313,12 @@ int main(){
     glm::mat4 lightModel(1.0f);
     
     lightModel = glm::translate(lightModel, lightPos);
+    lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+
+    // LINES --------------------------------------------------------------------------//
+
+    line line1;
+    line1.initLines(glm::vec3(0.0f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f));
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -355,21 +345,21 @@ int main(){
             view = cam.getView();
             projection = cam.getPerspective();
 
+            // Line-Position
+            line1.updateLines(lightPos, glm::vec3(0.0f,0.0f,0.0f));
+
             // Light-Rotation
-            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0,1.0,0.0)) * lightModel;
+            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(0.8f), glm::vec3(0.0,1.0,0.0)) * lightModel;
 
             lightPos = glm::vec3(-3.0f, 1.5f, 3.0f);
             lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
 
             // Cube-Rotation
-            model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0,1.0,1.0));
+            // model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0,1.0,1.0));
         }
         
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        glUniform3fv(glGetUniformLocation(textureShader, "lightColor"), 1, glm::value_ptr(light));
-        glUniform3fv(glGetUniformLocation(textureShader, "lightPos"), 1, glm::value_ptr(lightPos));
         
         // Light-Source
         glUseProgram(lightShader);
@@ -387,6 +377,9 @@ int main(){
 
         // Cube - Object1
         glUseProgram(textureShader);
+
+        glUniform3fv(glGetUniformLocation(textureShader, "lightColor"), 1, glm::value_ptr(light));
+        glUniform3fv(glGetUniformLocation(textureShader, "lightPos"), 1, glm::value_ptr(lightPos));
 
         glUniformMatrix4fv(
             glGetUniformLocation(textureShader, "projection"),
@@ -413,21 +406,35 @@ int main(){
             cam.getPos().z
         );
 
-        
         glBindVertexArray(VAO);
-    
-        glBindTexture(GL_TEXTURE_2D, white_.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
-        glBindTexture(GL_TEXTURE_2D, yellow_.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));
-        glBindTexture(GL_TEXTURE_2D, red_.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(12 * sizeof(float)));
-        glBindTexture(GL_TEXTURE_2D, orange_.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(18 * sizeof(float)));
-        glBindTexture(GL_TEXTURE_2D, blue_.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(24 * sizeof(float)));
-        glBindTexture(GL_TEXTURE_2D, green_.getID());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(30 * sizeof(float)));
+        glBindTexture(GL_TEXTURE_2D, rubix_texture.getID());
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+
+        // Lines
+        glUseProgram(lineShader);
+        glm::mat4 lineModel(1.0f);
+
+        glUniformMatrix4fv(
+            glGetUniformLocation(lineShader, "projection"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(projection)
+        );
+        glUniformMatrix4fv(
+            glGetUniformLocation(lineShader, "view"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(view)
+        );
+        glUniformMatrix4fv(
+            glGetUniformLocation(lineShader, "lineModel"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(lineModel)
+        );
+
+        glBindVertexArray(line1.get_VAO());
+        glDrawArrays(GL_LINES, 0, 2);   
 
         // Events //
         glfwPollEvents();

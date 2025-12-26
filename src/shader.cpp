@@ -148,6 +148,49 @@ void buffer::destroy(){
 
 //-------------------------------------------------------------------------------------//
 
+line::~line(){
+    glDeleteBuffers(1,&VBO);
+    glDeleteVertexArrays(1,&VAO);
+}
+
+void line::initLines(const glm::vec3 startPos, const glm::vec3 endPos){
+
+    vertices[0] = startPos.x;
+    vertices[1] = startPos.y;
+    vertices[2] = startPos.z;
+
+    vertices[3] = endPos.x;
+    vertices[4] = endPos.y;
+    vertices[5] = endPos.z;
+    
+    glGenBuffers(1,&VBO);
+    glGenVertexArrays(1,&VAO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 3*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+}
+
+void line::updateLines(const glm::vec3 startPos, const glm::vec3 endPos){
+
+    vertices[0] = startPos.x;
+    vertices[1] = startPos.y;
+    vertices[2] = startPos.z;
+
+    vertices[3] = endPos.x;
+    vertices[4] = endPos.y;
+    vertices[5] = endPos.z;
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+}
+
+//-------------------------------------------------------------------------------------//
+
 texture::texture(){
 
     textureID = 0;
