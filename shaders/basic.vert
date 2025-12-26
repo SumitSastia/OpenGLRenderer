@@ -18,5 +18,5 @@ void main(){
     vColor = aColor;
 
     fragPos = vec3(model * vec4(aPos, 1.0));
-    vNormal = aNormal;
+    vNormal = mat3(transpose(inverse(model))) * aNormal;
 }

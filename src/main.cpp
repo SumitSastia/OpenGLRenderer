@@ -19,6 +19,8 @@ float balanceVal = 0.5f;
 bool isPaused = false;
 bool mouseInCamera = false;
 
+bool rotateCube = false;
+
 float lastTime = 0.0f;
 float deltaTime = 0.0f;
 
@@ -248,11 +250,6 @@ int main(){
         6,7,2,
         7,2,3
     };
-    
-    float lineVertices[] = {
-        0.0f,0.0f,0.0f,
-        1.0f,1.0f,1.0f
-    };
 
     shader* s1 = new shader(
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\lines.vert",
@@ -304,6 +301,11 @@ int main(){
 
     projection = cam.getPerspective();
 
+    glm::vec3 cubePos(0.0f,0.0f, 0.0f);
+    model = glm::translate(model, cubePos);
+
+    glm::mat3 normalModel(1.0f);
+
     // LIGHTING -----------------------------------------------------------------------//
 
     glm::vec3 light(1.0f, 1.0f, 1.0f);
@@ -320,6 +322,10 @@ int main(){
     line line1;
     line1.initLines(glm::vec3(0.0f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f));
 
+    glm::vec3 top_normal(0.0f,3.0f,0.0f);
+    line line2;
+    line2.initLines(cubePos, top_normal);
+
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
@@ -331,31 +337,35 @@ int main(){
         float currentTime = glfwGetTime();
         deltaTime = currentTime - lastTime;
         lastTime = currentTime;
+
+        // Camera
+        
+        cam.input_handler(window,deltaTime);
+        cam.mouse_handler(window);
+        cam.scroll_handler(scrollOffset);
+        
+        cam.look_at();
+        view = cam.getView();
+        projection = cam.getPerspective();
         
         // Updates //
         if(!isPaused){
-    
-            // Inputs
-            cam.input_handler(window,deltaTime);
-            cam.mouse_handler(window);
-            cam.scroll_handler(scrollOffset);
-            
-            cam.look_at();
-
-            view = cam.getView();
-            projection = cam.getPerspective();
 
             // Line-Position
-            line1.updateLines(lightPos, glm::vec3(0.0f,0.0f,0.0f));
+            line1.updateLines(lightPos, cubePos);
+            // line2.updateLines(cubePos, top_normal);
 
             // Light-Rotation
             lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(0.8f), glm::vec3(0.0,1.0,0.0)) * lightModel;
 
             lightPos = glm::vec3(-3.0f, 1.5f, 3.0f);
             lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
+        }
 
-            // Cube-Rotation
-            // model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0,1.0,1.0));
+        // Cube-Rotation
+        if(rotateCube){
+            model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0,1.0,1.0));
+            normalModel = glm::transpose(glm::inverse(glm::mat3(model)));
         }
         
         // Rendering //
@@ -399,6 +409,12 @@ int main(){
             GL_FALSE,
             glm::value_ptr(model)
         );
+        glUniformMatrix3fv(
+            glGetUniformLocation(textureShader, "normalModel"),
+            1,
+            GL_FALSE,
+            glm::value_ptr(normalModel)
+        );
         glUniform3f(
             glGetUniformLocation(textureShader, "viewPos"),
             cam.getPos().x,
@@ -434,7 +450,7 @@ int main(){
         );
 
         glBindVertexArray(line1.get_VAO());
-        glDrawArrays(GL_LINES, 0, 2);   
+        glDrawArrays(GL_LINES, 0, 2); 
 
         // Events //
         glfwPollEvents();
@@ -485,6 +501,13 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
         }
 
         mouseInCamera = !mouseInCamera;
+    }
+
+    if(glfwGetKey(window,GLFW_KEY_R)){
+        rotateCube = true;
+    }
+    else{
+        rotateCube = false;
     }
 }
 
