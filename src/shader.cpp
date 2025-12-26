@@ -107,8 +107,35 @@ void buffer::init(const float* vertices, size_t size_v, const unsigned int* indi
     glVertexAttribPointer(1, 3, GL_FLOAT,GL_FALSE, 9*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // Texture
+    // Normal
     glVertexAttribPointer(2, 3, GL_FLOAT,GL_FALSE, 9*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
+}
+
+void buffer::init2(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i){
+
+    glGenBuffers(1,&VBO);
+    glGenBuffers(1,&EBO);
+    glGenVertexArrays(1,&VAO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    glBufferData(GL_ARRAY_BUFFER, size_v, vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices, GL_STATIC_DRAW);
+
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Texture
+    glVertexAttribPointer(1, 2, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // Normal
+    glVertexAttribPointer(2, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(5*sizeof(float)));
     glEnableVertexAttribArray(2);
 }
 
@@ -142,6 +169,9 @@ void texture::load(const char* path){
         std::cerr << "Failed to Load Image!\n" << path << std::endl;
         return;
     }
+
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     glGenTextures(1,&textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);

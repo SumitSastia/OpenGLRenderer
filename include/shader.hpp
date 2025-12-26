@@ -29,6 +29,7 @@ public:
 
     void destroy();
     void init(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
+    void init2(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
 
     unsigned int get_VAO() const { return VAO; }
     unsigned int get_EBO() const { return EBO; }

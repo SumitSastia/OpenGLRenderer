@@ -113,43 +113,82 @@ int main(){
     
     // BUFFER -------------------------------------------------------------------------//
 
+    // float vertices[] = {
+
+    //     // Front
+    //     -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,1.0,
+    //      0.5, 0.5, 0.5,  0.0,1.0,0.0,  0.0,0.0,1.0,
+    //     -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,0.0,1.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,0.0,  0.0,0.0,1.0,
+         
+    //     // Back
+    //     -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,-1.0,
+    //      0.5, 0.5,-0.5,  1.0,0.0,1.0,  0.0,0.0,-1.0,
+    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,-1.0,
+    //      0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,0.0,-1.0,
+
+    //     // Left
+    //     -0.5, 0.5,-0.5,  0.0,1.0,1.0,  -1.0,0.0,0.0,
+    //     -0.5, 0.5, 0.5,  1.0,0.0,0.0,  -1.0,0.0,0.0,
+    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  -1.0,0.0,0.0,
+    //     -0.5,-0.5, 0.5,  0.0,0.0,1.0,  -1.0,0.0,0.0,
+
+    //     // Right
+    //      0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,0.0,
+    //      0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,0.0,
+    //      0.5,-0.5,-0.5,  0.5,1.0,0.5,  1.0,0.0,0.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,0.0,0.0,
+
+    //     // Top
+    //     -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,1.0,0.0,
+    //      0.5, 0.5,-0.5,  1.0,0.0,1.0,  0.0,1.0,0.0,
+    //     -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,1.0,0.0,
+    //      0.5, 0.5, 0.5,  0.0,1.0,0.0,  0.0,1.0,0.0,
+
+    //     // Bottom
+    //     -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,-1.0,0.0,
+    //      0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,-1.0,0.0,
+    //     -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,-1.0,0.0,
+    //      0.5,-0.5, 0.5,  1.0,1.0,0.0,  0.0,-1.0,0.0,
+    // };
+
     float vertices[] = {
 
         // Front
-        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,0.0,1.0,
-         0.5, 0.5, 0.5,  0.0,1.0,0.0,  0.0,0.0,1.0,
-        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,0.0,1.0,
-         0.5,-0.5, 0.5,  1.0,1.0,0.0,  0.0,0.0,1.0,
+        -0.5, 0.5, 0.5,  0.0,0.0,  0.0,0.0,1.0,
+         0.5, 0.5, 0.5,  1.0,0.0,  0.0,0.0,1.0,
+        -0.5,-0.5, 0.5,  0.0,1.0,  0.0,0.0,1.0,
+         0.5,-0.5, 0.5,  1.0,1.0,  0.0,0.0,1.0,
          
         // Back
-        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,0.0,-1.0,
-         0.5, 0.5,-0.5,  1.0,0.0,1.0,  0.0,0.0,-1.0,
-        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,0.0,-1.0,
-         0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,0.0,-1.0,
+        -0.5, 0.5,-0.5,  1.0,0.0,  0.0,0.0,-1.0,
+         0.5, 0.5,-0.5,  0.0,0.0,  0.0,0.0,-1.0,
+        -0.5,-0.5,-0.5,  1.0,1.0,  0.0,0.0,-1.0,
+         0.5,-0.5,-0.5,  0.0,1.0,  0.0,0.0,-1.0,
 
         // Left
-        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  -1.0,0.0,0.0,
-        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  -1.0,0.0,0.0,
-        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  -1.0,0.0,0.0,
-        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  -1.0,0.0,0.0,
+        -0.5, 0.5,-0.5,  0.0,0.0,  -1.0,0.0,0.0,
+        -0.5, 0.5, 0.5,  1.0,0.0,  -1.0,0.0,0.0,
+        -0.5,-0.5,-0.5,  0.0,1.0,  -1.0,0.0,0.0,
+        -0.5,-0.5, 0.5,  1.0,1.0,  -1.0,0.0,0.0,
 
         // Right
-         0.5, 0.5,-0.5,  1.0,0.0,1.0,  1.0,0.0,0.0,
-         0.5, 0.5, 0.5,  0.0,1.0,0.0,  1.0,0.0,0.0,
-         0.5,-0.5,-0.5,  0.5,1.0,0.5,  1.0,0.0,0.0,
-         0.5,-0.5, 0.5,  1.0,1.0,0.0,  1.0,0.0,0.0,
+         0.5, 0.5,-0.5,  1.0,0.0,  1.0,0.0,0.0,
+         0.5, 0.5, 0.5,  0.0,0.0,  1.0,0.0,0.0,
+         0.5,-0.5,-0.5,  1.0,1.0,  1.0,0.0,0.0,
+         0.5,-0.5, 0.5,  0.0,1.0,  1.0,0.0,0.0,
 
         // Top
-        -0.5, 0.5,-0.5,  0.0,1.0,1.0,  0.0,1.0,0.0,
-         0.5, 0.5,-0.5,  1.0,0.0,1.0,  0.0,1.0,0.0,
-        -0.5, 0.5, 0.5,  1.0,0.0,0.0,  0.0,1.0,0.0,
-         0.5, 0.5, 0.5,  0.0,1.0,0.0,  0.0,1.0,0.0,
+        -0.5, 0.5,-0.5,  0.0,0.0,  0.0,1.0,0.0,
+         0.5, 0.5,-0.5,  1.0,0.0,  0.0,1.0,0.0,
+        -0.5, 0.5, 0.5,  0.0,1.0,  0.0,1.0,0.0,
+         0.5, 0.5, 0.5,  1.0,1.0,  0.0,1.0,0.0,
 
         // Bottom
-        -0.5,-0.5,-0.5,  1.0,1.0,1.0,  0.0,-1.0,0.0,
-         0.5,-0.5,-0.5,  0.5,1.0,0.5,  0.0,-1.0,0.0,
-        -0.5,-0.5, 0.5,  0.0,0.0,1.0,  0.0,-1.0,0.0,
-         0.5,-0.5, 0.5,  1.0,1.0,0.0,  0.0,-1.0,0.0,
+        -0.5,-0.5,-0.5,  1.0,0.0,  0.0,-1.0,0.0,
+         0.5,-0.5,-0.5,  0.0,0.0,  0.0,-1.0,0.0,
+        -0.5,-0.5, 0.5,  1.0,1.0,  0.0,-1.0,0.0,
+         0.5,-0.5, 0.5,  0.0,1.0,  0.0,-1.0,0.0,
     };
 
     unsigned int indices[] = {
@@ -232,11 +271,16 @@ int main(){
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\light.vert",
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\light.frag"
     );
+
+    shader* s3 = new shader(
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\texture.vert",
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\texture.frag"
+    );
     
     buffer b1;
     buffer b2; // Light-Source Cube
 
-    b1.init(vertices, sizeof(vertices), indices, sizeof(indices));
+    b1.init2(vertices, sizeof(vertices), indices, sizeof(indices));
     b2.init(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
     
     unsigned int VAO = b1.get_VAO();
@@ -244,12 +288,24 @@ int main(){
 
     unsigned int shaderProgram = s1->get_program();
     unsigned int lightShader = s2->get_program();
+    unsigned int textureShader = s3->get_program();
     
     // Textures -----------------------------------------------------------------------//
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
+
+    texture white_, yellow_, red_, orange_, blue_, green_;
+
+    white_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\white.png");
+    yellow_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\yellow.png");
+    red_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\red.png");
+    orange_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\orange.png");
+    blue_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\blue.png");
+    green_.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\green.png");
+
+
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -304,13 +360,16 @@ int main(){
 
             lightPos = glm::vec3(-3.0f, 1.5f, 3.0f);
             lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
+
+            // Cube-Rotation
+            model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0,1.0,1.0));
         }
         
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(light));
-        glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
+        glUniform3fv(glGetUniformLocation(textureShader, "lightColor"), 1, glm::value_ptr(light));
+        glUniform3fv(glGetUniformLocation(textureShader, "lightPos"), 1, glm::value_ptr(lightPos));
         
         // Light-Source
         glUseProgram(lightShader);
@@ -327,35 +386,48 @@ int main(){
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
         // Cube - Object1
-        glUseProgram(shaderProgram);
+        glUseProgram(textureShader);
 
         glUniformMatrix4fv(
-            glGetUniformLocation(shaderProgram, "projection"),
+            glGetUniformLocation(textureShader, "projection"),
             1,
             GL_FALSE,
             glm::value_ptr(projection)
         );
         glUniformMatrix4fv(
-            glGetUniformLocation(shaderProgram, "view"),
+            glGetUniformLocation(textureShader, "view"),
             1,
             GL_FALSE,
             glm::value_ptr(view)
         );
         glUniformMatrix4fv(
-            glGetUniformLocation(shaderProgram, "model"),
+            glGetUniformLocation(textureShader, "model"),
             1,
             GL_FALSE,
             glm::value_ptr(model)
         );
         glUniform3f(
-            glGetUniformLocation(shaderProgram, "viewPos"),
+            glGetUniformLocation(textureShader, "viewPos"),
             cam.getPos().x,
             cam.getPos().y,
             cam.getPos().z
         );
 
+        
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+    
+        glBindTexture(GL_TEXTURE_2D, white_.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+        glBindTexture(GL_TEXTURE_2D, yellow_.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(float)));
+        glBindTexture(GL_TEXTURE_2D, red_.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(12 * sizeof(float)));
+        glBindTexture(GL_TEXTURE_2D, orange_.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(18 * sizeof(float)));
+        glBindTexture(GL_TEXTURE_2D, blue_.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(24 * sizeof(float)));
+        glBindTexture(GL_TEXTURE_2D, green_.getID());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(30 * sizeof(float)));
 
         // Events //
         glfwPollEvents();
