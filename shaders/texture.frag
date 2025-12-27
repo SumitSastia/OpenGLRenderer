@@ -21,7 +21,6 @@ uniform vec3 viewPos;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
-uniform sampler2D texture3;
 
 uniform material m1;
 
@@ -29,10 +28,9 @@ void main(){
 
     vec3 t1 = vec3(texture(texture1, vTextureCords));
     vec3 t2 = vec3(texture(texture2, vTextureCords));
-    vec3 t3 = vec3(texture(texture3, vTextureCords));
 
     // Ambient
-    vec3 ambientLight = (m1.ambient*t1 + t3) * lightColor;
+    vec3 ambientLight = (m1.ambient*t1) * lightColor;
 
     // Diffuse
     vec3 normal = normalize(vNormal);

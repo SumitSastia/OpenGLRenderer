@@ -263,3 +263,32 @@ void materials::init(){
     chrome.specular = glm::vec3(0.774f);
     chrome.shininess = 76.8f;
 }
+
+void setVec3(const unsigned int &shaderProgram, const char* target, const glm::vec3 &vector){
+
+    glUniform3fv(
+        glGetUniformLocation(shaderProgram, target),
+        1,
+        glm::value_ptr(vector)
+    );
+}
+
+void setMat3(const unsigned int &shaderProgram, const char* target, const glm::mat3 &matrix){
+
+    glUniformMatrix3fv(
+        glGetUniformLocation(shaderProgram, target),
+        1,
+        GL_FALSE,
+        glm::value_ptr(matrix)
+    );
+}
+
+void setMat4(const unsigned int &shaderProgram, const char* target, const glm::mat4 &matrix){
+
+    glUniformMatrix4fv(
+        glGetUniformLocation(shaderProgram, target),
+        1,
+        GL_FALSE,
+        glm::value_ptr(matrix)
+    );
+}

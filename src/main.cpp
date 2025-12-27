@@ -351,12 +351,7 @@ int main(){
         glUseProgram(lightShader);
         glm::mat4 finalMatrix = projection * view * lightModel;
         
-        glUniformMatrix4fv(
-            glGetUniformLocation(lightShader, "finalMatrix"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(finalMatrix)
-        );
+        setMat4(lightShader, "finalMatrix", finalMatrix);
 
         glBindVertexArray(VAO2);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
@@ -364,55 +359,21 @@ int main(){
         // Cube - Object1
         glUseProgram(textureShader);
 
-        glUniform3fv(glGetUniformLocation(textureShader, "lightColor"), 1, glm::value_ptr(light));
-        glUniform3fv(glGetUniformLocation(textureShader, "lightPos"), 1, glm::value_ptr(lightPos));
+        setVec3(textureShader, "lightColor", light);
+        setVec3(textureShader, "lightPos", lightPos);
 
-        glUniformMatrix4fv(
-            glGetUniformLocation(textureShader, "projection"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(projection)
-        );
-        glUniformMatrix4fv(
-            glGetUniformLocation(textureShader, "view"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(view)
-        );
-        glUniformMatrix4fv(
-            glGetUniformLocation(textureShader, "model"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(model)
-        );
-        glUniformMatrix3fv(
-            glGetUniformLocation(textureShader, "normalModel"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(normalModel)
-        );
-        glUniform3fv(
-            glGetUniformLocation(textureShader, "viewPos"),
-            1,
-            glm::value_ptr(cam.getPos())
-        );
+        setMat4(textureShader, "projection", projection);
+        setMat4(textureShader, "view", view);
+        setMat4(textureShader, "model", model);
+
+        setMat3(textureShader, "normalModel", normalModel);
+        setVec3(textureShader, "viewPos", cam.getPos());
 
         // Material
-        glUniform3fv(
-            glGetUniformLocation(textureShader, "m1.ambient"),
-            1,
-            glm::value_ptr(m1.ambient)
-        );
-        glUniform3fv(
-            glGetUniformLocation(textureShader, "m1.diffuse"),
-            1,
-            glm::value_ptr(m1.diffuse)
-        );
-        glUniform3fv(
-            glGetUniformLocation(textureShader, "m1.specular"),
-            1,
-            glm::value_ptr(m1.specular)
-        );
+        setVec3(textureShader, "m1.ambient", m1.ambient);
+        setVec3(textureShader, "m1.diffuse", m1.diffuse);
+        setVec3(textureShader, "m1.specular", m1.specular);
+
         glUniform1f(
             glGetUniformLocation(textureShader, "m1.shininess"),
             m1.shininess
@@ -426,10 +387,6 @@ int main(){
             glGetUniformLocation(textureShader, "texture2"),
             1
         );
-        glUniform1i(
-            glGetUniformLocation(textureShader, "texture3"),
-            2
-        );
 
         glBindVertexArray(VAO);
 
@@ -439,33 +396,15 @@ int main(){
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
 
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, emission.getID());
-
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 
         // Lines
         glUseProgram(lineShader);
         glm::mat4 lineModel(1.0f);
 
-        glUniformMatrix4fv(
-            glGetUniformLocation(lineShader, "projection"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(projection)
-        );
-        glUniformMatrix4fv(
-            glGetUniformLocation(lineShader, "view"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(view)
-        );
-        glUniformMatrix4fv(
-            glGetUniformLocation(lineShader, "lineModel"),
-            1,
-            GL_FALSE,
-            glm::value_ptr(lineModel)
-        );
+        setMat4(lineShader, "projection", projection);
+        setMat4(lineShader, "view", view);
+        setMat4(lineShader, "lineModel", lineModel);
 
         if(showLines){
             glBindVertexArray(line1.get_VAO());

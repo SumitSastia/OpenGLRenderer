@@ -88,8 +88,13 @@ struct material{
 struct materials{
 
     material rubber, wood, plastic, concrete, glass, chrome;
-
     void init();
 };
+
+void setVec3(const unsigned int &shaderProgram, const char* target, const glm::vec3 &vector);
+
+void setMat3(const unsigned int &shaderProgram, const char* target, const glm::mat3 &matrix);
+
+void setMat4(const unsigned int &shaderProgram, const char* target, const glm::mat4 &matrix);
 
 #endif
