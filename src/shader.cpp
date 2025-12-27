@@ -228,3 +228,38 @@ void texture::load(const char* path){
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
     glGenerateMipmap(GL_TEXTURE_2D);
 }
+
+//-------------------------------------------------------------------------------------//
+
+void materials::init(){
+
+    rubber.ambient = glm::vec3(0.02f);
+    rubber.diffuse = glm::vec3(0.01f);
+    rubber.specular = glm::vec3(0.4f);
+    rubber.shininess = 10.0f;
+
+    wood.ambient = glm::vec3(0.2f, 0.15f, 0.1f);
+    wood.diffuse = glm::vec3(0.4f, 0.3f, 0.2f);
+    wood.specular = glm::vec3(0.05f);
+    wood.shininess = 8.0f;
+
+    plastic.ambient = glm::vec3(0.1f);
+    plastic.diffuse = glm::vec3(0.6f);
+    plastic.specular = glm::vec3(0.2f);
+    plastic.shininess = 16.0f;
+
+    concrete.ambient = glm::vec3(0.05f);
+    concrete.diffuse = glm::vec3(0.5f);
+    concrete.specular = glm::vec3(0.1f);
+    concrete.shininess = 4.0f;
+
+    glass.ambient = glm::vec3(0.0f);
+    glass.diffuse = glm::vec3(0.3f);
+    glass.specular = glm::vec3(0.9f);
+    glass.shininess = 96.0f;
+
+    chrome.ambient = glm::vec3(0.25f);
+    chrome.diffuse = glm::vec3(0.4f);
+    chrome.specular = glm::vec3(0.774f);
+    chrome.shininess = 76.8f;
+}

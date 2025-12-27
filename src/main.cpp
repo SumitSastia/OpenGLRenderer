@@ -23,6 +23,7 @@ bool isPaused = false;
 bool mouseInCamera = false;
 
 bool rotateCube = false;
+bool showLines = false;
 
 float lastTime = 0.0f;
 float deltaTime = 0.0f;
@@ -98,7 +99,7 @@ int main(){
     glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
 
     glViewport(0,0,frameWidth,frameHeight);
-    glClearColor(0.13f,0.0f,0.2f,0.5f);
+    glClearColor(0.065f,0.0f,0.1f,0.5f);
     
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, input_callback);
@@ -288,8 +289,11 @@ int main(){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
 
-    texture rubix_texture;
-    rubix_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\rubix\\all_in_one.png");
+    texture wood_texture;
+    texture metal_frame;
+
+    wood_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wood_box_atlas.png");
+    metal_frame.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\metal_frame_atlas.png");
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -312,13 +316,13 @@ int main(){
     // LIGHTING -----------------------------------------------------------------------//
 
     glm::vec3 light(1.0f, 1.0f, 1.0f);
-    glm::vec3 coral(1.0f, 0.5f, 0.31f);
+    // glm::vec3 light(1.0f, 0.5f, 0.31f);
 
     glm::vec3 lightPos(-3.0f, 1.5f, 3.0f);
     glm::mat4 lightModel(1.0f);
     
     lightModel = glm::translate(lightModel, lightPos);
-    lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+    lightModel = glm::scale(lightModel, glm::vec3(0.5f));
 
     // LINES --------------------------------------------------------------------------//
 
@@ -331,13 +335,10 @@ int main(){
 
     // MATERIALS ----------------------------------------------------------------------//
 
-    material m1;
+    materials materials;
+    materials.init();
 
-    m1.ambient = glm::vec3(0.1f);
-    m1.diffuse = glm::vec3(0.6f);
-    m1.specular = glm::vec3(0.7f);
-
-    m1.shininess = 32.0f;
+    material m1 = materials.wood;
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -454,8 +455,23 @@ int main(){
             m1.shininess
         );
 
+        glUniform1i(
+            glGetUniformLocation(textureShader, "texture1"),
+            0
+        );
+        glUniform1i(
+            glGetUniformLocation(textureShader, "texture2"),
+            1
+        );
+
         glBindVertexArray(VAO);
-        glBindTexture(GL_TEXTURE_2D, rubix_texture.getID());
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
+
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 
         // Lines
@@ -481,8 +497,10 @@ int main(){
             glm::value_ptr(lineModel)
         );
 
-        glBindVertexArray(line1.get_VAO());
-        glDrawArrays(GL_LINES, 0, 2); 
+        if(showLines){
+            glBindVertexArray(line1.get_VAO());
+            glDrawArrays(GL_LINES, 0, 2);
+        }
 
         // Events //
         glfwPollEvents();
@@ -515,15 +533,13 @@ GLFWimage* load_image(const char* path){
 
 void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
-    if(glfwGetKey(window,GLFW_KEY_ESCAPE)){
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE)){
         glfwSetWindowShouldClose(window,GLFW_TRUE);
     }
 
-    if(glfwGetKey(window,GLFW_KEY_F)){
-        isPaused = !isPaused;
-    }
+    isPaused = (glfwGetKey(window, GLFW_KEY_F))? !isPaused : isPaused;
 
-    if(glfwGetKey(window,GLFW_KEY_E)){
+    if(glfwGetKey(window, GLFW_KEY_E)){
 
         if(!mouseInCamera){
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -535,12 +551,8 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
         mouseInCamera = !mouseInCamera;
     }
 
-    if(glfwGetKey(window,GLFW_KEY_R)){
-        rotateCube = true;
-    }
-    else{
-        rotateCube = false;
-    }
+    rotateCube = glfwGetKey(window, GLFW_KEY_R);
+    showLines = (glfwGetKey(window, GLFW_KEY_L))? !showLines : showLines;
 }
 
 void scroll_callback(GLFWwindow* window, double offset_x, double offset_y){

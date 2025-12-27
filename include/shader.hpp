@@ -85,4 +85,11 @@ struct material{
     float shininess;
 };
 
+struct materials{
+
+    material rubber, wood, plastic, concrete, glass, chrome;
+
+    void init();
+};
+
 #endif
