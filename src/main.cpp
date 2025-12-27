@@ -329,6 +329,16 @@ int main(){
     line line2;
     line2.initLines(cubePos, top_normal);
 
+    // MATERIALS ----------------------------------------------------------------------//
+
+    material m1;
+
+    m1.ambient = glm::vec3(0.1f);
+    m1.diffuse = glm::vec3(0.6f);
+    m1.specular = glm::vec3(0.7f);
+
+    m1.shininess = 32.0f;
+
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
@@ -417,11 +427,31 @@ int main(){
             GL_FALSE,
             glm::value_ptr(normalModel)
         );
-        glUniform3f(
+        glUniform3fv(
             glGetUniformLocation(textureShader, "viewPos"),
-            cam.getPos().x,
-            cam.getPos().y,
-            cam.getPos().z
+            1,
+            glm::value_ptr(cam.getPos())
+        );
+
+        // Material
+        glUniform3fv(
+            glGetUniformLocation(textureShader, "m1.ambient"),
+            1,
+            glm::value_ptr(m1.ambient)
+        );
+        glUniform3fv(
+            glGetUniformLocation(textureShader, "m1.diffuse"),
+            1,
+            glm::value_ptr(m1.diffuse)
+        );
+        glUniform3fv(
+            glGetUniformLocation(textureShader, "m1.specular"),
+            1,
+            glm::value_ptr(m1.specular)
+        );
+        glUniform1f(
+            glGetUniformLocation(textureShader, "m1.shininess"),
+            m1.shininess
         );
 
         glBindVertexArray(VAO);

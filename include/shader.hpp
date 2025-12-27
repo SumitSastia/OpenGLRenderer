@@ -8,6 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <camera.hpp>
+
 class shader{
 
     unsigned int vertexShader;
@@ -74,6 +76,13 @@ public:
 
     void load(const char* path);
     unsigned int getID() const { return textureID; }
+};
+
+struct material{
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float shininess;
 };
 
 #endif
