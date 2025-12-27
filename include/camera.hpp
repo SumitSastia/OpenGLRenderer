@@ -27,6 +27,8 @@ class camera{
     float pitch; // x-axis rotation
 
     float fov;
+    float aspectRatio;
+
     bool mouseEnabled;
 
 public:
@@ -42,6 +44,7 @@ public:
     void set_position(const glm::vec3 position);
     void set_target(const glm::vec3 target);
     void set_fov(const float fov);
+    void set_aspect(const int frameWidth, const int frameHeight);
 
     glm::vec3 getPos() const { return position; }
     glm::mat4 getView() const { return viewMatrix; }

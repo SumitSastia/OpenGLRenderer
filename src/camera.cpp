@@ -15,20 +15,14 @@ camera::camera(){
     up_axis = glm::cross(direction, right_axis);
 
     fov = 45.0f;
+    aspectRatio = 800.0f/600.0f;
 
-    projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
     mouseEnabled = false;
 
     yaw = -90.0f;
     pitch = 0.0f;
 
-    // glm::vec3 new_direction;
-
-    // new_direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    // new_direction.y = sin(glm::radians(pitch));
-    // new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-    // target = glm::normalize(new_direction);
 }
 
 void camera::set_position(const glm::vec3 position){
@@ -51,6 +45,12 @@ void camera::set_fov(const float fov){
     if(fov < -89.0f) this->fov = -89.0f;
 
     projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
+}
+
+void camera::set_aspect(const int frameWidth, const int frameHeight){
+
+    aspectRatio = (float)frameWidth / (float)frameHeight;
+    projection = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
 }
 
 void camera::look_at(){

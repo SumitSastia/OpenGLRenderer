@@ -7,12 +7,15 @@
 
 #include <camera.hpp>
 
-#define WIN_W 800
-#define WIN_H 600
+#define WIN_W 1120
+#define WIN_H 700
 
 using namespace std;
 
 //-----------------------------------------------------------------------------------------------//
+
+int frameWidth = 0;
+int frameHeight = 0;
 
 float balanceVal = 0.5f;
 
@@ -92,9 +95,9 @@ int main(){
     
     glfwSetWindowAttrib(window,GLFW_RESIZABLE,GLFW_FALSE);
     
-    // MISC ---------------------------------------------------------------------------//
-    
-    glViewport(0,0,WIN_W,WIN_H);
+    glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
+
+    glViewport(0,0,frameWidth,frameHeight);
     glClearColor(0.13f,0.0f,0.2f,0.5f);
     
     glfwSwapInterval(1);
@@ -292,14 +295,14 @@ int main(){
     
     camera cam;
     glfwSetScrollCallback(window, scroll_callback);
+
+    cam.set_aspect(frameWidth, frameHeight);
     
     // GL MATHEMATICS -----------------------------------------------------------------//
     
     glm::mat4 model(1.0f);
-    glm::mat4 view;
-    glm::mat4 projection;
-
-    projection = cam.getPerspective();
+    glm::mat4 view(1.0f);
+    glm::mat4 projection = cam.getPerspective();
 
     glm::vec3 cubePos(0.0f,0.0f, 0.0f);
     model = glm::translate(model, cubePos);
@@ -334,19 +337,18 @@ int main(){
 
     while(!glfwWindowShouldClose(window) && isRunning){
 
+        // Time
         float currentTime = glfwGetTime();
         deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
         // Camera
-        
         cam.input_handler(window,deltaTime);
         cam.mouse_handler(window);
         cam.scroll_handler(scrollOffset);
         
         cam.look_at();
         view = cam.getView();
-        projection = cam.getPerspective();
         
         // Updates //
         if(!isPaused){
