@@ -21,15 +21,18 @@ uniform vec3 viewPos;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
+uniform sampler2D texture3;
+
 uniform material m1;
 
 void main(){
 
     vec3 t1 = vec3(texture(texture1, vTextureCords));
     vec3 t2 = vec3(texture(texture2, vTextureCords));
+    vec3 t3 = vec3(texture(texture3, vTextureCords));
 
     // Ambient
-    vec3 ambientLight = m1.ambient * lightColor * t1;
+    vec3 ambientLight = (m1.ambient*t1 + t3) * lightColor;
 
     // Diffuse
     vec3 normal = normalize(vNormal);
@@ -43,7 +46,7 @@ void main(){
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
-    vec3 specularLight = spec * vec3(texture(texture2, vTextureCords)) * lightColor;
+    vec3 specularLight = spec * t2 * lightColor;
 
     // Final Color
     // vec3 resultColor = (ambientLight + diffuseLight + specularLight) * vec3(1.0,1.0,1.0);
