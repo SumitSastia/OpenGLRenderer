@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "RelWithDebInfo/firstGame.exe"
+			"path" : "Debug/firstGame.exe"
 		},
 		{
-			"path" : "RelWithDebInfo/firstGame.pdb"
+			"path" : "Debug/firstGame.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -36,19 +36,19 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 21,
+				"line" : 22,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 25,
+				"line" : 26,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 20,
+				"line" : 21,
 				"parent" : 0
 			}
 		]
@@ -64,7 +64,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob1 /DNDEBUG -std:c++17 -MD -Zi"
+					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Ob0 /Od -std:c++17 -MDd -RTC1 -Zi"
 				}
 			],
 			"includes" : 
@@ -87,14 +87,15 @@
 			[
 				0,
 				2,
-				3
+				3,
+				4
 			]
 		},
 		{
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /O2 /Ob1 /DNDEBUG -MD -Zi"
+					"fragment" : "/DWIN32 /D_WINDOWS /Ob0 /Od -MDd -RTC1 -Zi"
 				}
 			],
 			"includes" : 
@@ -123,7 +124,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob1 /DNDEBUG -MD -Zi",
+				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Ob0 /Od -MDd -RTC1 -Zi",
 				"role" : "flags"
 			},
 			{
@@ -183,7 +184,8 @@
 				0,
 				1,
 				2,
-				3
+				3,
+				4
 			]
 		}
 	],
@@ -211,6 +213,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/camera.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/lights.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

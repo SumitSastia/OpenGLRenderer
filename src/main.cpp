@@ -6,6 +6,7 @@
 #include <stb_image.h>
 
 #include <camera.hpp>
+#include <lights.hpp>
 
 #define WIN_W 1120
 #define WIN_H 700
@@ -32,6 +33,8 @@ double cursor_dx = 0.0;
 double cursor_dy = 0.0;
 
 float scrollOffset = 0.0f;
+
+bool useFlashLight = true;
 
 //-----------------------------------------------------------------------------------------------//
 
@@ -299,7 +302,7 @@ int main(){
     // MATERIALS ----------------------------------------------------------------------//
 
     materials materials;
-    materials.init();
+    lights lights;
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -388,16 +391,21 @@ int main(){
         setVec3(textureShader, "m1.specular", materials.wood.specular);
         setFloat(textureShader, "m1.shininess", materials.glass.shininess);
 
-        // Light Attenuation
-        setFloat(textureShader, "l1.constant", 1.0f);
-        setFloat(textureShader, "l1.linear", 0.001f);
-        setFloat(textureShader, "l1.quadratic", 0.016f);
+        // Lights
+        lights.flashlight.position = cam.getPos();
+        lights.flashlight.direction = cam.getTarget();
 
-        // Spotlight
-        setVec3(textureShader, "s1.position", cam.getPos());
-        setVec3(textureShader, "s1.direction", cam.getTarget());
-        setFloat(textureShader, "s1.cutOffangle", glm::cos(glm::radians(12.5f)));
-        setFloat(textureShader, "s1.outerCutOff", glm::cos(glm::radians(17.5f)));
+        lights.cubelight.position = lightPos;
+
+        glUniform1i(
+            glGetUniformLocation(textureShader, "useFlashLight"),
+            useFlashLight
+        );
+
+        setDirectionalLight(textureShader, "d1", lights.sunlight);
+        setSpotLight(textureShader, "s1", lights.flashlight);
+        setPointLight(textureShader, "p1", lights.cubelight);
+
 
         glUniform1i(
             glGetUniformLocation(textureShader, "texture1"),
@@ -493,6 +501,7 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
 
     rotateCube = glfwGetKey(window, GLFW_KEY_R);
     showLines = (glfwGetKey(window, GLFW_KEY_L))? !showLines : showLines;
+    useFlashLight = (glfwGetKey(window, GLFW_KEY_T))? !useFlashLight : useFlashLight;
 }
 
 void scroll_callback(GLFWwindow* window, double offset_x, double offset_y){

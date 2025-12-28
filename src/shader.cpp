@@ -231,7 +231,7 @@ void texture::load(const char* path){
 
 //-------------------------------------------------------------------------------------//
 
-void materials::init(){
+materials::materials(){
 
     rubber.ambient = glm::vec3(0.02f);
     rubber.diffuse = glm::vec3(0.01f);

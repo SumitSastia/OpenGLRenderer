@@ -8,8 +8,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <camera.hpp>
-
 class shader{
 
     unsigned int vertexShader;
@@ -88,7 +86,7 @@ struct material{
 struct materials{
 
     material rubber, wood, plastic, concrete, glass, chrome;
-    void init();
+    materials();
 };
 
 void setFloat(const unsigned int &shaderProgram, const char* target, const float &value);

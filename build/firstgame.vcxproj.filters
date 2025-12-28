@@ -13,6 +13,9 @@
     <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\src\lights.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\sumit\Documents\GitHub\OpenGLRenderer\CMakeLists.txt" />

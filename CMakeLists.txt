@@ -14,6 +14,7 @@ add_executable(${TARGET_NAME}
     src/glad.c
     src/shader.cpp
     src/camera.cpp
+    src/lights.cpp
 )
 
 # including headers & linkers
