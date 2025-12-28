@@ -55,3 +55,17 @@ void setDirectionalLight(const unsigned int &shaderProgram, const std::string &t
     setVec3(shaderProgram, (target + ".color").c_str(), dl.color);
 }
 
+colors::colors(){
+
+    red = glm::vec3(1.0f,0.0f,0.0f);
+    orange = glm::vec3(0.945f,0.352f,0.133f);
+    yellow = glm::vec3(1.0f,1.0f,0.0f);
+    green = glm::vec3(0.0f,1.0f,0.0f);
+    blue = glm::vec3(0.0f,0.0f,1.0f);
+    pink = glm::vec3(0.89f,0.239f,0.58f);
+    white = glm::vec3(1.0f,1.0f,1.0f);
+    black = glm::vec3(0.0f,0.0f,0.0f);
+    gray = glm::vec3(0.392f,0.392f,0.392f);
+
+}
+

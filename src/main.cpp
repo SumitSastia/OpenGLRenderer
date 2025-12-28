@@ -260,6 +260,10 @@ int main(){
     wood_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wood_box.png");
     metal_frame.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\metal_frame.png");
     emission.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\test.png");
+
+    materials materials;
+    lights lights;
+    colors colors;
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -281,8 +285,7 @@ int main(){
 
     // LIGHTING -----------------------------------------------------------------------//
 
-    glm::vec3 light(1.0f, 1.0f, 1.0f);
-    // glm::vec3 light(1.0f, 0.5f, 0.31f);
+    glm::vec3 lightColor(colors.yellow);
 
     glm::vec3 lightPos(3.0f, 1.5f,-3.0f);
     glm::mat4 lightModel(1.0f);
@@ -298,11 +301,6 @@ int main(){
     glm::vec3 top_normal(0.0f,3.0f,0.0f);
     line line2;
     line2.initLines(cubePos, top_normal);
-
-    // MATERIALS ----------------------------------------------------------------------//
-
-    materials materials;
-    lights lights;
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -368,15 +366,13 @@ int main(){
         glm::mat4 finalMatrix = projection * view * lightModel;
         
         setMat4(lightShader, "finalMatrix", finalMatrix);
+        setVec3(lightShader, "lightColor", lightColor);
 
         glBindVertexArray(VAO2);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
         // Cube - Object1
         glUseProgram(textureShader);
-
-        setVec3(textureShader, "lightColor", light);
-        setVec3(textureShader, "lightPos", lightPos);
 
         setMat4(textureShader, "projection", projection);
         setMat4(textureShader, "view", view);
@@ -396,6 +392,7 @@ int main(){
         lights.flashlight.direction = cam.getTarget();
 
         lights.cubelight.position = lightPos;
+        lights.cubelight.color = lightColor;
 
         glUniform1i(
             glGetUniformLocation(textureShader, "useFlashLight"),

@@ -140,7 +140,7 @@ void main(){
     vec3 finalColor = vec3(0.0);
 
     finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
-    finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
+    // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
 
     if(useFlashLight){
         finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);

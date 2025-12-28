@@ -55,4 +55,19 @@ void setSpotLight(const unsigned int &shaderProgram, const std::string &target, 
 
 void setDirectionalLight(const unsigned int &shaderProgram, const std::string &target, const directionalLight &dl);
 
+struct colors{
+
+    glm::vec3 red;
+    glm::vec3 orange;
+    glm::vec3 yellow;
+    glm::vec3 green;
+    glm::vec3 blue;
+    glm::vec3 pink;
+    glm::vec3 white;
+    glm::vec3 black;
+    glm::vec3 gray;
+
+    colors();
+};
+
 #endif
