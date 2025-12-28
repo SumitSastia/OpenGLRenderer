@@ -281,7 +281,7 @@ int main(){
     glm::vec3 light(1.0f, 1.0f, 1.0f);
     // glm::vec3 light(1.0f, 0.5f, 0.31f);
 
-    glm::vec3 lightPos(-3.0f, 1.5f, 3.0f);
+    glm::vec3 lightPos(3.0f, 1.5f,-3.0f);
     glm::mat4 lightModel(1.0f);
     
     lightModel = glm::translate(lightModel, lightPos);
@@ -306,6 +306,19 @@ int main(){
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -334,7 +347,7 @@ int main(){
             // Light-Rotation
             lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(0.8f), glm::vec3(0.0,1.0,0.0)) * lightModel;
 
-            lightPos = glm::vec3(-3.0f, 1.5f, 3.0f);
+            lightPos = glm::vec3(3.0f, 1.5f,-3.0f);
             lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
         }
 
@@ -373,11 +386,11 @@ int main(){
         setVec3(textureShader, "m1.ambient", m1.ambient);
         setVec3(textureShader, "m1.diffuse", m1.diffuse);
         setVec3(textureShader, "m1.specular", m1.specular);
+        setFloat(textureShader, "m1.shininess", materials.glass.shininess);
 
-        glUniform1f(
-            glGetUniformLocation(textureShader, "m1.shininess"),
-            m1.shininess
-        );
+        setFloat(textureShader, "l1.constant", 1.0f);
+        setFloat(textureShader, "l1.linear", 0.001f);
+        setFloat(textureShader, "l1.quadratic", 0.032f);
 
         glUniform1i(
             glGetUniformLocation(textureShader, "texture1"),
@@ -396,7 +409,18 @@ int main(){
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+        for(unsigned int i=0; i<10; i++){
+
+            glm::mat4 model1(1.0f);
+            model1 = glm::translate(model1, cubePositions[i]);
+            float angle = 20.0f * i;
+            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
+            normalModel = glm::transpose(glm::inverse(model1));
+
+            setMat4(textureShader, "model", model1);
+            setMat3(textureShader, "normalModel", normalModel);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+        }
 
         // Lines
         glUseProgram(lineShader);

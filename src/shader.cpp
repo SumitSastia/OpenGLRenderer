@@ -264,6 +264,14 @@ void materials::init(){
     chrome.shininess = 76.8f;
 }
 
+void setFloat(const unsigned int &shaderProgram, const char* target, const float &value){
+
+    glUniform1f(
+        glGetUniformLocation(shaderProgram, target),
+        value
+    );
+}
+
 void setVec3(const unsigned int &shaderProgram, const char* target, const glm::vec3 &vector){
 
     glUniform3fv(

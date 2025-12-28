@@ -91,6 +91,8 @@ struct materials{
     void init();
 };
 
+void setFloat(const unsigned int &shaderProgram, const char* target, const float &value);
+
 void setVec3(const unsigned int &shaderProgram, const char* target, const glm::vec3 &vector);
 
 void setMat3(const unsigned int &shaderProgram, const char* target, const glm::mat3 &matrix);

@@ -7,6 +7,12 @@ struct material{
     float shininess;
 };
 
+struct lightFade{
+    float constant;
+    float linear;
+    float quadratic;
+};
+
 in vec3 vPos;
 in vec2 vTextureCords;
 in vec3 vNormal;
@@ -23,6 +29,7 @@ uniform sampler2D texture1;
 uniform sampler2D texture2;
 
 uniform material m1;
+uniform lightFade l1;
 
 void main(){
 
@@ -37,18 +44,19 @@ void main(){
     vec3 lightDirection = normalize(lightPos - vPos);
 
     float diff = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuseLight = diff * (m1.diffuse*t1 + t2) * lightColor;
+    vec3 diffuseLight = diff * (m1.diffuse*(t1-t2) + t2) * lightColor;
 
     // Specular
     vec3 viewDirection = normalize(viewPos - vPos);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
-    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
+    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), m1.shininess);
     vec3 specularLight = spec * t2 * lightColor;
 
-    // Final Color
-    // vec3 resultColor = (ambientLight + diffuseLight + specularLight) * vec3(1.0,1.0,1.0);
+    // Attenuation
+    float fragDistance = length(lightPos - vPos);
+    float attenuation = 1.0 / (l1.constant + l1.linear*fragDistance + l1.quadratic*fragDistance*fragDistance);
 
-    FragColor = vec4((ambientLight + diffuseLight + specularLight), 1.0);
-    // FragColor = vec4(resultColor,1.0);
+    // Final Color
+    FragColor = vec4(attenuation * (ambientLight + diffuseLight + specularLight), 1.0);
 }
