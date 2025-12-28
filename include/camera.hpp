@@ -49,6 +49,7 @@ public:
     glm::vec3 getPos() const { return position; }
     glm::mat4 getView() const { return viewMatrix; }
     glm::mat4 getPerspective() const { return projection; }
+    glm::vec3 getTarget() const { return target; }
 };
 
 #endif

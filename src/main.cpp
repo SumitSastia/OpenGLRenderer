@@ -301,8 +301,6 @@ int main(){
     materials materials;
     materials.init();
 
-    material m1 = materials.wood;
-
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
@@ -345,7 +343,8 @@ int main(){
             // line2.updateLines(cubePos, top_normal);
 
             // Light-Rotation
-            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(0.8f), glm::vec3(0.0,1.0,0.0)) * lightModel;
+            float rotationSpeed = 1.0f;
+            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0,1.0,0.0)) * lightModel;
 
             lightPos = glm::vec3(3.0f, 1.5f,-3.0f);
             lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
@@ -383,14 +382,20 @@ int main(){
         setVec3(textureShader, "viewPos", cam.getPos());
 
         // Material
-        setVec3(textureShader, "m1.ambient", m1.ambient);
-        setVec3(textureShader, "m1.diffuse", m1.diffuse);
-        setVec3(textureShader, "m1.specular", m1.specular);
+        setVec3(textureShader, "m1.ambient", materials.wood.ambient);
+        setVec3(textureShader, "m1.diffuse", materials.wood.diffuse);
+        setVec3(textureShader, "m1.specular", materials.wood.specular);
         setFloat(textureShader, "m1.shininess", materials.glass.shininess);
 
+        // Light Attenuation
         setFloat(textureShader, "l1.constant", 1.0f);
         setFloat(textureShader, "l1.linear", 0.001f);
-        setFloat(textureShader, "l1.quadratic", 0.032f);
+        setFloat(textureShader, "l1.quadratic", 0.016f);
+
+        // Spotlight
+        setVec3(textureShader, "s1.position", cam.getPos());
+        setVec3(textureShader, "s1.direction", cam.getTarget());
+        setFloat(textureShader, "s1.cutOffangle", glm::cos(glm::radians(12.5f)));
 
         glUniform1i(
             glGetUniformLocation(textureShader, "texture1"),
@@ -415,7 +420,7 @@ int main(){
             model1 = glm::translate(model1, cubePositions[i]);
             float angle = 20.0f * i;
             model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
-            normalModel = glm::transpose(glm::inverse(model1));
+            normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
 
             setMat4(textureShader, "model", model1);
             setMat3(textureShader, "normalModel", normalModel);
