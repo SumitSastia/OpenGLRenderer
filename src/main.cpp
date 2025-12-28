@@ -334,6 +334,7 @@ int main(){
         
         cam.look_at();
         view = cam.getView();
+        projection = cam.getPerspective();
         
         // Updates //
         if(!isPaused){
@@ -344,7 +345,7 @@ int main(){
 
             // Light-Rotation
             float rotationSpeed = 1.0f;
-            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0,1.0,0.0)) * lightModel;
+            // lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0,1.0,0.0)) * lightModel;
 
             lightPos = glm::vec3(3.0f, 1.5f,-3.0f);
             lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
@@ -396,6 +397,7 @@ int main(){
         setVec3(textureShader, "s1.position", cam.getPos());
         setVec3(textureShader, "s1.direction", cam.getTarget());
         setFloat(textureShader, "s1.cutOffangle", glm::cos(glm::radians(12.5f)));
+        setFloat(textureShader, "s1.outerCutOff", glm::cos(glm::radians(17.5f)));
 
         glUniform1i(
             glGetUniformLocation(textureShader, "texture1"),

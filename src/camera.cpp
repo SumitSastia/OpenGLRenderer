@@ -44,7 +44,7 @@ void camera::set_fov(const float fov){
     if(fov > 89.0f) this->fov = 89.0f;
     if(fov < -89.0f) this->fov = -89.0f;
 
-    projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
 }
 
 void camera::set_aspect(const int frameWidth, const int frameHeight){
@@ -84,7 +84,7 @@ void camera::input_handler(GLFWwindow* window, float deltaTime){
     }
 
     if(glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)){
-        camSpeed = 2.0f;
+        camSpeed = 4.0f;
     }
     else{
         camSpeed = 1.0f;
