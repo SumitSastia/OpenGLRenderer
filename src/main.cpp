@@ -7,6 +7,7 @@
 #include <shader.hpp>
 #include <camera.hpp>
 #include <lights.hpp>
+#include <mesh.hpp>
 
 #define WIN_W 1120
 #define WIN_H 700
@@ -233,6 +234,11 @@ int main(){
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\texture.vert",
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\texture.frag"
     );
+
+    shader* s4 = new shader(
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.vert",
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.frag"
+    );
     
     buffer b1;
     buffer b2; // Light-Source Cube
@@ -246,6 +252,7 @@ int main(){
     unsigned int lineShader = s1->get_program();
     unsigned int lightShader = s2->get_program();
     unsigned int textureShader = s3->get_program();
+    unsigned int modelShader = s4->get_program();
     
     // Textures -----------------------------------------------------------------------//
     
@@ -319,6 +326,12 @@ int main(){
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
+    // MODELS -------------------------------------------------------------------------//
+
+    model3d bed("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\models\\cup\\Cup.obj");
+    
+    // cout << "didnt even reach here" << endl;
+
     // OPENGL LOOP --------------------------------------------------------------------//
 
     while(!glfwWindowShouldClose(window) && isRunning){
@@ -372,20 +385,90 @@ int main(){
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
         // Cube - Object1
-        glUseProgram(textureShader);
+        // glUseProgram(textureShader);
 
-        setMat4(textureShader, "projection", projection);
-        setMat4(textureShader, "view", view);
-        setMat4(textureShader, "model", model);
+        // setMat4(textureShader, "projection", projection);
+        // setMat4(textureShader, "view", view);
+        // setMat4(textureShader, "model", model);
 
-        setMat3(textureShader, "normalModel", normalModel);
-        setVec3(textureShader, "viewPos", cam.getPos());
+        // setMat3(textureShader, "normalModel", normalModel);
+        // setVec3(textureShader, "viewPos", cam.getPos());
+
+        // // Material
+        // setVec3(textureShader, "m1.ambient", materials.wood.ambient);
+        // setVec3(textureShader, "m1.diffuse", materials.wood.diffuse);
+        // setVec3(textureShader, "m1.specular", materials.wood.specular);
+        // setFloat(textureShader, "m1.shininess", materials.glass.shininess);
+
+        // // Lights
+        // lights.flashlight.position = cam.getPos();
+        // lights.flashlight.direction = cam.getTarget();
+
+        // lights.cubelight.position = lightPos;
+        // lights.cubelight.color = lightColor;
+
+        // glUniform1i(
+        //     glGetUniformLocation(textureShader, "useFlashLight"),
+        //     useFlashLight
+        // );
+
+        // setDirectionalLight(textureShader, "d1", lights.sunlight);
+        // setSpotLight(textureShader, "s1", lights.flashlight);
+        // setPointLight(textureShader, "p1", lights.cubelight);
+
+        // glUniform1i(
+        //     glGetUniformLocation(textureShader, "texture1"),
+        //     0
+        // );
+        // glUniform1i(
+        //     glGetUniformLocation(textureShader, "texture2"),
+        //     1
+        // );
+
+        // glBindVertexArray(VAO);
+
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
+
+        // glActiveTexture(GL_TEXTURE1);
+        // glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
+
+        // for(unsigned int i=0; i<10; i++){
+
+        //     glm::mat4 model1(1.0f);
+        //     model1 = glm::translate(model1, cubePositions[i]);
+        //     float angle = 20.0f * i;
+        //     model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
+        //     normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
+
+        //     setMat4(textureShader, "model", model1);
+        //     setMat3(textureShader, "normalModel", normalModel);
+        //     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+        // }
+
+        // Models
+        glUseProgram(modelShader);
+
+        setMat4(modelShader, "projection", projection);
+        setMat4(modelShader, "view", view);
+        setMat4(modelShader, "model", model);
+
+        setMat3(modelShader, "normalModel", normalModel);
+        setVec3(modelShader, "viewPos", cam.getPos());
 
         // Material
-        setVec3(textureShader, "m1.ambient", materials.wood.ambient);
-        setVec3(textureShader, "m1.diffuse", materials.wood.diffuse);
-        setVec3(textureShader, "m1.specular", materials.wood.specular);
-        setFloat(textureShader, "m1.shininess", materials.glass.shininess);
+        setVec3(modelShader, "m1.ambient", materials.wood.ambient);
+        setVec3(modelShader, "m1.diffuse", materials.wood.diffuse);
+        setVec3(modelShader, "m1.specular", materials.wood.specular);
+        setFloat(modelShader, "m1.shininess", materials.glass.shininess);
+
+        glm::mat4 model1(1.0f);
+
+        model1 = glm::scale(model1, glm::vec3(0.2f));
+        normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
+
+        setMat4(modelShader, "model", model1);
+        setMat3(modelShader, "normalModel", normalModel);
 
         // Lights
         lights.flashlight.position = cam.getPos();
@@ -395,44 +478,24 @@ int main(){
         lights.cubelight.color = lightColor;
 
         glUniform1i(
-            glGetUniformLocation(textureShader, "useFlashLight"),
+            glGetUniformLocation(modelShader, "useFlashLight"),
             useFlashLight
         );
 
-        setDirectionalLight(textureShader, "d1", lights.sunlight);
-        setSpotLight(textureShader, "s1", lights.flashlight);
-        setPointLight(textureShader, "p1", lights.cubelight);
-
+        setDirectionalLight(modelShader, "d1", lights.sunlight);
+        setSpotLight(modelShader, "s1", lights.flashlight);
+        setPointLight(modelShader, "p1", lights.cubelight);
 
         glUniform1i(
-            glGetUniformLocation(textureShader, "texture1"),
+            glGetUniformLocation(modelShader, "texture_diffuse"),
             0
         );
         glUniform1i(
-            glGetUniformLocation(textureShader, "texture2"),
+            glGetUniformLocation(modelShader, "texture_specular"),
             1
         );
 
-        glBindVertexArray(VAO);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
-
-        for(unsigned int i=0; i<10; i++){
-
-            glm::mat4 model1(1.0f);
-            model1 = glm::translate(model1, cubePositions[i]);
-            float angle = 20.0f * i;
-            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
-            normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
-
-            setMat4(textureShader, "model", model1);
-            setMat3(textureShader, "normalModel", normalModel);
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-        }
+        bed.draw(modelShader);
 
         // Lines
         glUseProgram(lineShader);

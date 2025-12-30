@@ -54,7 +54,7 @@ public:
     void loadIndices(const unsigned int* indices, const size_t &size);
 };
 
-class model{
+class model3d{
 
     std::vector <mesh> meshes;
     std::string modelPath;
@@ -68,7 +68,7 @@ class model{
 
 public:
 
-    model(const char* path){
+    model3d(const char* path){
         loadModel(path);
     }
 

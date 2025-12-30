@@ -43,6 +43,6 @@
 # Archive files
 *.zip
 
-# VSCode Folder
-build
 .vscode
+build
+assets/models

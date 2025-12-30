@@ -113,7 +113,7 @@ void mesh::loadIndices(const unsigned int* indices, const size_t &size){
 
 //-------------------------------------------------------------------------------------//
 
-std::vector <texture> model::loadTextures(aiMaterial* mat, aiTextureType type, std::string typeName){
+std::vector <texture> model3d::loadTextures(aiMaterial* mat, aiTextureType type, std::string typeName){
 
     std::vector <texture> textures;
 
@@ -134,7 +134,7 @@ std::vector <texture> model::loadTextures(aiMaterial* mat, aiTextureType type, s
     return textures;
 }
 
-mesh model::processMesh(aiMesh* modelMesh, const aiScene* scene){
+mesh model3d::processMesh(aiMesh* modelMesh, const aiScene* scene){
 
     std::vector <vertex> vertices;
     std::vector <unsigned int> indices;
@@ -196,7 +196,7 @@ mesh model::processMesh(aiMesh* modelMesh, const aiScene* scene){
     return mesh(vertices, indices, textures);
 }
 
-void model::processNode(aiNode* node, const aiScene* scene){
+void model3d::processNode(aiNode* node, const aiScene* scene){
 
     for(unsigned int i=0; i < node->mNumMeshes; i++){
 
@@ -209,7 +209,7 @@ void model::processNode(aiNode* node, const aiScene* scene){
     }
 }
 
-void model::loadModel(const std::string &path){
+void model3d::loadModel(const std::string &path){
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -223,9 +223,10 @@ void model::loadModel(const std::string &path){
     modelPath = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
+    // std::cout << "didnt even reach here" << std::endl;
 }
 
-void model::draw(const unsigned int &shaderProgram){
+void model3d::draw(const unsigned int &shaderProgram){
 
     for(unsigned int i=0; i < meshes.size(); i++){
         meshes[i].draw(shaderProgram);
