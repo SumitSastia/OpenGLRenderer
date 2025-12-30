@@ -39,3 +39,10 @@
 
 # debug information files
 *.dwo
+
+# Archive files
+*.zip
+
+# VSCode Folder
+build
+.vscode

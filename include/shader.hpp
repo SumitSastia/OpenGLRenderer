@@ -63,17 +63,21 @@ class texture{
     int width;
     int height;
     int nrChannels;
-
-    unsigned int textureID;
     unsigned char* pixelData;
-
+    
 public:
+    
+    unsigned int textureID;
+    std::string type;
+    const char* filePath;
 
     texture();
     ~texture();
 
     void load(const char* path);
+
     unsigned int getID() const { return textureID; }
+    std::string getType() const { return type; }
 };
 
 struct material{
@@ -88,6 +92,8 @@ struct materials{
     material rubber, wood, plastic, concrete, glass, chrome;
     materials();
 };
+
+void setInt(const unsigned int &shaderProgram, const char* target, const int &value);
 
 void setFloat(const unsigned int &shaderProgram, const char* target, const float &value);
 

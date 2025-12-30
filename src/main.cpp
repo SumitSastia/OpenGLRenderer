@@ -2,9 +2,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <shader.hpp>
 #include <stb_image.h>
 
+#include <shader.hpp>
 #include <camera.hpp>
 #include <lights.hpp>
 
