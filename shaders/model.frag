@@ -124,23 +124,23 @@ vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1,
 
 void main(){
 
-    vec3 normal = normalize(vNormal);
+    // vec3 normal = normalize(vNormal);
 
-    vec3 t1 = vec3(texture(texture1, vTexCords));
-    vec3 t2 = vec3(texture(texture1, vTexCords));
+    // vec3 t1 = vec3(texture(texture1, vTexCords));
+    // vec3 t2 = vec3(texture(texture1, vTexCords));
 
-    // Ambient
-    vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);
+    // // Ambient
+    // vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);
 
-    vec3 finalColor = vec3(0.0);
+    // vec3 finalColor = vec3(0.0);
 
-    finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
-    // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
+    // finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
+    // // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
 
-    if(useFlashLight){
-        finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
-    }
+    // if(useFlashLight){
+    //     finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
+    // }
 
-    FragColor = vec4(ambientLight + finalColor, 1.0);
+    // FragColor = vec4(ambientLight + finalColor, 1.0);
     FragColor = vec4(1,1,1,1);
 }

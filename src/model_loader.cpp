@@ -57,40 +57,37 @@ void mesh::readFile(const char* path){
         else if(prefix == "f"){
 
             std::string vertexIndex;
-            unsigned int indexPoints = 0;
-            unsigned int baseIndex = vertices.size();
+            std::vector <std::string> vertexIndices;
+            const unsigned int baseIndex = vertices.size();
 
             while(dataStream >> vertexIndex){
-
-                std::string verts[3];
-                dataStream >> verts[0] >> verts[1] >> verts[2];
-
-                for(unsigned int i=0; i<3; i++){
-
-                    std::stringstream vertexStream(verts[i]);
-                    std::string posStr, nrlStr, texStr;
-
-                    std::getline(vertexStream, posStr, '/');
-                    std::getline(vertexStream, texStr, '/');
-                    std::getline(vertexStream, nrlStr, '/');
-
-                    unsigned int posIndex = std::stoi(posStr) - 1;
-                    unsigned int nrlIndex = std::stoi(nrlStr) - 1;
-                    unsigned int texIndex = std::stoi(texStr) - 1;
-
-                    vertex temp_v(positions[posIndex], normals[nrlIndex], texCords[texIndex]);
-                    vertices.push_back(temp_v);
-                }
-                indexPoints++;
+                vertexIndices.push_back(vertexIndex);
             }
 
-            // Triangle
-            indices.push_back(baseIndex);
-            indices.push_back(baseIndex+1);
-            indices.push_back(baseIndex+2);
+            for(const std::string &vi : vertexIndices){
 
-            // Quad
-            if(indexPoints == 4) indices.push_back(baseIndex+3);
+                std::stringstream vertexStream(vi);
+                std::string posStr, nrlStr, texStr;
+
+                std::getline(vertexStream, posStr, '/');
+                std::getline(vertexStream, texStr, '/');
+                std::getline(vertexStream, nrlStr, '/');
+
+                const unsigned int posIndex = std::stoi(posStr) - 1;
+                const unsigned int nrlIndex = std::stoi(nrlStr) - 1;
+                const unsigned int texIndex = std::stoi(texStr) - 1;
+
+                vertex temp_v(positions[posIndex], normals[nrlIndex], texCords[texIndex]);
+                vertices.push_back(temp_v);
+            }
+
+            const unsigned int size = vertexIndices.size();
+            for(size_t i=1; i+1 < size; i++){
+
+                indices.push_back(baseIndex);
+                indices.push_back(baseIndex+i);
+                indices.push_back(baseIndex+i+1);
+            }
         }
     }
 }
@@ -163,6 +160,7 @@ void mesh::draw(const unsigned int &shaderProgram){
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
     glBindVertexArray(0);
+
 }
 
 //-------------------------------------------------------------------------------------//

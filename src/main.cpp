@@ -332,6 +332,9 @@ int main(){
 
     glm::mat4 cup_model(1.0f);
 
+    cup_model = glm::translate(cup_model, glm::vec3(0.0f,5.0f,0.0f));
+    cup_model = glm::scale(cup_model, glm::vec3(0.5f));
+
     // OPENGL LOOP --------------------------------------------------------------------//
 
     while(!glfwWindowShouldClose(window) && isRunning){
@@ -458,25 +461,25 @@ int main(){
         setMat3(modelShader, "normalModel", cup_normal);
         setVec3(modelShader, "viewPos", cam.getPos());
 
-        // Material
-        setVec3(modelShader, "m1.ambient", materials.wood.ambient);
-        setVec3(modelShader, "m1.diffuse", materials.wood.diffuse);
-        setVec3(modelShader, "m1.specular", materials.wood.specular);
-        setFloat(modelShader, "m1.shininess", materials.glass.shininess);
+        // // Material
+        // setVec3(modelShader, "m1.ambient", materials.wood.ambient);
+        // setVec3(modelShader, "m1.diffuse", materials.wood.diffuse);
+        // setVec3(modelShader, "m1.specular", materials.wood.specular);
+        // setFloat(modelShader, "m1.shininess", materials.glass.shininess);
 
-        glUniform1i(
-            glGetUniformLocation(modelShader, "useFlashLight"),
-            useFlashLight
-        );
+        // glUniform1i(
+        //     glGetUniformLocation(modelShader, "useFlashLight"),
+        //     useFlashLight
+        // );
 
-        setDirectionalLight(modelShader, "d1", lights.sunlight);
-        setSpotLight(modelShader, "s1", lights.flashlight);
-        setPointLight(modelShader, "p1", lights.cubelight);
+        // setDirectionalLight(modelShader, "d1", lights.sunlight);
+        // setSpotLight(modelShader, "s1", lights.flashlight);
+        // setPointLight(modelShader, "p1", lights.cubelight);
 
-        glUniform1i(
-            glGetUniformLocation(textureShader, "texture1"),
-            0
-        );
+        // glUniform1i(
+        //     glGetUniformLocation(textureShader, "texture1"),
+        //     0
+        // );
 
         cup_mesh.draw(modelShader);
 
