@@ -35,19 +35,16 @@ struct spotLight{
 };
 
 in vec3 vPos;
-in vec2 vTextureCords;
 in vec3 vNormal;
+in vec2 vTexCords;
 
 out vec4 FragColor;
-
-uniform float alphaVal;
-
-uniform vec3 lightColor;
-uniform vec3 lightPos;
 uniform vec3 viewPos;
 
-uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_specular1;
+uniform sampler2D texture1;
+
+// uniform sampler2D texture_diffuse1;
+// uniform sampler2D texture_specular1;
 
 uniform material m1;
 
@@ -127,12 +124,10 @@ vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1,
 
 void main(){
 
-    // Ignoring Cube Light-Source
-
     vec3 normal = normalize(vNormal);
 
-    vec3 t1 = vec3(texture(texture_diffuse1, vTextureCords));
-    vec3 t2 = vec3(texture(texture_specular1, vTextureCords));
+    vec3 t1 = vec3(texture(texture1, vTexCords));
+    vec3 t2 = vec3(texture(texture1, vTexCords));
 
     // Ambient
     vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);

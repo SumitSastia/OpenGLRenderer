@@ -63,12 +63,13 @@ class texture{
     int width;
     int height;
     int nrChannels;
+    
+    std::string type;
+    unsigned int textureID;
     unsigned char* pixelData;
     
 public:
     
-    unsigned int textureID;
-    std::string type;
     const char* filePath;
 
     texture();
