@@ -7,8 +7,7 @@
 #include <shader.hpp>
 #include <camera.hpp>
 #include <lights.hpp>
-#include <shapes.hpp>
-#include <model_loader.hpp>
+#include <models.hpp>
 
 constexpr auto WIN_W = 1120;
 constexpr auto WIN_H = 700;
@@ -324,7 +323,7 @@ int main(){
 
     // MODELS -------------------------------------------------------------------------//
     
-    mesh cup_mesh("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\models\\juice-bottle.obj");
+    //mesh cup_mesh("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\models\\juice-bottle.obj");
 
     glm::mat4 cup_model(1.0f);
 
@@ -442,7 +441,8 @@ int main(){
         // shapes::instance().cube.textureID = wood_texture.getID();
         // shapes::instance().cube.draw(modelShader);
 
-        cup_mesh.draw(modelShader);
+        // cup_mesh.textureID = wood_texture.getID();
+        //cup_mesh.draw(modelShader);
 
         // Lines
         glUseProgram(lineShader);

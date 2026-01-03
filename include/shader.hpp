@@ -17,7 +17,7 @@ class shader{
 public:
 
     shader(const char* vertPath, const char* fragPath);
-    void destroy();
+    void destroy() const;
 
     std::string loadShader(const char* path);
     unsigned int get_program() const { return shaderProgram; }

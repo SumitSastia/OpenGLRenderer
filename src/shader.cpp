@@ -72,7 +72,7 @@ std::string shader::loadShader(const char* path){
 
     if(!file){
         std::cerr << "Failed to open the File!" << std::endl;
-        return nullptr;
+        return "";
     }
 
     std::stringstream ss;
@@ -81,7 +81,7 @@ std::string shader::loadShader(const char* path){
     return ss.str();
 }
 
-void shader::destroy(){
+void shader::destroy() const {
     glDeleteProgram(shaderProgram);
 }
 
