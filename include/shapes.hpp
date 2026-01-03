@@ -1,7 +1,7 @@
 #ifndef SHAPES_HPP
 #define SHAPES_HPP
 
-#include <mesh.hpp>
+#include <model_loader.hpp>
 
 struct shapes{
 

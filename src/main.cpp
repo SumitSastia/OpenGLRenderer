@@ -7,6 +7,7 @@
 #include <shader.hpp>
 #include <camera.hpp>
 #include <lights.hpp>
+#include <shapes.hpp>
 #include <model_loader.hpp>
 
 #define WIN_W 1120
@@ -103,7 +104,6 @@ int main(){
     glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
 
     glViewport(0,0,frameWidth,frameHeight);
-    glClearColor(0.065f,0.0f,0.1f,0.5f);
     
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, input_callback);
@@ -271,6 +271,7 @@ int main(){
     materials materials;
     lights lights;
     colors colors;
+    shapes shapes;
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -332,8 +333,16 @@ int main(){
 
     glm::mat4 cup_model(1.0f);
 
-    cup_model = glm::translate(cup_model, glm::vec3(0.0f,5.0f,0.0f));
+    cup_model = glm::translate(cup_model, glm::vec3(0.0f,3.0f,0.0f));
     cup_model = glm::scale(cup_model, glm::vec3(0.5f));
+
+    glClearColor(0.065f,0.0f,0.1f,1.0f);
+    // glClearColor(
+    //     lights.sunlight.color.x,
+    //     lights.sunlight.color.y,
+    //     lights.sunlight.color.z,
+    //     1.0f
+    // );
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -388,100 +397,102 @@ int main(){
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
         // Cube - Object1
-        glUseProgram(textureShader);
+        // glUseProgram(textureShader);
 
-        setMat4(textureShader, "projection", projection);
-        setMat4(textureShader, "view", view);
-        setMat4(textureShader, "model", model);
+        // setMat4(textureShader, "projection", projection);
+        // setMat4(textureShader, "view", view);
+        // setMat4(textureShader, "model", model);
 
-        setMat3(textureShader, "normalModel", normalModel);
-        setVec3(textureShader, "viewPos", cam.getPos());
+        // setMat3(textureShader, "normalModel", normalModel);
+        // setVec3(textureShader, "viewPos", cam.getPos());
 
-        // Material
-        setVec3(textureShader, "m1.ambient", materials.wood.ambient);
-        setVec3(textureShader, "m1.diffuse", materials.wood.diffuse);
-        setVec3(textureShader, "m1.specular", materials.wood.specular);
-        setFloat(textureShader, "m1.shininess", materials.glass.shininess);
+        // // Material
+        // setVec3(textureShader, "m1.ambient", materials.wood.ambient);
+        // setVec3(textureShader, "m1.diffuse", materials.wood.diffuse);
+        // setVec3(textureShader, "m1.specular", materials.wood.specular);
+        // setFloat(textureShader, "m1.shininess", materials.glass.shininess);
 
-        // Lights
+        // // Lights
         lights.flashlight.position = cam.getPos();
         lights.flashlight.direction = cam.getTarget();
 
         lights.cubelight.position = lightPos;
         lights.cubelight.color = lightColor;
 
-        glUniform1i(
-            glGetUniformLocation(textureShader, "useFlashLight"),
-            useFlashLight
-        );
+        // glUniform1i(
+        //     glGetUniformLocation(textureShader, "useFlashLight"),
+        //     useFlashLight
+        // );
 
-        setDirectionalLight(textureShader, "d1", lights.sunlight);
-        setSpotLight(textureShader, "s1", lights.flashlight);
-        setPointLight(textureShader, "p1", lights.cubelight);
+        // setDirectionalLight(textureShader, "d1", lights.sunlight);
+        // setSpotLight(textureShader, "s1", lights.flashlight);
+        // setPointLight(textureShader, "p1", lights.cubelight);
 
-        glUniform1i(
-            glGetUniformLocation(textureShader, "texture1"),
-            0
-        );
-        glUniform1i(
-            glGetUniformLocation(textureShader, "texture2"),
-            1
-        );
+        // glUniform1i(
+        //     glGetUniformLocation(textureShader, "texture1"),
+        //     0
+        // );
+        // glUniform1i(
+        //     glGetUniformLocation(textureShader, "texture2"),
+        //     1
+        // );
 
-        glBindVertexArray(VAO);
+        // glBindVertexArray(VAO);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
+        // glActiveTexture(GL_TEXTURE1);
+        // glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
 
-        for(unsigned int i=0; i<10; i++){
+        // for(unsigned int i=0; i<10; i++){
 
-            glm::mat4 model1(1.0f);
-            model1 = glm::translate(model1, cubePositions[i]);
-            float angle = 20.0f * i;
-            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
-            normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
+        //     glm::mat4 model1(1.0f);
+        //     model1 = glm::translate(model1, cubePositions[i]);
+        //     float angle = 20.0f * i;
+        //     model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
+        //     normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
 
-            setMat4(textureShader, "model", model1);
-            setMat3(textureShader, "normalModel", normalModel);
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-        }
+        //     setMat4(textureShader, "model", model1);
+        //     setMat3(textureShader, "normalModel", normalModel);
+        //     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+        // }
 
         // Model
         glUseProgram(modelShader);
 
         setMat4(modelShader, "projection", projection);
         setMat4(modelShader, "view", view);
-        setMat4(modelShader, "model", cup_model);
-
-        glm::mat4 cup_normal = glm::transpose(glm::inverse(glm::mat3(cup_model)));
-
-        setMat3(modelShader, "normalModel", cup_normal);
         setVec3(modelShader, "viewPos", cam.getPos());
 
-        // // Material
-        // setVec3(modelShader, "m1.ambient", materials.wood.ambient);
-        // setVec3(modelShader, "m1.diffuse", materials.wood.diffuse);
-        // setVec3(modelShader, "m1.specular", materials.wood.specular);
-        // setFloat(modelShader, "m1.shininess", materials.glass.shininess);
+        // Material
+        setVec3(modelShader, "m1.ambient", materials.wood.ambient);
+        setVec3(modelShader, "m1.diffuse", materials.wood.diffuse);
+        setVec3(modelShader, "m1.specular", materials.wood.specular);
+        setFloat(modelShader, "m1.shininess", materials.glass.shininess);
 
-        // glUniform1i(
-        //     glGetUniformLocation(modelShader, "useFlashLight"),
-        //     useFlashLight
-        // );
+        glUniform1i(
+            glGetUniformLocation(modelShader, "useFlashLight"),
+            useFlashLight
+        );
 
-        // setDirectionalLight(modelShader, "d1", lights.sunlight);
-        // setSpotLight(modelShader, "s1", lights.flashlight);
-        // setPointLight(modelShader, "p1", lights.cubelight);
+        setDirectionalLight(modelShader, "d1", lights.sunlight);
+        setSpotLight(modelShader, "s1", lights.flashlight);
+        setPointLight(modelShader, "p1", lights.cubelight);
 
-        // glUniform1i(
-        //     glGetUniformLocation(textureShader, "texture1"),
-        //     0
-        // );
+        setMat4(modelShader, "model", model);
+        glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(model)));
+        setMat3(modelShader, "normalModel", normal1);
 
-        cup_mesh.draw(modelShader);
+        glUniform1i(
+            glGetUniformLocation(modelShader, "texture1"),
+            0
+        );
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
+
+        shapes.cube.textureID = wood_texture.getID();
+        shapes.cube.draw(modelShader);
 
         // Lines
         glUseProgram(lineShader);

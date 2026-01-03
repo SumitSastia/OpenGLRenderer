@@ -6,7 +6,7 @@
 
 //-------------------------------------------------------------------------------------//
 
-mesh::mesh(const char* path){
+mesh::mesh(const char* path): total_vertices(0){
 
     readFile(path);
     setupMesh();
@@ -97,6 +97,12 @@ void mesh::setupMesh(){
     size_t size_v = sizeof(vertex) * vertices.size();
     size_t size_i = sizeof(unsigned int) * indices.size();
 
+    total_vertices = indices.size();
+
+    if(!size_v || !size_i){
+        std::cerr << "BUG :: Vertices & Indices not loaded!" << std::endl;
+    }
+
     glGenBuffers(1,&VBO);
     glGenBuffers(1,&EBO);
     glGenVertexArrays(1,&VAO);
@@ -118,7 +124,7 @@ void mesh::setupMesh(){
     glEnableVertexAttribArray(1);
 
     // Texture
-    glVertexAttribPointer(1, 2, GL_FLOAT,GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, textureCords));
+    glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, textureCords));
     glEnableVertexAttribArray(2);
 }
 
@@ -155,10 +161,45 @@ void mesh::loadIndices(const unsigned int* indices, const size_t &size){
     }
 }
 
-void mesh::draw(const unsigned int &shaderProgram){
+void mesh::bindVertices(const float* vertices, const size_t &size_v, const unsigned int* indices, const size_t &size_i){
+
+    if(!size_v || !size_i){
+        std::cerr << "BUG :: Empty Mesh!" << std::endl;
+    }
+
+    glGenBuffers(1,&VBO);
+    glGenBuffers(1,&EBO);
+    glGenVertexArrays(1,&VAO);
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    glBufferData(GL_ARRAY_BUFFER, size_v, vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices, GL_STATIC_DRAW);
+
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    // Normal
+    glVertexAttribPointer(1, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // Texture
+    glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+}
+
+void mesh::draw(const unsigned int &shaderProgram) const {
+
+    glBindVertexArray(VAO);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    glDrawElements(GL_TRIANGLES, total_vertices, GL_UNSIGNED_INT, (void*)0);
     glBindVertexArray(0);
 
 }

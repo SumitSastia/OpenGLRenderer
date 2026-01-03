@@ -17,6 +17,7 @@ add_executable(${TARGET_NAME}
     src/shader.cpp
     src/camera.cpp
     src/lights.cpp
+    src/shapes.cpp
     src/model_loader.cpp
 )
 

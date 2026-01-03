@@ -10,7 +10,7 @@ lights::lights(){
     cubelight.linear = 0.001f;
     cubelight.quadratic = 0.016f;
 
-    sunlight.color = glm::vec3(0.99f,0.82f,0.46f);
+    sunlight.color = glm::vec3(0.99f,0.82f,0.66f);
     sunlight.direction = glm::vec3(1.0f,1.0f,1.0f);
 
     flashlight.position = glm::vec3(0.0f,0.0f,3.0f);
