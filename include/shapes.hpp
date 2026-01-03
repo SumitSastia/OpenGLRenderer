@@ -10,6 +10,7 @@ struct shapes{
     mesh sphere;
 
     shapes();
+    static shapes& instance();
 };
 
 #endif

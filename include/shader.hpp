@@ -69,8 +69,6 @@ class texture{
     unsigned char* pixelData;
     
 public:
-    
-    const char* filePath;
 
     texture();
     ~texture();
@@ -92,6 +90,8 @@ struct materials{
 
     material rubber, wood, plastic, concrete, glass, chrome;
     materials();
+
+    static materials& instance();
 };
 
 void setInt(const unsigned int &shaderProgram, const char* target, const int &value);
@@ -103,5 +103,7 @@ void setVec3(const unsigned int &shaderProgram, const char* target, const glm::v
 void setMat3(const unsigned int &shaderProgram, const char* target, const glm::mat3 &matrix);
 
 void setMat4(const unsigned int &shaderProgram, const char* target, const glm::mat4 &matrix);
+
+void setMaterial(const unsigned int& shaderProgram, const std::string &target);
 
 #endif

@@ -1,5 +1,10 @@
 #include <shapes.hpp>
 
+shapes& shapes::instance() {
+    static shapes instance;
+    return instance;
+}
+
 shapes::shapes(){
 
     float vertices[] = {
@@ -67,9 +72,6 @@ shapes::shapes(){
         20,21,22,
         21,22,23
     };
-
-    // cube.loadVertices(vertices, 192);
-    // cube.loadIndices(indices, 36);
 
     cube.bindVertices(vertices, sizeof(vertices), indices, sizeof(indices));
     cube.total_vertices = 36;

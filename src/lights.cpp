@@ -1,6 +1,16 @@
 #include <lights.hpp>
 #include <shader.hpp>
 
+lights& lights::instance(){
+    static lights instance;
+    return instance;
+}
+
+colors& colors::instance(){
+    static colors instance;
+    return instance;
+}
+
 lights::lights(){
 
     cubelight.position = glm::vec3(3.0f, 1.5f,-3.0f);

@@ -43,6 +43,7 @@
 # Archive files
 *.zip
 
+.vs
 .vscode
 build
 assets/models

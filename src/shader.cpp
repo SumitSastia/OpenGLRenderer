@@ -7,6 +7,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <lights.hpp>
+
 //-------------------------------------------------------------------------------------//
 
 shader::shader(const char* vertPath, const char* fragPath){
@@ -231,6 +233,11 @@ void texture::load(const char* path){
 
 //-------------------------------------------------------------------------------------//
 
+materials& materials::instance(){
+    static materials instance;
+    return instance;
+}
+
 materials::materials(){
 
     rubber.ambient = glm::vec3(0.02f);
@@ -307,4 +314,12 @@ void setMat4(const unsigned int &shaderProgram, const char* target, const glm::m
         GL_FALSE,
         glm::value_ptr(matrix)
     );
+}
+
+void setMaterial(const unsigned int& shaderProgram, const std::string &target){
+
+    setVec3(shaderProgram, (target + ".ambient").c_str(), materials::instance().wood.ambient);
+    setVec3(shaderProgram, (target + ".diffuse").c_str(), materials::instance().wood.diffuse);
+    setVec3(shaderProgram, (target + ".specular").c_str(), materials::instance().wood.specular);
+    setFloat(shaderProgram, (target + ".shininess").c_str(), materials::instance().glass.shininess);
 }

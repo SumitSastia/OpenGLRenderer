@@ -10,8 +10,8 @@
 #include <shapes.hpp>
 #include <model_loader.hpp>
 
-#define WIN_W 1120
-#define WIN_H 700
+constexpr auto WIN_W = 1120;
+constexpr auto WIN_H = 700;
 
 using namespace std;
 
@@ -94,7 +94,7 @@ int main(){
     int win_xpos = videoMode->width/2 - WIN_W/2;
     int win_ypos = videoMode->height/2 - WIN_H/2;
     
-    GLFWimage* windowIcon = load_image("window_icon.png");
+    GLFWimage* windowIcon = load_image("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\icons\\window_icon.png");
     
     glfwSetWindowPos(window,win_xpos,win_ypos);
     glfwSetWindowIcon(window,1,windowIcon);
@@ -240,8 +240,8 @@ int main(){
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.frag"
     );
     
-    buffer b1;
-    buffer b2; // Light-Source Cube
+    buffer b1{};
+    buffer b2{}; // Light-Source Cube
 
     b1.init2(vertices, sizeof(vertices), indices, sizeof(indices));
     b2.init(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
@@ -267,11 +267,6 @@ int main(){
     wood_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wood_box.png");
     metal_frame.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\metal_frame.png");
     emission.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\test.png");
-
-    materials materials;
-    lights lights;
-    colors colors;
-    shapes shapes;
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -293,7 +288,7 @@ int main(){
 
     // LIGHTING -----------------------------------------------------------------------//
 
-    glm::vec3 lightColor(colors.yellow);
+    glm::vec3 lightColor(colors::instance().yellow);
 
     glm::vec3 lightPos(3.0f, 1.5f,-3.0f);
     glm::mat4 lightModel(1.0f);
@@ -396,54 +391,12 @@ int main(){
         glBindVertexArray(VAO2);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
 
-        // Cube - Object1
-        // glUseProgram(textureShader);
+        // Lights
+        lights::instance().flashlight.position = cam.getPos();
+        lights::instance().flashlight.direction = cam.getTarget();
 
-        // setMat4(textureShader, "projection", projection);
-        // setMat4(textureShader, "view", view);
-        // setMat4(textureShader, "model", model);
-
-        // setMat3(textureShader, "normalModel", normalModel);
-        // setVec3(textureShader, "viewPos", cam.getPos());
-
-        // // Material
-        // setVec3(textureShader, "m1.ambient", materials.wood.ambient);
-        // setVec3(textureShader, "m1.diffuse", materials.wood.diffuse);
-        // setVec3(textureShader, "m1.specular", materials.wood.specular);
-        // setFloat(textureShader, "m1.shininess", materials.glass.shininess);
-
-        // // Lights
-        lights.flashlight.position = cam.getPos();
-        lights.flashlight.direction = cam.getTarget();
-
-        lights.cubelight.position = lightPos;
-        lights.cubelight.color = lightColor;
-
-        // glUniform1i(
-        //     glGetUniformLocation(textureShader, "useFlashLight"),
-        //     useFlashLight
-        // );
-
-        // setDirectionalLight(textureShader, "d1", lights.sunlight);
-        // setSpotLight(textureShader, "s1", lights.flashlight);
-        // setPointLight(textureShader, "p1", lights.cubelight);
-
-        // glUniform1i(
-        //     glGetUniformLocation(textureShader, "texture1"),
-        //     0
-        // );
-        // glUniform1i(
-        //     glGetUniformLocation(textureShader, "texture2"),
-        //     1
-        // );
-
-        // glBindVertexArray(VAO);
-
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
-
-        // glActiveTexture(GL_TEXTURE1);
-        // glBindTexture(GL_TEXTURE_2D, metal_frame.getID());
+        lights::instance().cubelight.position = lightPos;
+        lights::instance().cubelight.color = lightColor;
 
         // for(unsigned int i=0; i<10; i++){
 
@@ -466,19 +419,16 @@ int main(){
         setVec3(modelShader, "viewPos", cam.getPos());
 
         // Material
-        setVec3(modelShader, "m1.ambient", materials.wood.ambient);
-        setVec3(modelShader, "m1.diffuse", materials.wood.diffuse);
-        setVec3(modelShader, "m1.specular", materials.wood.specular);
-        setFloat(modelShader, "m1.shininess", materials.glass.shininess);
+        setMaterial(modelShader, "m1");
 
         glUniform1i(
             glGetUniformLocation(modelShader, "useFlashLight"),
             useFlashLight
         );
 
-        setDirectionalLight(modelShader, "d1", lights.sunlight);
-        setSpotLight(modelShader, "s1", lights.flashlight);
-        setPointLight(modelShader, "p1", lights.cubelight);
+        setDirectionalLight(modelShader, "d1", lights::instance().sunlight);
+        setSpotLight(modelShader, "s1", lights::instance().flashlight);
+        setPointLight(modelShader, "p1", lights::instance().cubelight);
 
         setMat4(modelShader, "model", model);
         glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(model)));
@@ -488,11 +438,9 @@ int main(){
             glGetUniformLocation(modelShader, "texture1"),
             0
         );
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, wood_texture.getID());
 
-        shapes.cube.textureID = wood_texture.getID();
-        shapes.cube.draw(modelShader);
+        shapes::instance().cube.textureID = wood_texture.getID();
+        shapes::instance().cube.draw(modelShader);
 
         // Lines
         glUseProgram(lineShader);

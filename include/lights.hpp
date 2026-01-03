@@ -47,6 +47,7 @@ struct lights{
     spotLight flashlight;
 
     lights();
+    static lights& instance();
 };
 
 void setPointLight(const unsigned int &shaderProgram, const std::string &target, const pointLight &pl);
@@ -68,6 +69,7 @@ struct colors{
     glm::vec3 gray;
 
     colors();
+    static colors& instance();
 };
 
 #endif
