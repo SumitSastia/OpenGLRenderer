@@ -73,11 +73,21 @@ void mesh::readFile(const char* path){
                 std::getline(vertexStream, texStr, '/');
                 std::getline(vertexStream, nrlStr, '/');
 
-                const unsigned int posIndex = std::stoi(posStr) - 1;
-                const unsigned int nrlIndex = std::stoi(nrlStr) - 1;
-                const unsigned int texIndex = std::stoi(texStr) - 1;
+                const int posIndex = std::stoi(posStr) - 1;
+                const int nrlIndex = nrlStr.empty()? -1 : std::stoi(nrlStr) - 1;
+                const int texIndex = texStr.empty()? -1 : std::stoi(texStr) - 1;
 
-                vertex temp_v(positions[posIndex], normals[nrlIndex], texCords[texIndex]);
+                glm::vec3 nrl;
+                glm::vec2 tex;
+
+                if(nrlIndex == -1){
+                    nrl = (nrlIndex != -1)? normals[nrlIndex] : glm::vec3(0.0f);
+                }
+                if(texIndex == -1){
+                    tex = (texIndex != -1)? texCords[nrlIndex] : glm::vec2(0.0f);
+                }
+
+                vertex temp_v(positions[posIndex], nrl, tex);
                 vertices.push_back(temp_v);
             }
 
@@ -126,39 +136,6 @@ void mesh::setupMesh(){
     // Texture
     glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, textureCords));
     glEnableVertexAttribArray(2);
-}
-
-void mesh::loadVertices(const float* vertices, const size_t &size){
-
-    if(size % 8){
-        std::cerr << "ERROR::Vertex-Array size mismatched!" << std::endl;
-        return;
-    }
-
-    unsigned int itr = 0;
-
-    while(itr < size){
-
-        vertex tempVertex(
-            glm::vec3(vertices[itr++], vertices[itr++], vertices[itr++]),
-            glm::vec3(vertices[itr++], vertices[itr++], vertices[itr++]),
-            glm::vec2(vertices[itr++], vertices[itr++])
-        );
-
-        this->vertices.push_back(tempVertex);
-    }
-}
-
-void mesh::loadIndices(const unsigned int* indices, const size_t &size){
-
-    if(size % 3){
-        std::cerr << "ERROR::Vertex-Array size mismatched!" << std::endl;
-        return;
-    }
-
-    for(unsigned int i=0; i<size; i++){
-        this->indices.push_back(indices[i]);
-    }
 }
 
 void mesh::bindVertices(const float* vertices, const size_t &size_v, const unsigned int* indices, const size_t &size_i){

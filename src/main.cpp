@@ -324,12 +324,12 @@ int main(){
 
     // MODELS -------------------------------------------------------------------------//
     
-    mesh cup_mesh("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\models\\cup\\Cup.obj");
+    mesh cup_mesh("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\models\\juice-bottle.obj");
 
     glm::mat4 cup_model(1.0f);
 
-    cup_model = glm::translate(cup_model, glm::vec3(0.0f,3.0f,0.0f));
-    cup_model = glm::scale(cup_model, glm::vec3(0.5f));
+    cup_model = glm::translate(cup_model, glm::vec3(0.0f,0.0f,0.0f));
+    cup_model = glm::scale(cup_model, glm::vec3(3.0f));
 
     glClearColor(0.065f,0.0f,0.1f,1.0f);
     // glClearColor(
@@ -430,8 +430,8 @@ int main(){
         setSpotLight(modelShader, "s1", lights::instance().flashlight);
         setPointLight(modelShader, "p1", lights::instance().cubelight);
 
-        setMat4(modelShader, "model", model);
-        glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(model)));
+        setMat4(modelShader, "model", cup_model);
+        glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
         setMat3(modelShader, "normalModel", normal1);
 
         glUniform1i(
@@ -439,8 +439,10 @@ int main(){
             0
         );
 
-        shapes::instance().cube.textureID = wood_texture.getID();
-        shapes::instance().cube.draw(modelShader);
+        // shapes::instance().cube.textureID = wood_texture.getID();
+        // shapes::instance().cube.draw(modelShader);
+
+        cup_mesh.draw(modelShader);
 
         // Lines
         glUseProgram(lineShader);

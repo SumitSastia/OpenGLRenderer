@@ -47,11 +47,6 @@ public:
         vertices(vertices),
         indices(indices) {}
 
-    // void loadTexture();
-
-    void loadVertices(const float* vertices, const size_t &size);
-    void loadIndices(const unsigned int* indices, const size_t &size);
-
     void bindVertices(const float* vertices, const size_t &size_v, const unsigned int* indices, const size_t &size_i);
 
     void draw(const unsigned int &shaderProgram) const;
