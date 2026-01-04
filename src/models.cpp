@@ -11,7 +11,10 @@ void meshTexture::loadTexture(const char* path, const std::string& directory) {
     //cout << "loadTExture" << endl;
 
     int width, height;
-    std::string fullPath = directory + "/" + path;
+
+    checkPath = path;
+    const std::string fullPath = directory + "/" + path;
+
     unsigned char* pixelData = stbi_load(fullPath.c_str(), &width, &height, nullptr, 4);
 
     if (!pixelData) {
@@ -206,6 +209,7 @@ mesh model3D::processMesh(aiMesh* _mesh, const aiScene* scene) {
 std::vector<meshTexture> model3D::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& type_str) const {
 
     //cout << "loadmaterialtexture" << endl;
+
     std::vector <meshTexture> textures;
 
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
@@ -213,10 +217,23 @@ std::vector<meshTexture> model3D::loadMaterialTextures(aiMaterial* mat, aiTextur
         aiString str;
         mat->GetTexture(type, i, &str);
 
-        meshTexture tex;
-        tex.loadTexture(str.C_Str(), directory);
-        tex.type = type_str;
-        textures.push_back(tex);
+        bool skip = false;
+        for (const auto& tex : loadedTextures) {
+
+            if (std::strcmp(tex.checkPath.data(), str.C_Str()) == 0) {
+
+                textures.push_back(tex);
+                skip = true; break;
+            }
+        }
+
+        if (!skip) {
+
+            meshTexture tex;
+            tex.loadTexture(str.C_Str(), directory);
+            tex.type = type_str;
+            textures.push_back(tex);
+        }
     }
     return textures;
 }

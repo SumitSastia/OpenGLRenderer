@@ -31,6 +31,8 @@ struct meshTexture {
 
     unsigned int id;
     std::string type;
+    std::string checkPath;
+
     void loadTexture(const char* path, const std::string& directory);
 };
 
@@ -65,6 +67,8 @@ class model3D {
 
     std::vector <mesh> meshes;
     std::string directory;
+
+    std::vector <meshTexture> loadedTextures;
 
     void loadModel(const std::string& path);
 

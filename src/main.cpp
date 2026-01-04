@@ -428,9 +428,6 @@ int main(){
         glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
         setMat3(modelShader, "normalModel", normal1);
 
-        glUniform1i(glGetUniformLocation(modelShader, "texture_diffuse1"), 0);
-        glUniform1i(glGetUniformLocation(modelShader, "texture_specular1"), 1);
-
         cup.draw(modelShader);
 
         // Lines
