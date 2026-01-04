@@ -1,17 +1,17 @@
 #include <lights.hpp>
 #include <shader.hpp>
 
-lights& lights::instance(){
+lights& lights::instance() {
     static lights instance;
     return instance;
 }
 
-colors& colors::instance(){
+colors& colors::instance() {
     static colors instance;
     return instance;
 }
 
-lights::lights(){
+lights::lights() {
 
     cubelight.position = glm::vec3(3.0f, 1.5f,-3.0f);
     cubelight.color = glm::vec3(1.0f,1.0f,1.0f);
@@ -35,7 +35,7 @@ lights::lights(){
     flashlight.quadratic = 0.016f;
 }
 
-void setPointLight(const unsigned int &shaderProgram, const std::string &target, const pointLight &pl){
+void setPointLight(const unsigned int &shaderProgram, const std::string &target, const pointLight &pl) {
 
     setVec3(shaderProgram, (target + ".position").c_str(), pl.position);
     setVec3(shaderProgram, (target + ".color").c_str(), pl.color);
@@ -45,7 +45,7 @@ void setPointLight(const unsigned int &shaderProgram, const std::string &target,
     setFloat(shaderProgram, (target + ".quadratic").c_str(), pl.quadratic);
 }
 
-void setSpotLight(const unsigned int &shaderProgram, const std::string &target, const spotLight &sl){
+void setSpotLight(const unsigned int &shaderProgram, const std::string &target, const spotLight &sl) {
 
     setVec3(shaderProgram, (target + ".position").c_str(), sl.position);
     setVec3(shaderProgram, (target + ".direction").c_str(), sl.direction);
@@ -59,13 +59,13 @@ void setSpotLight(const unsigned int &shaderProgram, const std::string &target, 
     setFloat(shaderProgram, (target + ".quadratic").c_str(), sl.quadratic);
 }
 
-void setDirectionalLight(const unsigned int &shaderProgram, const std::string &target, const directionalLight &dl){
+void setDirectionalLight(const unsigned int &shaderProgram, const std::string &target, const directionalLight &dl) {
 
     setVec3(shaderProgram, (target + ".direction").c_str(), dl.direction);
     setVec3(shaderProgram, (target + ".color").c_str(), dl.color);
 }
 
-colors::colors(){
+colors::colors() {
 
     red = glm::vec3(1.0f,0.0f,0.0f);
     orange = glm::vec3(0.945f,0.352f,0.133f);
@@ -79,3 +79,25 @@ colors::colors(){
 
 }
 
+//-------------------------------------------------------------------------------------//
+
+lightSource::lightSource() {
+
+    src = lights::instance().cubelight;
+    srcShape = shapes::instance().cube;
+}
+
+void lightSource::setLightColor(const glm::vec3& color) {
+    src.color = color;
+}
+
+void lightSource::setPosition(const glm::vec3& position) {
+    src.position = position;
+}
+
+void lightSource::draw(const unsigned int& shader) const {
+
+    glBindVertexArray(srcShape.VAO);
+    glDrawElements(GL_TRIANGLES, srcShape.indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+    glBindVertexArray(0);
+}

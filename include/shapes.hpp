@@ -1,13 +1,30 @@
 #ifndef SHAPES_HPP
 #define SHAPES_HPP
 
-#include <model_loader.hpp>
+#include <shader.hpp>
+#include <models.hpp>
 
-struct shapes{
+struct shape {
 
-    mesh cube;
-    mesh cylinder;
-    mesh sphere;
+    unsigned int VBO, VAO, EBO;
+    unsigned int indicesCount;
+
+    texture shapeTexture;
+
+    void bindVertices(
+        const float* vertices, const size_t& size_v,
+        const unsigned int* indices, const size_t& size_i
+    );
+
+    void loadTexture(const char* path);
+    void draw(const unsigned int& shader) const;
+};
+
+struct shapes {
+
+    shape cube;
+    shape cylinder;
+    shape sphere;
 
     shapes();
     static shapes& instance();

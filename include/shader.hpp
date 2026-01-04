@@ -8,6 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <string>
+
 class shader {
 
     unsigned int vertexShader;
@@ -31,7 +33,7 @@ class buffer {
 
 public:
 
-    void destroy();
+    void destroy() const;
     void init(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
     void init2(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
 
@@ -69,9 +71,6 @@ class texture {
     unsigned char* pixelData;
     
 public:
-
-    texture();
-    ~texture();
 
     void load(const char* path);
 

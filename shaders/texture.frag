@@ -35,15 +35,12 @@ struct spotLight{
 };
 
 in vec3 vPos;
-in vec2 vTextureCords;
 in vec3 vNormal;
+in vec2 vTextureCords;
 
 out vec4 FragColor;
 
 uniform float alphaVal;
-
-uniform vec3 lightColor;
-uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 uniform sampler2D texture1;
@@ -132,7 +129,7 @@ void main(){
     vec3 normal = normalize(vNormal);
 
     vec3 t1 = vec3(texture(texture1, vTextureCords));
-    vec3 t2 = vec3(texture(texture2, vTextureCords));
+    vec3 t2 = vec3(texture(texture1, vTextureCords));
 
     // Ambient
     vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);

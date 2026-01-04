@@ -10,6 +10,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <shapes.hpp>
+
 struct directionalLight{
 
     glm::vec3 direction;
@@ -56,7 +58,7 @@ void setSpotLight(const unsigned int &shaderProgram, const std::string &target, 
 
 void setDirectionalLight(const unsigned int &shaderProgram, const std::string &target, const directionalLight &dl);
 
-struct colors{
+struct colors {
 
     glm::vec3 red;
     glm::vec3 orange;
@@ -70,6 +72,23 @@ struct colors{
 
     colors();
     static colors& instance();
+};
+
+class lightSource {
+
+    pointLight src;
+    shape srcShape;
+
+public:
+
+    lightSource();
+
+    void setLightColor(const glm::vec3& color);
+    glm::vec3 getLightColor() const { return src.color; }
+
+    void setPosition(const glm::vec3& posiition);
+
+    void draw(const unsigned int& shader) const;
 };
 
 #endif

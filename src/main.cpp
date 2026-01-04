@@ -8,6 +8,7 @@
 #include <camera.hpp>
 #include <lights.hpp>
 #include <models.hpp>
+#include <shapes.hpp>
 
 constexpr auto WIN_W = 1120;
 constexpr auto WIN_H = 700;
@@ -273,7 +274,7 @@ int main(){
     glfwSetScrollCallback(window, scroll_callback);
 
     cam.set_aspect(frameWidth, frameHeight);
-    cam.set_position(glm::vec3(0.0f,0.0f,10.0f));
+    cam.set_position(glm::vec3(0.0f,0.0f,3.0f));
     
     // GL MATHEMATICS -----------------------------------------------------------------//
     
@@ -295,6 +296,11 @@ int main(){
     
     lightModel = glm::translate(lightModel, lightPos);
     lightModel = glm::scale(lightModel, glm::vec3(0.5f));
+
+    lightSource myLight{};
+    
+    myLight.setLightColor(lightColor);
+    myLight.setPosition(lightPos);
 
     // LINES --------------------------------------------------------------------------//
 
@@ -324,7 +330,7 @@ int main(){
 
     // MODELS -------------------------------------------------------------------------//
 
-    model3D cup("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/backpack/survival_guitar_backpack.obj");
+    //model3D cup("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/backpack/survival_guitar_backpack.obj");
 
     glm::mat4 cup_model(1.0f);
 
@@ -380,10 +386,9 @@ int main(){
         glm::mat4 finalMatrix = projection * view * lightModel;
         
         setMat4(lightShader, "finalMatrix", finalMatrix);
-        setVec3(lightShader, "lightColor", lightColor);
+        setVec3(lightShader, "lightColor", myLight.getLightColor());
 
-        glBindVertexArray(VAO2);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+        myLight.draw(lightShader);
 
         // Lights
         lights::instance().flashlight.position = cam.getPos();
@@ -392,43 +397,65 @@ int main(){
         lights::instance().cubelight.position = lightPos;
         lights::instance().cubelight.color = lightColor;
 
-        // for(unsigned int i=0; i<10; i++){
+        /*for(unsigned int i=0; i<10; i++){
 
-        //     glm::mat4 model1(1.0f);
-        //     model1 = glm::translate(model1, cubePositions[i]);
-        //     float angle = 20.0f * i;
-        //     model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
-        //     normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
+            glm::mat4 model1(1.0f);
+            model1 = glm::translate(model1, cubePositions[i]);
+            float angle = 20.0f * i;
+            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
+            normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
 
-        //     setMat4(textureShader, "model", model1);
-        //     setMat3(textureShader, "normalModel", normalModel);
-        //     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-        // }
+            setMat4(textureShader, "model", model1);
+            setMat3(textureShader, "normalModel", normalModel);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+        }*/
 
-        // Model
-        glUseProgram(modelShader);
+        // Shapes
+        glUseProgram(textureShader);
 
-        setMat4(modelShader, "projection", projection);
-        setMat4(modelShader, "view", view);
-        setVec3(modelShader, "viewPos", cam.getPos());
+        setMat4(textureShader, "projection", projection);
+        setMat4(textureShader, "view", view);
+        setVec3(textureShader, "viewPos", cam.getPos());
 
         // Material
-        setMaterial(modelShader, "m1");
+        setMaterial(textureShader, "m1");
 
-        glUniform1i(
-            glGetUniformLocation(modelShader, "useFlashLight"),
-            useFlashLight
-        );
+        glUniform1i(glGetUniformLocation(textureShader, "useFlashLight"), useFlashLight);
 
-        setDirectionalLight(modelShader, "d1", lights::instance().sunlight);
-        setSpotLight(modelShader, "s1", lights::instance().flashlight);
-        setPointLight(modelShader, "p1", lights::instance().cubelight);
+        setDirectionalLight(textureShader, "d1", lights::instance().sunlight);
+        setSpotLight(textureShader, "s1", lights::instance().flashlight);
+        setPointLight(textureShader, "p1", lights::instance().cubelight);
 
-        setMat4(modelShader, "model", cup_model);
-        glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
-        setMat3(modelShader, "normalModel", normal1);
+        setMat4(textureShader, "model", model);
+        glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(model)));
+        setMat3(textureShader, "normalModel", normal1);
 
-        cup.draw(modelShader);
+        shapes::instance().cube.draw(textureShader);
+
+        // Model
+        //glUseProgram(modelShader);
+
+        //setMat4(modelShader, "projection", projection);
+        //setMat4(modelShader, "view", view);
+        //setVec3(modelShader, "viewPos", cam.getPos());
+
+        //// Material
+        //setMaterial(modelShader, "m1");
+
+        //glUniform1i(
+        //    glGetUniformLocation(modelShader, "useFlashLight"),
+        //    useFlashLight
+        //);
+
+        //setDirectionalLight(modelShader, "d1", lights::instance().sunlight);
+        //setSpotLight(modelShader, "s1", lights::instance().flashlight);
+        //setPointLight(modelShader, "p1", lights::instance().cubelight);
+
+        //setMat4(modelShader, "model", cup_model);
+        //glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
+        //setMat3(modelShader, "normalModel", normal1);
+
+        //cup.draw(modelShader);
 
         // Lines
         glUseProgram(lineShader);

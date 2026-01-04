@@ -2,7 +2,6 @@
 #include <shader.hpp>
 #include <fstream>
 #include <sstream>
-#include <string>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -141,7 +140,7 @@ void buffer::init2(const float* vertices, size_t size_v, const unsigned int* ind
     glEnableVertexAttribArray(2);
 }
 
-void buffer::destroy(){
+void buffer::destroy() const {
 
     glDeleteBuffers(1,&VBO);
     glDeleteBuffers(1,&EBO);
@@ -193,19 +192,6 @@ void line::updateLines(const glm::vec3 startPos, const glm::vec3 endPos){
 
 //-------------------------------------------------------------------------------------//
 
-texture::texture(){
-
-    textureID = 0;
-    width = 0;
-    height = 0;
-    nrChannels = 0;
-    pixelData = nullptr;
-}
-
-texture::~texture(){
-    stbi_image_free(pixelData);
-}
-
 void texture::load(const char* path){
 
     pixelData = stbi_load(path, &width, &height, nullptr, 4);
@@ -215,11 +201,11 @@ void texture::load(const char* path){
         return;
     }
 
-    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
     glGenTextures(1,&textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
+
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -229,6 +215,9 @@ void texture::load(const char* path){
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
     glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(pixelData);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 //-------------------------------------------------------------------------------------//

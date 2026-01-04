@@ -1,5 +1,56 @@
 #include <shapes.hpp>
 
+void shape::bindVertices(
+    const float* vertices, const size_t& size_v,
+    const unsigned int* indices, const size_t& size_i
+) {
+    indicesCount = size_i / sizeof(float);
+
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    glGenVertexArrays(1, &VAO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, size_v, vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices, GL_STATIC_DRAW);
+
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // TextureCords
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+}
+
+void shape::loadTexture(const char* path) {
+    shapeTexture.load(path);
+}
+
+void shape::draw(const unsigned int& shader) const {
+
+    setInt(shader, "texture1", 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, shapeTexture.getID());
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+//-------------------------------------------------------------------------------------//
+
 shapes& shapes::instance() {
     static shapes instance;
     return instance;
@@ -74,5 +125,5 @@ shapes::shapes(){
     };
 
     cube.bindVertices(vertices, sizeof(vertices), indices, sizeof(indices));
-    cube.total_vertices = 36;
+    cube.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wood_box.png");
 }

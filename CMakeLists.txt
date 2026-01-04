@@ -16,6 +16,7 @@ add_executable(${TARGET_NAME}
     src/camera.cpp
     src/lights.cpp
     src/models.cpp
+    src/shapes.cpp
 )
 
 # including headers & linkers
