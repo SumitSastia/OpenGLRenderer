@@ -8,7 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class shader{
+class shader {
 
     unsigned int vertexShader;
     unsigned int fragmentShader;
@@ -23,7 +23,7 @@ public:
     unsigned int get_program() const { return shaderProgram; }
 };
 
-class buffer{
+class buffer {
 
     unsigned int VBO;
     unsigned int VAO;
@@ -40,7 +40,7 @@ public:
     unsigned int get_EBO() const { return EBO; }
 };
 
-class line{
+class line {
 
     unsigned int VBO;
     unsigned int VAO;
@@ -58,7 +58,7 @@ public:
     unsigned int get_VAO() const { return VAO; }
 };
 
-class texture{
+class texture {
 
     int width;
     int height;
@@ -79,14 +79,14 @@ public:
     std::string getType() const { return type; }
 };
 
-struct material{
+struct material {
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
     float shininess;
 };
 
-struct materials{
+struct materials {
 
     material rubber, wood, plastic, concrete, glass, chrome;
     materials();

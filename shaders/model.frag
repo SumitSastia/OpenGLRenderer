@@ -41,10 +41,8 @@ in vec2 vTexCords;
 out vec4 FragColor;
 uniform vec3 viewPos;
 
-uniform sampler2D texture1;
-
-// uniform sampler2D texture_diffuse1;
-// uniform sampler2D texture_specular1;
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
 
 uniform material m1;
 
@@ -126,8 +124,8 @@ void main(){
 
     vec3 normal = normalize(vNormal);
 
-    vec3 t1 = vec3(texture(texture1, vTexCords));
-    vec3 t2 = vec3(texture(texture1, vTexCords));
+    vec3 t1 = vec3(texture(texture_diffuse1, vTexCords));
+    vec3 t2 = vec3(texture(texture_diffuse1, vTexCords));
 
     // Ambient
     vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);

@@ -263,9 +263,9 @@ int main(){
     texture metal_frame;
     texture emission;
 
-    wood_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wood_box.png");
-    metal_frame.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\metal_frame.png");
-    emission.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\test.png");
+    //wood_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wood_box.png");
+    //metal_frame.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\metal_frame.png");
+    //emission.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\test.png");
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -273,6 +273,7 @@ int main(){
     glfwSetScrollCallback(window, scroll_callback);
 
     cam.set_aspect(frameWidth, frameHeight);
+    cam.set_position(glm::vec3(0.0f,0.0f,10.0f));
     
     // GL MATHEMATICS -----------------------------------------------------------------//
     
@@ -322,21 +323,15 @@ int main(){
     };
 
     // MODELS -------------------------------------------------------------------------//
-    
-    //mesh cup_mesh("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\models\\juice-bottle.obj");
+
+    model3D cup("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/backpack/survival_guitar_backpack.obj");
 
     glm::mat4 cup_model(1.0f);
 
     cup_model = glm::translate(cup_model, glm::vec3(0.0f,0.0f,0.0f));
-    cup_model = glm::scale(cup_model, glm::vec3(3.0f));
+    cup_model = glm::scale(cup_model, glm::vec3(0.01f));
 
     glClearColor(0.065f,0.0f,0.1f,1.0f);
-    // glClearColor(
-    //     lights.sunlight.color.x,
-    //     lights.sunlight.color.y,
-    //     lights.sunlight.color.z,
-    //     1.0f
-    // );
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -433,16 +428,10 @@ int main(){
         glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
         setMat3(modelShader, "normalModel", normal1);
 
-        glUniform1i(
-            glGetUniformLocation(modelShader, "texture1"),
-            0
-        );
+        glUniform1i(glGetUniformLocation(modelShader, "texture_diffuse1"), 0);
+        glUniform1i(glGetUniformLocation(modelShader, "texture_specular1"), 1);
 
-        // shapes::instance().cube.textureID = wood_texture.getID();
-        // shapes::instance().cube.draw(modelShader);
-
-        // cup_mesh.textureID = wood_texture.getID();
-        //cup_mesh.draw(modelShader);
+        cup.draw(modelShader);
 
         // Lines
         glUseProgram(lineShader);

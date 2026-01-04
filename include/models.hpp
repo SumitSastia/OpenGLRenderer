@@ -75,7 +75,7 @@ class model3D {
 
 public:
 
-    model3D(const char* path) {
+    model3D(const char* path) : directory("") {
         loadModel(path);
     }
 

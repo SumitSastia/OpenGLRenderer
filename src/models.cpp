@@ -4,21 +4,26 @@
 
 #include <stb_image.h>
 
+using namespace std;
+
 void meshTexture::loadTexture(const char* path, const std::string& directory) {
 
+    //cout << "loadTExture" << endl;
+
     int width, height;
-    unsigned char* pixelData = stbi_load((directory + path).c_str(), &width, &height, nullptr, 4);
+    std::string fullPath = directory + "/" + path;
+    unsigned char* pixelData = stbi_load(fullPath.c_str(), &width, &height, nullptr, 4);
 
     if (!pixelData) {
-        std::cerr << "Failed to Load Image!\n" << path << std::endl;
+        std::cerr << "Failed to Load Image!\n" << fullPath << std::endl;
         return;
     }
 
-    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
+
+    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -28,14 +33,21 @@ void meshTexture::loadTexture(const char* path, const std::string& directory) {
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
     glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(pixelData);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 //-------------------------------------------------------------------------------------//
 
 void mesh::setupMesh() {
 
+    //cout << "setupmesh" << endl;
+
     size_t size_v = sizeof(vertex) * vertices.size();
     size_t size_i = sizeof(unsigned int) * indices.size();
+
+    //cout << size_v << "," << size_i << endl;
 
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -44,21 +56,21 @@ void mesh::setupMesh() {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, size_v, &vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, size_v, vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices.data(), GL_STATIC_DRAW);
 
     // Position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Texture
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, normal));
+    // Normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, normal));
     glEnableVertexAttribArray(1);
 
-    // Normal
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, textureCords));
+    // Texture
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, textureCords));
     glEnableVertexAttribArray(2);
 }
 
@@ -90,11 +102,15 @@ void mesh::draw(const unsigned int& shader) const {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    //glActiveTexture(GL_TEXTURE0);
 }
 
 //-------------------------------------------------------------------------------------//
 
 void model3D::loadModel(const std::string& path) {
+
+    //cout << "loadmodel" << endl;
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -110,7 +126,9 @@ void model3D::loadModel(const std::string& path) {
 
 void model3D::processNode(aiNode* node, const aiScene* scene) {
 
-    for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
+    //cout << "processnode" << endl;
+
+    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 
         aiMesh* mesh_part = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(mesh_part, scene));
@@ -121,52 +139,59 @@ void model3D::processNode(aiNode* node, const aiScene* scene) {
     }
 }
 
-mesh model3D::processMesh(aiMesh* mesh, const aiScene* scene) {
+mesh model3D::processMesh(aiMesh* _mesh, const aiScene* scene) {
+
+    //cout << "processmesh" << endl;
     
     std::vector <vertex> vertices;
     std::vector <unsigned int> indices;
     std::vector <meshTexture> textures;
 
-    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+    for (unsigned int i = 0; i < _mesh->mNumVertices; i++) {
 
-        vertex temp_vertex;
+        vertex temp_vertex{};
 
         temp_vertex.position = glm::vec3(
-            mesh->mVertices[i].x,
-            mesh->mVertices[i].y,
-            mesh->mVertices[i].z
+            _mesh->mVertices[i].x,
+            _mesh->mVertices[i].y,
+            _mesh->mVertices[i].z
         );
 
-        temp_vertex.normal = glm::vec3(
-            mesh->mNormals[i].x,
-            mesh->mNormals[i].y,
-            mesh->mNormals[i].z
-        );
+        if (_mesh->HasNormals()) {
 
-        if (mesh->mTextureCoords[0]) {
+            temp_vertex.normal = glm::vec3(
+                _mesh->mNormals[i].x,
+                _mesh->mNormals[i].y,
+                _mesh->mNormals[i].z
+            );
+        }
+
+        if (_mesh->mTextureCoords[0]) {
 
             temp_vertex.textureCords = glm::vec2(
-                mesh->mTextureCoords[0][i].x,
-                mesh->mTextureCoords[0][i].y
+                _mesh->mTextureCoords[0][i].x,
+                _mesh->mTextureCoords[0][i].y
             );
         }
         else {
             temp_vertex.textureCords = glm::vec2(0.0f);
         }
+
+        vertices.push_back(temp_vertex);
     }
 
-    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+    for (unsigned int i = 0; i < _mesh->mNumFaces; i++) {
 
-        aiFace face = mesh->mFaces[i];
+        aiFace face = _mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
 
             indices.push_back(face.mIndices[j]);
         }
     }
 
-    if (mesh->mMaterialIndex >= 0) {
+    if (_mesh->mMaterialIndex >= 0) {
         
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        aiMaterial* material = scene->mMaterials[_mesh->mMaterialIndex];
 
         std::vector <meshTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -174,10 +199,13 @@ mesh model3D::processMesh(aiMesh* mesh, const aiScene* scene) {
         std::vector <meshTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
+    
+    return mesh(vertices, indices, textures);
 }
 
 std::vector<meshTexture> model3D::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& type_str) const {
 
+    //cout << "loadmaterialtexture" << endl;
     std::vector <meshTexture> textures;
 
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
