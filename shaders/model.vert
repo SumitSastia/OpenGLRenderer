@@ -12,11 +12,12 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
+uniform mat4 finalMatrix;
 uniform mat3 normalModel;
 
 void main(){
 
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    gl_Position = finalMatrix * vec4(aPos, 1.0);
     vTexCords = aTexCords;
 
     vPos = vec3(model * vec4(aPos, 1.0));

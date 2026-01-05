@@ -1,7 +1,6 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
 #include <stb_image.h>
 
 #include <shader.hpp>
@@ -91,10 +90,10 @@ int main(){
         return -1;
     }
     
-    int win_xpos = videoMode->width/2 - WIN_W/2;
-    int win_ypos = videoMode->height/2 - WIN_H/2;
+    const unsigned int win_xpos = videoMode->width/2 - WIN_W/2;
+    const unsigned int win_ypos = videoMode->height/2 - WIN_H/2;
     
-    GLFWimage* windowIcon = load_image("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\icons\\window_icon.png");
+    const GLFWimage* windowIcon = load_image("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/icons/window_icon.png");
     
     glfwSetWindowPos(window,win_xpos,win_ypos);
     glfwSetWindowIcon(window,1,windowIcon);
@@ -109,116 +108,6 @@ int main(){
     glfwSetKeyCallback(window, input_callback);
     
     // BUFFER -------------------------------------------------------------------------//
-
-    float vertices[] = {
-
-        // Front
-        -0.5, 0.5, 0.5,  0.0,0.0,  0.0,0.0,1.0,
-         0.5, 0.5, 0.5,  1.0,0.0,  0.0,0.0,1.0,
-        -0.5,-0.5, 0.5,  0.0,1.0,  0.0,0.0,1.0,
-         0.5,-0.5, 0.5,  1.0,1.0,  0.0,0.0,1.0,
-         
-        // Back
-         0.5, 0.5,-0.5,  0.0,0.0,  0.0,0.0,-1.0,
-        -0.5, 0.5,-0.5,  1.0,0.0,  0.0,0.0,-1.0,
-         0.5,-0.5,-0.5,  0.0,1.0,  0.0,0.0,-1.0,
-        -0.5,-0.5,-0.5,  1.0,1.0,  0.0,0.0,-1.0,
-
-        // Left
-        -0.5, 0.5,-0.5,  0.0,0.0,  -1.0,0.0,0.0,
-        -0.5, 0.5, 0.5,  1.0,0.0,  -1.0,0.0,0.0,
-        -0.5,-0.5,-0.5,  0.0,1.0,  -1.0,0.0,0.0,
-        -0.5,-0.5, 0.5,  1.0,1.0,  -1.0,0.0,0.0,
-
-        // Right
-         0.5, 0.5, 0.5,  0.0,0.0,  1.0,0.0,0.0,
-         0.5, 0.5,-0.5,  1.0,0.0,  1.0,0.0,0.0,
-         0.5,-0.5, 0.5,  0.0,1.0,  1.0,0.0,0.0,
-         0.5,-0.5,-0.5,  1.0,1.0,  1.0,0.0,0.0,
-
-        // Top
-        -0.5, 0.5,-0.5,  0.0,0.0,  0.0,1.0,0.0,
-         0.5, 0.5,-0.5,  1.0,0.0,  0.0,1.0,0.0,
-        -0.5, 0.5, 0.5,  0.0,1.0,  0.0,1.0,0.0,
-         0.5, 0.5, 0.5,  1.0,1.0,  0.0,1.0,0.0,
-
-        // Bottom
-         0.5,-0.5,-0.5,  0.0,0.0,  0.0,-1.0,0.0,
-        -0.5,-0.5,-0.5,  1.0,0.0,  0.0,-1.0,0.0,
-         0.5,-0.5, 0.5,  0.0,1.0,  0.0,-1.0,0.0,
-        -0.5,-0.5, 0.5,  1.0,1.0,  0.0,-1.0,0.0,
-    };
-
-    unsigned int indices[] = {
-
-        // Front
-        0,1,2,
-        1,2,3,
-
-        // Back
-        4,5,6,
-        5,6,7,
-
-        // Left
-        8,9,10,
-        9,10,11,
-
-        // Right
-        12,13,14,
-        13,14,15,
-
-        // Top
-        16,17,18,
-        17,18,19,
-
-        // Bottom
-        20,21,22,
-        21,22,23
-    };
-
-    float vertices2[] = {
-
-        // Position //
-
-        // Front
-        -0.5, 0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-         0.5, 0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-        -0.5,-0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-         0.5,-0.5, 0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-         
-        // Back
-        -0.5, 0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-         0.5, 0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-        -0.5,-0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-         0.5,-0.5,-0.5,  1.0, 1.0, 1.0,  0.0, 0.0, 0.0,
-    };
-    
-    unsigned int indices2[] = {
-
-        // Front
-        0,1,2,
-        1,2,3,
-
-        // Back
-        4,5,6,
-        5,6,7,
-
-        // Left
-        4,0,6,
-        0,6,2,
-
-        // Right
-        5,1,7,
-        1,7,3,
-
-        // Top
-        4,5,0,
-        5,0,1,
-
-        // Bottom
-        6,7,2,
-        7,2,3
-    };
 
     shader* s1 = new shader(
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\lines.vert",
@@ -239,34 +128,22 @@ int main(){
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.vert",
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.frag"
     );
-    
-    buffer b1{};
-    buffer b2{}; // Light-Source Cube
 
-    b1.init2(vertices, sizeof(vertices), indices, sizeof(indices));
-    b2.init(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
-    
-    unsigned int VAO = b1.get_VAO();
-    unsigned int VAO2 = b2.get_VAO();
-
-    unsigned int lineShader = s1->get_program();
-    unsigned int lightShader = s2->get_program();
-    unsigned int textureShader = s3->get_program();
-    unsigned int modelShader = s4->get_program();
+    const unsigned int lineShader = s1->get_program();
+    const unsigned int lightShader = s2->get_program();
+    const unsigned int textureShader = s3->get_program();
+    const unsigned int modelShader = s4->get_program();
     
     // Textures -----------------------------------------------------------------------//
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
-    texture wood_texture;
-    texture metal_frame;
-    texture emission;
-
-    //wood_texture.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\wood_box.png");
-    //metal_frame.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\metal_frame.png");
-    //emission.load("C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\assets\\textures\\test.png");
+    glEnable(GL_STENCIL_TEST);
+    //glStencilFunc(GL_EQUAL, 1, 0xFF);
     
     // CAMERA -------------------------------------------------------------------------//
     
@@ -293,6 +170,9 @@ int main(){
 
     glm::vec3 lightPos(3.0f, 1.5f,-3.0f);
     glm::mat4 lightModel(1.0f);
+
+    lights::instance().cubelight.position = lightPos;
+    lights::instance().cubelight.color = lightColor;
     
     lightModel = glm::translate(lightModel, lightPos);
     lightModel = glm::scale(lightModel, glm::vec3(0.5f));
@@ -331,13 +211,15 @@ int main(){
     // MODELS -------------------------------------------------------------------------//
 
     //model3D cup("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/backpack/survival_guitar_backpack.obj");
+    model3D test_cube("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
 
     glm::mat4 cup_model(1.0f);
 
-    cup_model = glm::translate(cup_model, glm::vec3(0.0f,0.0f,0.0f));
-    cup_model = glm::scale(cup_model, glm::vec3(0.01f));
+    cup_model = glm::translate(cup_model, glm::vec3(0.0f,3.0f,0.0f));
+    cup_model = glm::scale(cup_model, glm::vec3(0.5f));
 
     glClearColor(0.065f,0.0f,0.1f,1.0f);
+    //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -379,7 +261,7 @@ int main(){
         }
         
         // Rendering //
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         // Light-Source
         glUseProgram(lightShader);
@@ -394,76 +276,117 @@ int main(){
         lights::instance().flashlight.position = cam.getPos();
         lights::instance().flashlight.direction = cam.getTarget();
 
-        lights::instance().cubelight.position = lightPos;
-        lights::instance().cubelight.color = lightColor;
-
-        /*for(unsigned int i=0; i<10; i++){
-
-            glm::mat4 model1(1.0f);
-            model1 = glm::translate(model1, cubePositions[i]);
-            float angle = 20.0f * i;
-            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
-            normalModel = glm::transpose(glm::inverse(glm::mat3(model1)));
-
-            setMat4(textureShader, "model", model1);
-            setMat3(textureShader, "normalModel", normalModel);
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-        }*/
-
         // Shapes
         glUseProgram(textureShader);
 
-        setMat4(textureShader, "projection", projection);
-        setMat4(textureShader, "view", view);
+        /*setMat4(textureShader, "projection", projection);
+        setMat4(textureShader, "view", view);*/
+
+        setMat4(textureShader, "finalMatrix", projection * view * model);
+        setMat4(textureShader, "model", model);
+        setMat3(textureShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model))));
+
         setVec3(textureShader, "viewPos", cam.getPos());
 
         // Material
         setMaterial(textureShader, "m1");
 
         glUniform1i(glGetUniformLocation(textureShader, "useFlashLight"), useFlashLight);
-
-        setDirectionalLight(textureShader, "d1", lights::instance().sunlight);
+        
         setSpotLight(textureShader, "s1", lights::instance().flashlight);
-        setPointLight(textureShader, "p1", lights::instance().cubelight);
+        setPointLight(textureShader, "p1", myLight.getLight());
 
-        setMat4(textureShader, "model", model);
-        glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(model)));
-        setMat3(textureShader, "normalModel", normal1);
+        glEnable(GL_DEPTH_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilMask(0xFF);
 
         shapes::instance().cube.draw(textureShader);
 
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        glStencilMask(0x00);
+        glDisable(GL_DEPTH_TEST);
+
+        glm::mat4 temp_model = glm::scale(model, glm::vec3(1.05f));
+        setMat4(textureShader, "finalMatrix", projection * view * temp_model);
+        setMat4(textureShader, "model", temp_model);
+        setMat3(textureShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(temp_model))));
+
+        shapes::instance().cube.draw(textureShader);
+
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glEnable(GL_DEPTH_TEST);
+
+        /*for (unsigned int i = 0; i < 10; i++) {
+
+            glm::mat4 model1(1.0f);
+            model1 = glm::translate(model1, cubePositions[i]);
+
+            float angle = 20.0f * i;
+            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+            setMat4(textureShader, "finalMatrix", projection * view * model1);
+            setMat4(textureShader, "model", model1);
+            setMat3(textureShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model1))));
+
+            shapes::instance().cube.draw(textureShader);
+        }*/
+
         // Model
-        //glUseProgram(modelShader);
+        glUseProgram(modelShader);
 
-        //setMat4(modelShader, "projection", projection);
-        //setMat4(modelShader, "view", view);
-        //setVec3(modelShader, "viewPos", cam.getPos());
+        setMat4(modelShader, "finalMatrix", projection * view * cup_model);
+        setVec3(modelShader, "viewPos", cam.getPos());
 
-        //// Material
-        //setMaterial(modelShader, "m1");
+        // Material
+        setMaterial(modelShader, "m1");
 
-        //glUniform1i(
-        //    glGetUniformLocation(modelShader, "useFlashLight"),
-        //    useFlashLight
-        //);
+        glUniform1i(glGetUniformLocation(modelShader, "useFlashLight"), useFlashLight);
 
-        //setDirectionalLight(modelShader, "d1", lights::instance().sunlight);
-        //setSpotLight(modelShader, "s1", lights::instance().flashlight);
-        //setPointLight(modelShader, "p1", lights::instance().cubelight);
+        setSpotLight(modelShader, "s1", lights::instance().flashlight);
+        setPointLight(modelShader, "p1", lights::instance().cubelight);
 
-        //setMat4(modelShader, "model", cup_model);
-        //glm::mat4 normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
-        //setMat3(modelShader, "normalModel", normal1);
+        cup_model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
+        cup_model = glm::scale(cup_model, glm::vec3(0.5f));
 
-        //cup.draw(modelShader);
+        setMat4(modelShader, "model", cup_model);
+        setMat3(modelShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(cup_model))));
+
+        test_cube.draw(modelShader);
+
+        /*for (unsigned int i = 0; i < 10; i++) {
+
+            glm::mat4 model1(1.0f);
+            model1 = glm::translate(model1, cubePositions[i]);
+
+            float angle = 20.0f * i;
+            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+            setMat4(modelShader, "finalMatrix", projection * view * model1);
+            setMat4(modelShader, "model", model1);
+            setMat3(modelShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model1))));
+
+            test_cube.draw(modelShader);
+        }*/
+
+        /*cup_model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 3.0f, 0.0f));
+        cup_model = glm::scale(cup_model, glm::vec3(0.01f));
+
+        setMat4(modelShader, "model", cup_model);
+        normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
+        setMat3(modelShader, "normalModel", normal1);
+
+        cup.draw(modelShader);*/
 
         // Lines
         glUseProgram(lineShader);
         glm::mat4 lineModel(1.0f);
 
-        setMat4(lineShader, "projection", projection);
-        setMat4(lineShader, "view", view);
-        setMat4(lineShader, "lineModel", lineModel);
+        setMat4(lineShader, "finalMatrix", projection * view * lineModel);
 
         if(showLines){
             glBindVertexArray(line1.get_VAO());
@@ -477,11 +400,10 @@ int main(){
 
     // TERMINATION --------------------------------------------------------------------//
 
-    b1.destroy();
-    b2.destroy();
-
     s1->destroy();
     s2->destroy();
+    s3->destroy();
+    s4->destroy();
     
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);
@@ -492,14 +414,14 @@ int main(){
 
 //-----------------------------------------------------------------------------------------------//
 
-GLFWimage* load_image(const char* path){
+GLFWimage* load_image(const char* path) {
     
     GLFWimage* img = new GLFWimage();
     img->pixels = stbi_load(path,&img->width,&img->height,nullptr,4);
     return img;
 }
 
-void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
     if(glfwGetKey(window, GLFW_KEY_ESCAPE)){
         glfwSetWindowShouldClose(window,GLFW_TRUE);
@@ -519,12 +441,15 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
         mouseInCamera = !mouseInCamera;
     }
 
+    // Hold
     rotateCube = glfwGetKey(window, GLFW_KEY_R);
+
+    // Toggle
     showLines = (glfwGetKey(window, GLFW_KEY_L))? !showLines : showLines;
     useFlashLight = (glfwGetKey(window, GLFW_KEY_T))? !useFlashLight : useFlashLight;
 }
 
-void scroll_callback(GLFWwindow* window, double offset_x, double offset_y){
+void scroll_callback(GLFWwindow* window, double offset_x, double offset_y) {
     scrollOffset = (float)offset_y;
 }
 
@@ -532,7 +457,7 @@ void track_mouse(GLFWwindow* window){
 
     static bool mouse_click_hold = false;
 
-    if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE){
+    if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
 
         cursor_dx = 0.0;
         cursor_dy = 0.0;
@@ -548,7 +473,7 @@ void track_mouse(GLFWwindow* window){
     static double prev_x = pos_x;
     static double prev_y = pos_y;
 
-    if(!mouse_click_hold){
+    if(!mouse_click_hold) {
         prev_x = pos_x;
         prev_y = pos_y;
         mouse_click_hold = true;

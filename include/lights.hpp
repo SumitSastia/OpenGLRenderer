@@ -84,9 +84,10 @@ public:
     lightSource();
 
     void setLightColor(const glm::vec3& color);
-    glm::vec3 getLightColor() const { return src.color; }
-
     void setPosition(const glm::vec3& posiition);
+
+    glm::vec3 getLightColor() const { return src.color; }
+    const pointLight& getLight() const { return src; }
 
     void draw(const unsigned int& shader) const;
 };

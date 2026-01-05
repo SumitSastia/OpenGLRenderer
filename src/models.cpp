@@ -8,17 +8,13 @@ using namespace std;
 
 void meshTexture::loadTexture(const char* path, const std::string& directory) {
 
-    //cout << "loadTExture" << endl;
-
     int width, height;
-
     checkPath = path;
-    const std::string fullPath = directory + "/" + path;
 
-    unsigned char* pixelData = stbi_load(fullPath.c_str(), &width, &height, nullptr, 4);
+    unsigned char* pixelData = stbi_load(path, &width, &height, nullptr, 4);
 
     if (!pixelData) {
-        std::cerr << "Failed to Load Image!\n" << fullPath << std::endl;
+        std::cerr << "Failed to Load Image!\n" << path << std::endl;
         return;
     }
 
@@ -207,8 +203,6 @@ mesh model3D::processMesh(aiMesh* _mesh, const aiScene* scene) {
 }
 
 std::vector<meshTexture> model3D::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& type_str) const {
-
-    //cout << "loadmaterialtexture" << endl;
 
     std::vector <meshTexture> textures;
 

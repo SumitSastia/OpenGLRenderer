@@ -4,6 +4,7 @@
 #include <shader.hpp>
 #include <models.hpp>
 
+// Hardcoded Models
 struct shape {
 
     unsigned int VBO, VAO, EBO;
