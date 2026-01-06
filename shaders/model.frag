@@ -139,6 +139,6 @@ void main(){
         finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
     }
 
-    FragColor = vec4(ambientLight + finalColor, 1.0);
+    FragColor = vec4(ambientLight + finalColor, 0.5);
     // FragColor = vec4(1,1,1,1);
 }

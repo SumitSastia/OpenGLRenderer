@@ -9,9 +9,6 @@
 #include <models.hpp>
 #include <shapes.hpp>
 
-constexpr auto WIN_W = 1120;
-constexpr auto WIN_H = 700;
-
 using namespace std;
 
 //-----------------------------------------------------------------------------------------------//
@@ -99,15 +96,15 @@ int main(){
     glfwSetWindowIcon(window,1,windowIcon);
     
     glfwSetWindowAttrib(window,GLFW_RESIZABLE,GLFW_FALSE);
-    
-    glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
 
+    glfwGetFramebufferSize(window, &frameWidth, &frameHeight);
     glViewport(0,0,frameWidth,frameHeight);
     
+    // V-Sync
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, input_callback);
     
-    // BUFFER -------------------------------------------------------------------------//
+    // SHADER -------------------------------------------------------------------------//
 
     shader* s1 = new shader(
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\lines.vert",
@@ -129,12 +126,18 @@ int main(){
         "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.frag"
     );
 
-    const unsigned int lineShader = s1->get_program();
-    const unsigned int lightShader = s2->get_program();
-    const unsigned int textureShader = s3->get_program();
-    const unsigned int modelShader = s4->get_program();
+    shader* s5 = new shader(
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\planes.vert",
+        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\planes.frag"
+    );
+
+    const unsigned int& lineShader = s1->get_program();
+    const unsigned int& lightShader = s2->get_program();
+    const unsigned int& textureShader = s3->get_program();
+    const unsigned int& modelShader = s4->get_program();
+    const unsigned int& planeShader = s5->get_program();
     
-    // Textures -----------------------------------------------------------------------//
+    // GL TWEAKS ----------------------------------------------------------------------//
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -142,9 +145,13 @@ int main(){
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    glEnable(GL_STENCIL_TEST);
+    //glEnable(GL_STENCIL_TEST);
     //glStencilFunc(GL_EQUAL, 1, 0xFF);
     
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CCW);
+
     // CAMERA -------------------------------------------------------------------------//
     
     camera& cam = camera::instance();
@@ -250,7 +257,7 @@ int main(){
 
             // Light-Rotation
             float rotationSpeed = 1.0f;
-            // lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0,1.0,0.0)) * lightModel;
+            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0,1.0,0.0)) * lightModel;
 
             lightPos = glm::vec3(3.0f, 1.5f,-3.0f);
             lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
@@ -280,6 +287,9 @@ int main(){
 
         shapes::instance().cube.draw(textureShader);
 
+        shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,1.0f)));
+        shapes::instance().square.draw(planeShader);
+
         /*for (unsigned int i = 0; i < 10; i++) {
 
             glm::mat4 model1(1.0f);
@@ -292,7 +302,7 @@ int main(){
             shapes::instance().cube.draw(textureShader);
         }*/
 
-        // Model
+        // Models
         glUseProgram(modelShader);
 
         cup_model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
@@ -332,11 +342,6 @@ int main(){
     }
 
     // TERMINATION --------------------------------------------------------------------//
-
-    s1->destroy();
-    s2->destroy();
-    s3->destroy();
-    s4->destroy();
     
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);

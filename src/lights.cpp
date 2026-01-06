@@ -121,6 +121,8 @@ void lightSource::update(
     this->projection = projection;
     this->view = view;
     this->model = model;
+
+    src.position = glm::vec3(model[3]);
 }
 
 void lightSource::draw(const unsigned int& shader) const {

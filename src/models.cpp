@@ -41,14 +41,17 @@ void meshTexture::loadTexture(const char* path, const std::string& directory) {
 
 //-------------------------------------------------------------------------------------//
 
-void mesh::setupMesh() {
+mesh::~mesh() {
 
-    //cout << "setupmesh" << endl;
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO);
+}
+
+void mesh::setupMesh() {
 
     size_t size_v = sizeof(vertex) * vertices.size();
     size_t size_i = sizeof(unsigned int) * indices.size();
-
-    //cout << size_v << "," << size_i << endl;
 
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -247,6 +250,7 @@ void model3D::update(
 void model3D::draw(const unsigned int& shader) const {
 
     glUseProgram(shader);
+    glFrontFace(GL_CW);
 
     setMat4(shader, "finalMatrix", projection * view * model);
     setMat4(shader, "model", model);
@@ -259,4 +263,6 @@ void model3D::draw(const unsigned int& shader) const {
     for (const auto& mesh_part : meshes) {
         mesh_part.draw(shader);
     }
+
+    glFrontFace(GL_CCW);
 }

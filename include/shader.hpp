@@ -10,6 +10,9 @@
 
 #include <string>
 
+constexpr auto WIN_W = 1120;
+constexpr auto WIN_H = 700;
+
 class shader {
 
     unsigned int vertexShader;
@@ -19,27 +22,9 @@ class shader {
 public:
 
     shader(const char* vertPath, const char* fragPath);
-    void destroy() const;
 
     std::string loadShader(const char* path);
-    unsigned int get_program() const { return shaderProgram; }
-};
-
-class buffer {
-
-    unsigned int VBO;
-    unsigned int VAO;
-    unsigned int EBO;
-
-public:
-
-    void destroy() const;
-    void init(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
-    void init2(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i);
-
-    unsigned int get_VBO() const { return VBO; }
-    unsigned int get_VAO() const { return VAO; }
-    unsigned int get_EBO() const { return EBO; }
+    const unsigned int& get_program() const { return shaderProgram; }
 };
 
 class line {
@@ -56,8 +41,8 @@ public:
     void initLines(const glm::vec3 startPos, const glm::vec3 endPos);
     void updateLines(const glm::vec3 startPos, const glm::vec3 endPos);
 
-    unsigned int get_VBO() const { return VBO; }
-    unsigned int get_VAO() const { return VAO; }
+    const unsigned int& get_VBO() const { return VBO; }
+    const unsigned int& get_VAO() const { return VAO; }
 };
 
 class texture {
@@ -72,10 +57,24 @@ class texture {
     
 public:
 
+    ~texture();
+
     void load(const char* path);
 
-    unsigned int getID() const { return textureID; }
-    std::string getType() const { return type; }
+    const unsigned int& getID() const { return textureID; }
+    const std::string& getType() const { return type; }
+};
+
+class frame_buffer {
+
+    unsigned int FBO;
+    unsigned int RBO;
+    unsigned int frameTexture;
+
+public:
+
+    frame_buffer();
+    ~frame_buffer();
 };
 
 struct material {
@@ -104,5 +103,7 @@ void setMat3(const unsigned int &shaderProgram, const char* target, const glm::m
 void setMat4(const unsigned int &shaderProgram, const char* target, const glm::mat4 &matrix);
 
 void setMaterial(const unsigned int& shaderProgram, const std::string &target);
+
+void printVec3(const glm::vec3& vector);
 
 #endif

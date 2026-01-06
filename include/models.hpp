@@ -60,6 +60,8 @@ public:
         setupMesh();
     }
 
+    ~mesh();
+
     void draw(const unsigned int& shader) const ;
 };
 

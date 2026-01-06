@@ -16,7 +16,14 @@ struct shape {
     glm::mat4 view;
     glm::mat4 model;
 
+    ~shape();
+
     void bindVertices(
+        const float* vertices, const size_t& size_v,
+        const unsigned int* indices, const size_t& size_i
+    );
+
+    void bindVertices2D(
         const float* vertices, const size_t& size_v,
         const unsigned int* indices, const size_t& size_i
     );
@@ -34,9 +41,8 @@ struct shape {
 
 struct shapes {
 
+    shape square;
     shape cube;
-    shape cylinder;
-    shape sphere;
 
     shapes();
     static shapes& instance();

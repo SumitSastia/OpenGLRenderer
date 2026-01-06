@@ -47,7 +47,6 @@ shader::shader(const char* vertPath, const char* fragPath){
     }
 
     // Shader Program //
-
     shaderProgram = glCreateProgram();
 
     glAttachShader(shaderProgram,vertexShader);
@@ -78,73 +77,6 @@ std::string shader::loadShader(const char* path){
     ss << file.rdbuf();
 
     return ss.str();
-}
-
-void shader::destroy() const {
-    glDeleteProgram(shaderProgram);
-}
-
-//-------------------------------------------------------------------------------------//
-
-void buffer::init(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i){
-
-    glGenBuffers(1,&VBO);
-    glGenBuffers(1,&EBO);
-    glGenVertexArrays(1,&VAO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    glBufferData(GL_ARRAY_BUFFER, size_v, vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices, GL_STATIC_DRAW);
-
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 9*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Color
-    glVertexAttribPointer(1, 3, GL_FLOAT,GL_FALSE, 9*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Normal
-    glVertexAttribPointer(2, 3, GL_FLOAT,GL_FALSE, 9*sizeof(float), (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
-}
-
-void buffer::init2(const float* vertices, size_t size_v, const unsigned int* indices, size_t size_i){
-
-    glGenBuffers(1,&VBO);
-    glGenBuffers(1,&EBO);
-    glGenVertexArrays(1,&VAO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    glBufferData(GL_ARRAY_BUFFER, size_v, vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_i, indices, GL_STATIC_DRAW);
-
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Texture
-    glVertexAttribPointer(1, 2, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Normal
-    glVertexAttribPointer(2, 3, GL_FLOAT,GL_FALSE, 8*sizeof(float), (void*)(5*sizeof(float)));
-    glEnableVertexAttribArray(2);
-}
-
-void buffer::destroy() const {
-
-    glDeleteBuffers(1,&VBO);
-    glDeleteBuffers(1,&EBO);
-    glDeleteVertexArrays(1,&VAO);   
 }
 
 //-------------------------------------------------------------------------------------//
@@ -192,6 +124,10 @@ void line::updateLines(const glm::vec3 startPos, const glm::vec3 endPos){
 
 //-------------------------------------------------------------------------------------//
 
+texture::~texture() {
+    glDeleteTextures(1, &textureID);
+}
+
 void texture::load(const char* path){
 
     pixelData = stbi_load(path, &width, &height, nullptr, 4);
@@ -218,6 +154,52 @@ void texture::load(const char* path){
 
     stbi_image_free(pixelData);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+//-------------------------------------------------------------------------------------//
+
+frame_buffer::frame_buffer() {
+
+    glGenFramebuffers(1, &FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+
+        // Texture Attachment
+        glGenTextures(1, &frameTexture);
+
+        glBindTexture(GL_TEXTURE_2D, frameTexture);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIN_W, WIN_H, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameTexture, 0);
+
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, WIN_W, WIN_H, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, frameTexture, 0);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Render Object
+        glGenRenderbuffers(1, &RBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIN_W, WIN_H);
+
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    }
+    else {
+        std::cerr << "UNABLE TO INITIALIZE THE FRAME BUFFER!" << std::endl;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+frame_buffer::~frame_buffer() {
+    glDeleteFramebuffers(1, &FBO);
 }
 
 //-------------------------------------------------------------------------------------//
@@ -311,4 +293,8 @@ void setMaterial(const unsigned int& shaderProgram, const std::string &target){
     setVec3(shaderProgram, (target + ".diffuse").c_str(), materials::instance().wood.diffuse);
     setVec3(shaderProgram, (target + ".specular").c_str(), materials::instance().wood.specular);
     setFloat(shaderProgram, (target + ".shininess").c_str(), materials::instance().glass.shininess);
+}
+
+void printVec3(const glm::vec3& vector) {
+    std::cout << "x: " << vector.x << ", y: " << vector.y << ", z: " << vector.z << std::endl;
 }
