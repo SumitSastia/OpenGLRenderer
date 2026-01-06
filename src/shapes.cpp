@@ -1,4 +1,7 @@
 #include <shapes.hpp>
+#include <camera.hpp>
+#include <lights.hpp>
+#include <iostream>
 
 void shape::bindVertices(
     const float* vertices, const size_t& size_v,
@@ -35,7 +38,27 @@ void shape::loadTexture(const char* path) {
     shapeTexture.load(path);
 }
 
+void shape::update(
+    const glm::mat4& projection,
+    const glm::mat4& view,
+    const glm::mat4& model
+) {
+    this->projection = projection;
+    this->view = view;
+    this->model = model;
+}
+
 void shape::draw(const unsigned int& shader) const {
+
+    glUseProgram(shader);
+
+    setMat4(shader, "finalMatrix", projection * view * model);
+    setMat4(shader, "model", model);
+    setMat3(shader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model))));
+    setVec3(shader, "viewPos", camera::instance().getPos());
+
+    setMaterial(shader, "m1");
+    setSpotLight(shader, "s1", lights::instance().flashlight);
 
     setInt(shader, "texture1", 0);
 

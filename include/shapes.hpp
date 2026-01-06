@@ -12,12 +12,23 @@ struct shape {
 
     texture shapeTexture;
 
+    glm::mat4 projection;
+    glm::mat4 view;
+    glm::mat4 model;
+
     void bindVertices(
         const float* vertices, const size_t& size_v,
         const unsigned int* indices, const size_t& size_i
     );
 
     void loadTexture(const char* path);
+
+    void update(
+        const glm::mat4& projection,
+        const glm::mat4& view,
+        const glm::mat4& model
+    );
+
     void draw(const unsigned int& shader) const;
 };
 

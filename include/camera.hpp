@@ -34,6 +34,7 @@ class camera{
 public:
 
     camera();
+    static camera& instance();
 
     void look_at();
     void input_handler(GLFWwindow* window, float deltaTime);

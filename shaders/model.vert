@@ -8,10 +8,7 @@ out vec3 vPos;
 out vec3 vNormal;
 out vec2 vTexCords;
 
-uniform mat4 projection;
-uniform mat4 view;
 uniform mat4 model;
-
 uniform mat4 finalMatrix;
 uniform mat3 normalModel;
 

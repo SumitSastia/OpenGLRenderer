@@ -65,6 +65,10 @@ public:
 
 class model3D {
 
+    glm::mat4 projection;
+    glm::mat4 view;
+    glm::mat4 model;
+
     std::vector <mesh> meshes;
     std::string directory;
 
@@ -82,6 +86,12 @@ public:
     model3D(const char* path) : directory("") {
         loadModel(path);
     }
+
+    void update(
+        const glm::mat4& projection,
+        const glm::mat4& view,
+        const glm::mat4& model
+    );
 
     void draw(const unsigned int& shader) const;
 };

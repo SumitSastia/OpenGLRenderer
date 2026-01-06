@@ -25,6 +25,11 @@ camera::camera(){
 
 }
 
+camera& camera::instance() {
+    static camera instance;
+    return instance;
+}
+
 void camera::set_position(const glm::vec3 position){
     this->position = position;
 }

@@ -34,6 +34,8 @@ struct spotLight{
     glm::vec3 direction;
     glm::vec3 color;
 
+    bool isVisible;
+
     float cutOffangle;
     float outerCutOff;
 
@@ -50,6 +52,8 @@ struct lights{
 
     lights();
     static lights& instance();
+
+    void update();
 };
 
 void setPointLight(const unsigned int &shaderProgram, const std::string &target, const pointLight &pl);
@@ -79,15 +83,29 @@ class lightSource {
     pointLight src;
     shape srcShape;
 
+    glm::mat4 projection;
+    glm::mat4 view;
+    glm::mat4 model;
+
 public:
 
-    lightSource();
+    lightSource(
+        const glm::mat4& projection,
+        const glm::mat4& view,
+        const glm::mat4& model
+    );
 
     void setLightColor(const glm::vec3& color);
     void setPosition(const glm::vec3& posiition);
 
     glm::vec3 getLightColor() const { return src.color; }
     const pointLight& getLight() const { return src; }
+
+    void update(
+        const glm::mat4& projection,
+        const glm::mat4& view,
+        const glm::mat4& model
+    );
 
     void draw(const unsigned int& shader) const;
 };

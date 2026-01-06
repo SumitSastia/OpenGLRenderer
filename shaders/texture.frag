@@ -26,6 +26,8 @@ struct spotLight{
     vec3 direction;
     vec3 color;
 
+    bool isVisible;
+
     float cutOffangle;
     float outerCutOff;
 
@@ -51,8 +53,6 @@ uniform material m1;
 uniform spotLight s1;
 uniform directionalLight d1;
 uniform pointLight p1;
-
-uniform bool useFlashLight;
 
 vec3 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1, vec3 t2){
 
@@ -139,7 +139,7 @@ void main(){
     finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
     // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
 
-    if(useFlashLight){
+    if(s1.isVisible){
         finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
     }
 

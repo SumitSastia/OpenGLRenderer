@@ -1,5 +1,6 @@
 #include <lights.hpp>
 #include <shader.hpp>
+#include <camera.hpp>
 
 lights& lights::instance() {
     static lights instance;
@@ -27,12 +28,20 @@ lights::lights() {
     flashlight.direction = glm::vec3(0.0f,0.0f,0.0f);
     flashlight.color = glm::vec3(1.0f,1.0f,1.0f);
 
+    flashlight.isVisible = true;
+
     flashlight.cutOffangle = glm::cos(glm::radians(12.5f));
     flashlight.outerCutOff = glm::cos(glm::radians(17.5f));
 
     flashlight.constant = 1.0f;
     flashlight.linear = 0.001f;
     flashlight.quadratic = 0.016f;
+}
+
+void lights::update() {
+
+    flashlight.position = camera::instance().getPos();
+    flashlight.direction = camera::instance().getTarget();
 }
 
 void setPointLight(const unsigned int &shaderProgram, const std::string &target, const pointLight &pl) {
@@ -50,6 +59,8 @@ void setSpotLight(const unsigned int &shaderProgram, const std::string &target, 
     setVec3(shaderProgram, (target + ".position").c_str(), sl.position);
     setVec3(shaderProgram, (target + ".direction").c_str(), sl.direction);
     setVec3(shaderProgram, (target + ".color").c_str(), sl.color);
+
+    glUniform1i(glGetUniformLocation(shaderProgram, (target + ".isVisible").c_str()), sl.isVisible);
 
     setFloat(shaderProgram, (target + ".cutOffangle").c_str(), sl.cutOffangle);
     setFloat(shaderProgram, (target + ".outerCutOff").c_str(), sl.outerCutOff);
@@ -81,7 +92,14 @@ colors::colors() {
 
 //-------------------------------------------------------------------------------------//
 
-lightSource::lightSource() {
+lightSource::lightSource(
+    const glm::mat4& projection,
+    const glm::mat4& view,
+    const glm::mat4& model
+) :
+    projection(projection),
+    view(view),
+    model(model) {
 
     src = lights::instance().cubelight;
     srcShape = shapes::instance().cube;
@@ -95,7 +113,22 @@ void lightSource::setPosition(const glm::vec3& position) {
     src.position = position;
 }
 
+void lightSource::update(
+    const glm::mat4& projection,
+    const glm::mat4& view,
+    const glm::mat4& model
+) {
+    this->projection = projection;
+    this->view = view;
+    this->model = model;
+}
+
 void lightSource::draw(const unsigned int& shader) const {
+
+    glUseProgram(shader);
+
+    setMat4(shader, "finalMatrix", projection * view * model);
+    setVec3(shader, "lightColor", src.color);
 
     glBindVertexArray(srcShape.VAO);
     glDrawElements(GL_TRIANGLES, srcShape.indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));

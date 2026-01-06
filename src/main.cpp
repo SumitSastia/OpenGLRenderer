@@ -147,7 +147,7 @@ int main(){
     
     // CAMERA -------------------------------------------------------------------------//
     
-    camera cam;
+    camera& cam = camera::instance();
     glfwSetScrollCallback(window, scroll_callback);
 
     cam.set_aspect(frameWidth, frameHeight);
@@ -177,7 +177,7 @@ int main(){
     lightModel = glm::translate(lightModel, lightPos);
     lightModel = glm::scale(lightModel, glm::vec3(0.5f));
 
-    lightSource myLight{};
+    lightSource myLight(projection, view, lightModel);
     
     myLight.setLightColor(lightColor);
     myLight.setPosition(lightPos);
@@ -242,6 +242,8 @@ int main(){
         // Updates //
         if(!isPaused){
 
+            lights::instance().flashlight.isVisible = useFlashLight;
+
             // Line-Position
             line1.updateLines(lightPos, cubePos);
             // line2.updateLines(cubePos, top_normal);
@@ -264,62 +266,19 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         // Light-Source
-        glUseProgram(lightShader);
-        glm::mat4 finalMatrix = projection * view * lightModel;
-        
-        setMat4(lightShader, "finalMatrix", finalMatrix);
-        setVec3(lightShader, "lightColor", myLight.getLightColor());
-
+        myLight.update(projection, view, lightModel);
         myLight.draw(lightShader);
 
         // Lights
-        lights::instance().flashlight.position = cam.getPos();
-        lights::instance().flashlight.direction = cam.getTarget();
+        lights::instance().update();
 
         // Shapes
         glUseProgram(textureShader);
 
-        /*setMat4(textureShader, "projection", projection);
-        setMat4(textureShader, "view", view);*/
-
-        setMat4(textureShader, "finalMatrix", projection * view * model);
-        setMat4(textureShader, "model", model);
-        setMat3(textureShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model))));
-
-        setVec3(textureShader, "viewPos", cam.getPos());
-
-        // Material
-        setMaterial(textureShader, "m1");
-
-        glUniform1i(glGetUniformLocation(textureShader, "useFlashLight"), useFlashLight);
-        
-        setSpotLight(textureShader, "s1", lights::instance().flashlight);
+        shapes::instance().cube.update(projection, view, model);
         setPointLight(textureShader, "p1", myLight.getLight());
 
-        glEnable(GL_DEPTH_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilMask(0xFF);
-
         shapes::instance().cube.draw(textureShader);
-
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-        glDisable(GL_DEPTH_TEST);
-
-        glm::mat4 temp_model = glm::scale(model, glm::vec3(1.05f));
-        setMat4(textureShader, "finalMatrix", projection * view * temp_model);
-        setMat4(textureShader, "model", temp_model);
-        setMat3(textureShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(temp_model))));
-
-        shapes::instance().cube.draw(textureShader);
-
-        glStencilMask(0xFF);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glEnable(GL_DEPTH_TEST);
 
         /*for (unsigned int i = 0; i < 10; i++) {
 
@@ -329,32 +288,18 @@ int main(){
             float angle = 20.0f * i;
             model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-            setMat4(textureShader, "finalMatrix", projection * view * model1);
-            setMat4(textureShader, "model", model1);
-            setMat3(textureShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model1))));
-
+            shapes::instance().cube.update(projection, view, model1);
             shapes::instance().cube.draw(textureShader);
         }*/
 
         // Model
         glUseProgram(modelShader);
 
-        setMat4(modelShader, "finalMatrix", projection * view * cup_model);
-        setVec3(modelShader, "viewPos", cam.getPos());
-
-        // Material
-        setMaterial(modelShader, "m1");
-
-        glUniform1i(glGetUniformLocation(modelShader, "useFlashLight"), useFlashLight);
-
-        setSpotLight(modelShader, "s1", lights::instance().flashlight);
-        setPointLight(modelShader, "p1", lights::instance().cubelight);
-
         cup_model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
         cup_model = glm::scale(cup_model, glm::vec3(0.5f));
 
-        setMat4(modelShader, "model", cup_model);
-        setMat3(modelShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(cup_model))));
+        test_cube.update(projection, view, cup_model);
+        setPointLight(modelShader, "p1", myLight.getLight());
 
         test_cube.draw(modelShader);
 
@@ -366,21 +311,9 @@ int main(){
             float angle = 20.0f * i;
             model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-            setMat4(modelShader, "finalMatrix", projection * view * model1);
-            setMat4(modelShader, "model", model1);
-            setMat3(modelShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model1))));
-
+            test_cube.update(projection, view, model1);
             test_cube.draw(modelShader);
         }*/
-
-        /*cup_model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 3.0f, 0.0f));
-        cup_model = glm::scale(cup_model, glm::vec3(0.01f));
-
-        setMat4(modelShader, "model", cup_model);
-        normal1 = glm::transpose(glm::inverse(glm::mat3(cup_model)));
-        setMat3(modelShader, "normalModel", normal1);
-
-        cup.draw(modelShader);*/
 
         // Lines
         glUseProgram(lineShader);
