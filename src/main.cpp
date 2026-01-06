@@ -8,6 +8,7 @@
 #include <lights.hpp>
 #include <models.hpp>
 #include <shapes.hpp>
+#include <scenes.hpp>
 
 using namespace std;
 
@@ -105,37 +106,6 @@ int main(){
     glfwSetKeyCallback(window, input_callback);
     
     // SHADER -------------------------------------------------------------------------//
-
-    shader* s1 = new shader(
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\lines.vert",
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\lines.frag"
-    );
-
-    shader* s2 = new shader(
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\light.vert",
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\light.frag"
-    );
-
-    shader* s3 = new shader(
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\texture.vert",
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\texture.frag"
-    );
-
-    shader* s4 = new shader(
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.vert",
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\model.frag"
-    );
-
-    shader* s5 = new shader(
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\planes.vert",
-        "C:\\Users\\sumit\\Documents\\GitHub\\OpenGLRenderer\\shaders\\planes.frag"
-    );
-
-    const unsigned int& lineShader = s1->get_program();
-    const unsigned int& lightShader = s2->get_program();
-    const unsigned int& textureShader = s3->get_program();
-    const unsigned int& modelShader = s4->get_program();
-    const unsigned int& planeShader = s5->get_program();
     
     // GL TWEAKS ----------------------------------------------------------------------//
     
@@ -173,22 +143,6 @@ int main(){
 
     // LIGHTING -----------------------------------------------------------------------//
 
-    glm::vec3 lightColor(colors::instance().yellow);
-
-    glm::vec3 lightPos(3.0f, 1.5f,-3.0f);
-    glm::mat4 lightModel(1.0f);
-
-    lights::instance().cubelight.position = lightPos;
-    lights::instance().cubelight.color = lightColor;
-    
-    lightModel = glm::translate(lightModel, lightPos);
-    lightModel = glm::scale(lightModel, glm::vec3(0.5f));
-
-    lightSource myLight(projection, view, lightModel);
-    
-    myLight.setLightColor(lightColor);
-    myLight.setPosition(lightPos);
-
     // LINES --------------------------------------------------------------------------//
 
     line line1;
@@ -218,12 +172,9 @@ int main(){
     // MODELS -------------------------------------------------------------------------//
 
     //model3D cup("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/backpack/survival_guitar_backpack.obj");
-    model3D test_cube("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
 
-    glm::mat4 cup_model(1.0f);
-
-    cup_model = glm::translate(cup_model, glm::vec3(0.0f,3.0f,0.0f));
-    cup_model = glm::scale(cup_model, glm::vec3(0.5f));
+    scene1 scene1;
+    scene1.init();
 
     glClearColor(0.065f,0.0f,0.1f,1.0f);
     //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -248,93 +199,21 @@ int main(){
         
         // Updates //
         if(!isPaused){
-
             lights::instance().flashlight.isVisible = useFlashLight;
-
-            // Line-Position
-            line1.updateLines(lightPos, cubePos);
-            // line2.updateLines(cubePos, top_normal);
-
-            // Light-Rotation
-            float rotationSpeed = 1.0f;
-            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0,1.0,0.0)) * lightModel;
-
-            lightPos = glm::vec3(3.0f, 1.5f,-3.0f);
-            lightPos = glm::vec3(lightModel * glm::vec4(lightPos, 1.0f));
         }
+
+        scene1.update(deltaTime);
 
         // Cube-Rotation
-        if(rotateCube){
+        /*if(rotateCube){
             model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0,1.0,1.0));
             normalModel = glm::transpose(glm::inverse(glm::mat3(model)));
-        }
+        }*/
         
         // Rendering //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        
-        // Light-Source
-        myLight.update(projection, view, lightModel);
-        myLight.draw(lightShader);
 
-        // Lights
-        lights::instance().update();
-
-        // Shapes
-        glUseProgram(textureShader);
-
-        shapes::instance().cube.update(projection, view, model);
-        setPointLight(textureShader, "p1", myLight.getLight());
-
-        shapes::instance().cube.draw(textureShader);
-
-        shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,1.0f)));
-        shapes::instance().square.draw(planeShader);
-
-        /*for (unsigned int i = 0; i < 10; i++) {
-
-            glm::mat4 model1(1.0f);
-            model1 = glm::translate(model1, cubePositions[i]);
-
-            float angle = 20.0f * i;
-            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-            shapes::instance().cube.update(projection, view, model1);
-            shapes::instance().cube.draw(textureShader);
-        }*/
-
-        // Models
-        glUseProgram(modelShader);
-
-        cup_model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
-        cup_model = glm::scale(cup_model, glm::vec3(0.5f));
-
-        test_cube.update(projection, view, cup_model);
-        setPointLight(modelShader, "p1", myLight.getLight());
-
-        test_cube.draw(modelShader);
-
-        /*for (unsigned int i = 0; i < 10; i++) {
-
-            glm::mat4 model1(1.0f);
-            model1 = glm::translate(model1, cubePositions[i]);
-
-            float angle = 20.0f * i;
-            model1 = glm::rotate(model1, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-            test_cube.update(projection, view, model1);
-            test_cube.draw(modelShader);
-        }*/
-
-        // Lines
-        glUseProgram(lineShader);
-        glm::mat4 lineModel(1.0f);
-
-        setMat4(lineShader, "finalMatrix", projection * view * lineModel);
-
-        if(showLines){
-            glBindVertexArray(line1.get_VAO());
-            glDrawArrays(GL_LINES, 0, 2);
-        }
+        scene1.render();
 
         // Events //
         glfwPollEvents();

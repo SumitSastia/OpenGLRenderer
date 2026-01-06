@@ -96,8 +96,9 @@ public:
     );
 
     void setLightColor(const glm::vec3& color);
-    void setPosition(const glm::vec3& posiition);
+    void setPosition(const glm::vec3& position);
 
+    glm::vec3 getPosition() const { return src.position; }
     glm::vec3 getLightColor() const { return src.color; }
     const pointLight& getLight() const { return src; }
 

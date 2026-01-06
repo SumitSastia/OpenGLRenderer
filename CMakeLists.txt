@@ -17,7 +17,8 @@ add_executable(${TARGET_NAME}
     src/lights.cpp
     src/models.cpp
     src/shapes.cpp
- "src/scenes.cpp")
+    src/scenes.cpp
+)
 
 # including headers & linkers
 target_include_directories(${TARGET_NAME} PRIVATE include)
