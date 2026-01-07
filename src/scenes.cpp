@@ -42,7 +42,7 @@ void scene1::init() {
     lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -3.0f));
     lightModel = glm::scale(lightModel, glm::vec3(0.5f));
 
-    cubeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, 0.0f));
+    cubeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
     cubeModel = glm::scale(cubeModel, glm::vec3(0.75f));
 
     // Light-Source
@@ -51,7 +51,7 @@ void scene1::init() {
     myLight->setPosition(glm::vec3(3.0f, 1.5f, -3.0f));
 
     // Models
-    cube1 = new model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/Untitled.obj");
+    cube1 = new model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
 }
 
 void scene1::update(const float& delta_time) {
@@ -63,12 +63,14 @@ void scene1::update(const float& delta_time) {
     float rotationSpeed = 1.0f;
     lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0f,1.0f,0.0f)) * lightModel;
 
-    myLight->update(projection, view, lightModel);
     lights::instance().update();
 
-    shapes::instance().cube.update(projection, view, cubeModel);
+    myLight->update(projection, view, lightModel);
+
+    shapes::instance().cube.update(projection, view, objectModel);
     shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-    cube1->update(projection, view, objectModel);
+
+    cube1->update(projection, view, cubeModel);
 }
 
 void scene1::render() const {
@@ -90,7 +92,6 @@ void scene1::render() const {
     // Model
     glUseProgram(modelShader);
     setPointLight(modelShader, "p1", myLight->getLight());
-
     cube1->draw(modelShader);
 }
 

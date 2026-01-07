@@ -20,6 +20,9 @@ class scene1 {
 
 public:
 
+	model3D* getCube() const { return cube1; }
+	lightSource* getLight() const { return myLight; }
+
 	void init();
 	void update(const float& delta_time);
 	void render() const;

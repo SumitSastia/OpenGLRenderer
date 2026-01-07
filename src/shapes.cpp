@@ -40,7 +40,7 @@ void shape::bindVertices(
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
 }
 
 void shape::bindVertices2D(
@@ -69,7 +69,7 @@ void shape::bindVertices2D(
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
 }
 
 void shape::loadTexture(const char* path) {
@@ -108,7 +108,7 @@ void shape::draw(const unsigned int& shader) const {
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    glUseProgram(0);
+    //glUseProgram(0);
 }
 
 //-------------------------------------------------------------------------------------//

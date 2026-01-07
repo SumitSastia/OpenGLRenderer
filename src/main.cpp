@@ -20,7 +20,7 @@ int frameHeight = 0;
 float balanceVal = 0.5f;
 
 bool isPaused = false;
-bool mouseInCamera = false;
+bool mouseInCamera = true;
 
 bool rotateCube = false;
 bool showLines = false;
@@ -106,6 +106,8 @@ int main(){
     // V-Sync
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, input_callback);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     // SHADER -------------------------------------------------------------------------//
     
@@ -173,13 +175,10 @@ int main(){
 
     // MODELS -------------------------------------------------------------------------//
 
-    //model3D cup("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/backpack/survival_guitar_backpack.obj");
-
     scene1 scene1;
     scene1.init();
 
     glClearColor(0.065f,0.0f,0.1f,1.0f);
-    //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -205,37 +204,11 @@ int main(){
         }
 
         scene1.update(deltaTime);
-
-        // Cube-Rotation
-        /*if(rotateCube){
-            model = glm::rotate(model, glm::radians(1.0f), glm::vec3(1.0,1.0,1.0));
-            normalModel = glm::transpose(glm::inverse(glm::mat3(model)));
-        }*/
         
         // Rendering //
-        //glBindFramebuffer(GL_FRAMEBUFFER, fb1.get_FBO());
-
-        glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         scene1.render();
-
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        //// Screen Texture from FrameBuffer
-        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT);
-
-        //glUseProgram(frameShader);
-        //glBindVertexArray(fb1.get_VAO());
-        //glDisable(GL_DEPTH_TEST);
-
-        //glBindTexture(GL_TEXTURE_2D, fb1.get_TEX());
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindVertexArray(0);
 
         // Events //
         glfwPollEvents();
@@ -243,8 +216,6 @@ int main(){
     }
 
     // TERMINATION --------------------------------------------------------------------//
-
-    //glDeleteProgram(frameShader);
     
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);

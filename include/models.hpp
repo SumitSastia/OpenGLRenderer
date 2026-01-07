@@ -60,6 +60,29 @@ public:
         setupMesh();
     }
 
+    // Disable Copying
+    mesh(const mesh&) = delete;
+    mesh& operator=(const mesh&) = delete;
+
+    // Move
+    mesh(mesh&& other) noexcept {
+        *this = std::move(other);
+    }
+
+    mesh& operator=(mesh&& other) noexcept {
+
+        VBO = other.VBO;
+        VAO = other.VAO;
+        EBO = other.EBO;
+
+        vertices = other.vertices;
+        indices = other.indices;
+        textures = other.textures;
+
+        other.VBO = other.VAO = other.EBO = 0;
+        return *this;
+    }
+
     ~mesh();
 
     void draw(const unsigned int& shader) const ;

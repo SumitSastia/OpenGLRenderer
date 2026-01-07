@@ -65,20 +65,20 @@ public:
     const std::string& getType() const { return type; }
 };
 
-class frame_buffer {
-
-    unsigned int FBO, RBO, VBO, VAO, EBO;
-    unsigned int frameTexture;
-
-public:
-
-    frame_buffer(const int& frameWidth, const int& frameHeight);
-    ~frame_buffer();
-
-    const unsigned int& get_FBO() const { return FBO; }
-    const unsigned int& get_VAO() const { return VAO; }
-    const unsigned int& get_TEX() const { return frameTexture; }
-};
+//class frame_buffer {
+//
+//    unsigned int FBO, RBO, VBO, VAO, EBO;
+//    unsigned int frameTexture;
+//
+//public:
+//
+//    frame_buffer(const int& frameWidth, const int& frameHeight);
+//    ~frame_buffer();
+//
+//    const unsigned int& get_FBO() const { return FBO; }
+//    const unsigned int& get_VAO() const { return VAO; }
+//    const unsigned int& get_TEX() const { return frameTexture; }
+//};
 
 struct material {
     glm::vec3 ambient;

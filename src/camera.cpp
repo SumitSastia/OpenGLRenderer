@@ -18,7 +18,7 @@ camera::camera(){
     aspectRatio = 800.0f/600.0f;
 
     projection = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
-    mouseEnabled = false;
+    mouseEnabled = true;
 
     yaw = -90.0f;
     pitch = 0.0f;
