@@ -84,11 +84,11 @@ void scene1::render() const {
     shapes::instance().square.draw(planeShader);
 
     // Model
-    glUseProgram(modelShader);
+    /*glUseProgram(modelShader);
     cube1->update(projection, view, cubeModel);
     setPointLight(modelShader, "p1", myLight->getLight());
 
-    cube1->draw(modelShader);
+    cube1->draw(modelShader);*/
 }
 
 void scene1::destroy() const {

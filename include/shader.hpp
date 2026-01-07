@@ -67,14 +67,17 @@ public:
 
 class frame_buffer {
 
-    unsigned int FBO;
-    unsigned int RBO;
+    unsigned int FBO, RBO, VBO, VAO;
     unsigned int frameTexture;
 
 public:
 
-    frame_buffer();
+    frame_buffer(const int& frameWidth, const int& frameHeight);
     ~frame_buffer();
+
+    const unsigned int& get_FBO() const { return FBO; }
+    const unsigned int& get_VAO() const { return VAO; }
+    const unsigned int& get_TEX() const { return frameTexture; }
 };
 
 struct material {

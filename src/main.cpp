@@ -87,6 +87,8 @@ int main(){
         cerr << "Unable to Load OpenGL!" << endl;
         return -1;
     }
+
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     
     const unsigned int win_xpos = videoMode->width/2 - WIN_W/2;
     const unsigned int win_ypos = videoMode->height/2 - WIN_H/2;
@@ -176,6 +178,15 @@ int main(){
     scene1 scene1;
     scene1.init();
 
+    frame_buffer fb1(frameWidth, frameHeight);
+    
+    shader sf(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
+    );
+
+    const unsigned int& frameShader = sf.get_program();
+
     glClearColor(0.065f,0.0f,0.1f,1.0f);
     //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -211,9 +222,27 @@ int main(){
         }*/
         
         // Rendering //
+        glBindFramebuffer(GL_FRAMEBUFFER, fb1.get_FBO());
+
+        glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
 
         scene1.render();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(frameShader);
+        glBindVertexArray(fb1.get_VAO());
+        glDisable(GL_DEPTH_TEST);
+
+        glBindTexture(GL_TEXTURE_2D, fb1.get_TEX());
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0);
 
         // Events //
         glfwPollEvents();
@@ -221,6 +250,8 @@ int main(){
     }
 
     // TERMINATION --------------------------------------------------------------------//
+
+    //glDeleteProgram(frameShader);
     
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);

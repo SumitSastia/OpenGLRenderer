@@ -158,48 +158,81 @@ void texture::load(const char* path){
 
 //-------------------------------------------------------------------------------------//
 
-frame_buffer::frame_buffer() {
+frame_buffer::frame_buffer(const int& frameWidth, const int& frameHeight) : VBO(0), VAO(0) {
 
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+    // Texture Attachment
+    glGenTextures(1, &frameTexture);
+    glBindTexture(GL_TEXTURE_2D, frameTexture);
 
-        // Texture Attachment
-        glGenTextures(1, &frameTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
-        glBindTexture(GL_TEXTURE_2D, frameTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIN_W, WIN_H, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameTexture, 0);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, WIN_W, WIN_H, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, frameTexture, 0);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, WIN_W, WIN_H, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-        //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, frameTexture, 0);
+    // Render Object
+    glGenRenderbuffers(1, &RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
-        // Render Object
-        glGenRenderbuffers(1, &RBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIN_W, WIN_H);
-
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cerr << "ERROR :: UNABLE TO COMPLETE FRAME BUFFER!" << std::endl;
     }
     else {
-        std::cerr << "UNABLE TO INITIALIZE THE FRAME BUFFER!" << std::endl;
+
+        // Vertices Binding
+        const float vertices[] = {
+
+            // Position  // Cords
+            -1.0f, 1.0f, 0.0f,1.0f,
+             1.0f, 1.0f, 1.0f,1.0f,
+            -1.0f,-1.0f, 0.0f,0.0f,
+
+             1.0f, 1.0f, 1.0f,1.0f,
+             1.0f,-1.0f, 1.0f,0.0f,
+            -1.0f,-1.0f, 0.0f,0.0f
+        };
+
+        glGenBuffers(1, &VBO);
+        glGenVertexArrays(1, &VAO);
+
+        glBindVertexArray(VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        glBindVertexArray(0);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 frame_buffer::~frame_buffer() {
+
     glDeleteFramebuffers(1, &FBO);
+    glDeleteRenderbuffers(1, &RBO);
+
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
 }
 
 //-------------------------------------------------------------------------------------//
