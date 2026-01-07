@@ -158,7 +158,7 @@ void texture::load(const char* path){
 
 //-------------------------------------------------------------------------------------//
 
-frame_buffer::frame_buffer(const int& frameWidth, const int& frameHeight) : VBO(0), VAO(0) {
+frame_buffer::frame_buffer(const int& frameWidth, const int& frameHeight) {
 
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -171,22 +171,22 @@ frame_buffer::frame_buffer(const int& frameWidth, const int& frameHeight) : VBO(
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameTexture, 0);
 
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, WIN_W, WIN_H, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
     //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, frameTexture, 0);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Render Object
     glGenRenderbuffers(1, &RBO);
     glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cerr << "ERROR :: UNABLE TO COMPLETE FRAME BUFFER!" << std::endl;
@@ -201,12 +201,18 @@ frame_buffer::frame_buffer(const int& frameWidth, const int& frameHeight) : VBO(
              1.0f, 1.0f, 1.0f,1.0f,
             -1.0f,-1.0f, 0.0f,0.0f,
 
-             1.0f, 1.0f, 1.0f,1.0f,
+             //1.0f, 1.0f, 1.0f,1.0f,
              1.0f,-1.0f, 1.0f,0.0f,
-            -1.0f,-1.0f, 0.0f,0.0f
+            //-1.0f,-1.0f, 0.0f,0.0f
         };
 
-        glGenBuffers(1, &VBO);
+        const unsigned int indices[] = {
+            0,1,2,
+            1,3,2
+        };
+
+        /*glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
         glGenVertexArrays(1, &VAO);
 
         glBindVertexArray(VAO);
@@ -214,13 +220,18 @@ frame_buffer::frame_buffer(const int& frameWidth, const int& frameHeight) : VBO(
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        glBindVertexArray(0);
+        glBindVertexArray(0);*/
+
+        //std::cout << "VBO: " << VBO << ", VAO: " << VAO << std::endl;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

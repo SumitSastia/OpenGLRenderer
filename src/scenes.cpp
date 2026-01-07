@@ -1,5 +1,6 @@
 #include <scenes.hpp>
 #include <camera.hpp>
+#include <iostream>
 
 void scene1::init() {
 
@@ -50,17 +51,24 @@ void scene1::init() {
     myLight->setPosition(glm::vec3(3.0f, 1.5f, -3.0f));
 
     // Models
-    cube1 = new model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
+    cube1 = new model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/Untitled.obj");
 }
 
 void scene1::update(const float& delta_time) {
+
+    const glm::mat4& projection = camera::instance().getPerspective();
+    const glm::mat4& view = camera::instance().getView();
 
     // Light-Rotation
     float rotationSpeed = 1.0f;
     lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0f,1.0f,0.0f)) * lightModel;
 
-    myLight->update(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
+    myLight->update(projection, view, lightModel);
     lights::instance().update();
+
+    shapes::instance().cube.update(projection, view, cubeModel);
+    shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+    cube1->update(projection, view, objectModel);
 }
 
 void scene1::render() const {
@@ -73,22 +81,17 @@ void scene1::render() const {
 
     // Object
     glUseProgram(textureShader);
-
-    shapes::instance().cube.update(projection, view, objectModel);
     setPointLight(textureShader, "p1", myLight->getLight());
-
     shapes::instance().cube.draw(textureShader);
 
     // Plane
-    shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
     shapes::instance().square.draw(planeShader);
 
     // Model
-    /*glUseProgram(modelShader);
-    cube1->update(projection, view, cubeModel);
+    glUseProgram(modelShader);
     setPointLight(modelShader, "p1", myLight->getLight());
 
-    cube1->draw(modelShader);*/
+    cube1->draw(modelShader);
 }
 
 void scene1::destroy() const {

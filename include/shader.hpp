@@ -67,7 +67,7 @@ public:
 
 class frame_buffer {
 
-    unsigned int FBO, RBO, VBO, VAO;
+    unsigned int FBO, RBO, VBO, VAO, EBO;
     unsigned int frameTexture;
 
 public:

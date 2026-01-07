@@ -107,7 +107,14 @@ void mesh::draw(const unsigned int& shader) const {
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
+    /*for (unsigned int i = 0; i < size; i++) {
+
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }*/
+    //std::cout << VAO << std::endl;
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 //-------------------------------------------------------------------------------------//
@@ -265,4 +272,5 @@ void model3D::draw(const unsigned int& shader) const {
     }
 
     glFrontFace(GL_CCW);
+    //glUseProgram(0);
 }
