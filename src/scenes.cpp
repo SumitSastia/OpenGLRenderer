@@ -42,7 +42,7 @@ void scene1::init() {
     lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -3.0f));
     lightModel = glm::scale(lightModel, glm::vec3(0.5f));
 
-    cubeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
+    cubeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 7.0f));
     cubeModel = glm::scale(cubeModel, glm::vec3(0.75f));
 
     // Light-Source

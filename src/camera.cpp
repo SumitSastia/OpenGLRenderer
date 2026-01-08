@@ -1,7 +1,8 @@
 #include <camera.h>
+#include <shader.h>
 #include <iostream>
 
-camera::camera(){
+camera::camera() {
 
     position = glm::vec3(0.0f, 0.0f, 3.0f);
     target = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -23,6 +24,8 @@ camera::camera(){
     yaw = -90.0f;
     pitch = 0.0f;
 
+    // Player Movements
+    Uturn = false;
 }
 
 camera& camera::instance() {
@@ -30,12 +33,46 @@ camera& camera::instance() {
     return instance;
 }
 
+void camera::update(const float& delta_time) {
+
+    if (Uturn) {
+        mouseEnabled = false;
+        
+        if (yaw < yaw_initial + 180.0f) {
+            yaw += 2.0f;
+        }
+        else {
+            Uturn = false;
+            mouseEnabled = true;
+        }
+    }
+
+    glm::vec3 new_direction;
+
+    new_direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    new_direction.y = sin(glm::radians(pitch));
+    new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+    target = glm::normalize(new_direction);
+
+    look_at();
+}
+
 void camera::set_position(const glm::vec3 position){
     this->position = position;
 }
 
 void camera::set_target(const glm::vec3 target){
+
     this->target = target;
+
+    glm::vec3 target_norm = glm::normalize(target);
+
+    pitch = asin(target_norm.y);
+    yaw = atan2(target_norm.z, target_norm.x);
+
+    pitch = glm::degrees(pitch);
+    yaw = glm::degrees(yaw);
 }
 
 void camera::set_speed(const float speed){
@@ -58,14 +95,18 @@ void camera::set_aspect(const int frameWidth, const int frameHeight){
     projection = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
 }
 
+void camera::set_yaw(const float& yaw) {
+    this->yaw = yaw;
+}
+
 void camera::look_at(){
     viewMatrix = glm::lookAt(position, position + target, up_axis);
 }
 
 void camera::input_handler(GLFWwindow* window, float deltaTime){
 
-    
     static bool PRESSED_E = false;
+    static bool PRESSED_X = false;
     
     if(glfwGetKey(window,GLFW_KEY_W)){
         position += target * camSpeed * deltaTime;
@@ -112,6 +153,18 @@ void camera::input_handler(GLFWwindow* window, float deltaTime){
     else{
         PRESSED_E = false;
     }
+
+    if (glfwGetKey(window, GLFW_KEY_X)) {
+
+        if (!PRESSED_X) {
+            Uturn = true;
+            yaw_initial = yaw;
+            PRESSED_X = true;
+        }
+    }
+    else {
+        PRESSED_X = false;
+    }
 }
 
 void camera::mouse_handler(GLFWwindow* window){
@@ -144,16 +197,6 @@ void camera::mouse_handler(GLFWwindow* window){
 
     if(pitch > 89.0f) pitch = 89.0f;
     if(pitch < -89.0f) pitch = -89.0f;
-
-    glm::vec3 new_direction;
-
-    new_direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    new_direction.y = sin(glm::radians(pitch));
-    new_direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-    target = glm::normalize(new_direction);
-
-    // std::cout << new_direction.x << std::endl;
 }
 
 void camera::scroll_handler(float &scrollOffset){

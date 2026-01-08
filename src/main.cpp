@@ -167,8 +167,6 @@ int main(){
 
     glClearColor(0.065f,0.0f,0.1f,1.0f);
 
-    //cout << frameWidth << ", " << frameHeight << endl;
-
     // OPENGL LOOP --------------------------------------------------------------------//
 
     while(!glfwWindowShouldClose(window) && isRunning){
@@ -181,36 +179,73 @@ int main(){
         // Camera
         cam.input_handler(window,deltaTime);
         cam.mouse_handler(window);
+        
         cam.scroll_handler(scrollOffset);
         
-        cam.look_at();
+        //cam.look_at();
         
         // Updates //
         if(!isPaused){
-            lights::instance().flashlight.isVisible = useFlashLight;
-        }
 
-        scene1.update(deltaTime);
+            cam.update(deltaTime);
+            lights::instance().flashlight.isVisible = useFlashLight;
+            scene1.update(deltaTime);
+        }
         
         // Rendering //
+
+        // Sampling Updated Scene in FrameBuffer
+
         glBindFramebuffer(GL_FRAMEBUFFER, fb1.get_FBO());
+        //glViewport(0,0, WIN_W, WIN_H);
+
+        glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        // Rotate Camera by 180
+        cam.set_yaw( cam.get_yaw() + 180.0f);
+        cam.update(deltaTime);
+        scene1.update(deltaTime);
+        scene1.render();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Rotate Camera by 180
+        //cam.set_target(-cam.getTarget());
+        
+
+        // Normal Scene
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
+        cam.set_yaw(cam.get_yaw() - 180.0f);
+        cam.update(deltaTime);
+        scene1.update(deltaTime);
         scene1.render();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        // Rendering FrameBuffer
+        glDisable(GL_DEPTH_TEST);
 
         glUseProgram(frameShader);
+        setBool(frameShader, "normalRender", true);
+
+        glm::mat4 screenModel(1.0f);
+        screenModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.8f, 0.0f));
+        screenModel = glm::scale(screenModel, glm::vec3(0.2f));
+
+        setMat4(frameShader, "model", screenModel);
+
         glBindVertexArray(fb1.get_VAO());
 
-        glDisable(GL_DEPTH_TEST);
         glBindTexture(GL_TEXTURE_2D, fb1.get_TEX());
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // Safety
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0);
 
         // Events //
         glfwPollEvents();
@@ -241,8 +276,6 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
         glfwSetWindowShouldClose(window,GLFW_TRUE);
     }
 
-    isPaused = (glfwGetKey(window, GLFW_KEY_F))? !isPaused : isPaused;
-
     if(glfwGetKey(window, GLFW_KEY_E)){
 
         if(!mouseInCamera){
@@ -259,6 +292,7 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
     rotateCube = glfwGetKey(window, GLFW_KEY_R);
 
     // Toggle
+    isPaused = (glfwGetKey(window, GLFW_KEY_F))? !isPaused : isPaused;
     showLines = (glfwGetKey(window, GLFW_KEY_L))? !showLines : showLines;
     useFlashLight = (glfwGetKey(window, GLFW_KEY_T))? !useFlashLight : useFlashLight;
 }

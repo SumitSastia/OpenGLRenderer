@@ -222,8 +222,6 @@ frame_buffer::frame_buffer(const int& frameWidth, const int& frameHeight) {
         glEnableVertexAttribArray(1);
 
         glBindVertexArray(0);
-
-        //std::cout << "VBO: " << VBO << ", VAO: " << VAO << std::endl;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -276,6 +274,14 @@ materials::materials(){
     chrome.diffuse = glm::vec3(0.4f);
     chrome.specular = glm::vec3(0.774f);
     chrome.shininess = 76.8f;
+}
+
+void setBool(const unsigned int& shaderProgram, const char* target, const bool& value) {
+
+    glUniform1i(
+        glGetUniformLocation(shaderProgram, target),
+        value
+    );
 }
 
 void setInt(const unsigned int &shaderProgram, const char* target, const int &value){

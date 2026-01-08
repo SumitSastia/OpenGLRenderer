@@ -95,6 +95,8 @@ struct materials {
     static materials& instance();
 };
 
+void setBool(const unsigned int& shaderProgram, const char* target, const bool& value);
+
 void setInt(const unsigned int &shaderProgram, const char* target, const int &value);
 
 void setFloat(const unsigned int &shaderProgram, const char* target, const float &value);

@@ -24,18 +24,25 @@ class camera{
     float camSensitivity;
 
     float yaw; // y-axis rotation
+    float yaw_initial;
+
     float pitch; // x-axis rotation
+    float pitch_initial;
 
     float fov;
     float aspectRatio;
 
     bool mouseEnabled;
 
+    // Player Movements
+    bool Uturn;
+
 public:
 
     camera();
     static camera& instance();
 
+    void update(const float& delta_time);
     void look_at();
     void input_handler(GLFWwindow* window, float deltaTime);
     void mouse_handler(GLFWwindow* window);
@@ -46,6 +53,9 @@ public:
     void set_target(const glm::vec3 target);
     void set_fov(const float fov);
     void set_aspect(const int frameWidth, const int frameHeight);
+    void set_yaw(const float& yaw);
+
+    float get_yaw() const { return yaw; }
 
     glm::vec3 getPos() const { return position; }
     glm::mat4 getView() const { return viewMatrix; }
