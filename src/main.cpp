@@ -151,21 +151,39 @@ int main(){
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    // MODELS -------------------------------------------------------------------------//
+    // CUBEMAPS -----------------------------------------------------------------------//
+
+    vector <string> cubemapFaces = {
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Right.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Left.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Top.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Bottom.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Front.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Back.bmp"
+    };
+
+    const unsigned int cubemapShader = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.frag"
+    );
+
+    cubeMap cm1(cubemapFaces);
+
+    // SCENES -------------------------------------------------------------------------//
 
     scene1 scene1;
     scene1.init();
 
     frame_buffer fb1(frameWidth, frameHeight);
 
-    shader frameS(
+    const unsigned int frameShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
     );
 
-    const unsigned int& frameShader = frameS.get_program();
-
-    glClearColor(0.065f,0.0f,0.1f,1.0f);
+    const unsigned int& frameBuffer = fb1.get_FBO();
+    const unsigned int& frameTexture = fb1.get_TEX();
+    const unsigned int& frameVAO = fb1.get_VAO();
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -179,71 +197,68 @@ int main(){
         // Camera
         cam.input_handler(window,deltaTime);
         cam.mouse_handler(window);
-        
         cam.scroll_handler(scrollOffset);
-        
-        //cam.look_at();
+        cam.update(deltaTime);
         
         // Updates //
         if(!isPaused){
 
-            cam.update(deltaTime);
             lights::instance().flashlight.isVisible = useFlashLight;
             scene1.update(deltaTime);
         }
         
         // Rendering //
 
-        // Sampling Updated Scene in FrameBuffer
-
-        glBindFramebuffer(GL_FRAMEBUFFER, fb1.get_FBO());
-        //glViewport(0,0, WIN_W, WIN_H);
-
-        glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        // Rotate Camera by 180
-        cam.set_yaw( cam.get_yaw() + 180.0f);
-        cam.update(deltaTime);
-        scene1.update(deltaTime);
-        scene1.render();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        // Rotate Camera by 180
-        //cam.set_target(-cam.getTarget());
-        
-
-        // Normal Scene
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // Sampling Scene in FrameBuffer
+        //glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
         glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-        cam.set_yaw(cam.get_yaw() - 180.0f);
-        cam.update(deltaTime);
-        scene1.update(deltaTime);
+        // Main Scene
+        glDepthMask(GL_TRUE);
+        glEnable(GL_CULL_FACE);
+
         scene1.render();
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Skybox
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_CULL_FACE);
+        glUseProgram(cubemapShader);
+
+        setMat4(cubemapShader, "projection", cam.getPerspective());
+        //setMat4(cubemapShader, "view", cam.getView());
+        setMat4(cubemapShader, "view", glm::mat4(glm::mat3(cam.getView())));
+
+        glBindVertexArray(cm1.get_VAO());
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cm1.get_ID());
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glDepthFunc(GL_LESS);
+        glDepthMask(GL_TRUE);
+        glEnable(GL_CULL_FACE);
+
+        scene1.render_transparent();
 
         // Rendering FrameBuffer
-        glDisable(GL_DEPTH_TEST);
+        /*glDisable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(frameShader);
         setBool(frameShader, "normalRender", true);
+        setMat4(frameShader, "model", glm::mat4(1.0f));
 
-        glm::mat4 screenModel(1.0f);
-        screenModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.8f, 0.0f));
-        screenModel = glm::scale(screenModel, glm::vec3(0.2f));
+        glBindVertexArray(frameVAO);
 
-        setMat4(frameShader, "model", screenModel);
-
-        glBindVertexArray(fb1.get_VAO());
-
-        glBindTexture(GL_TEXTURE_2D, fb1.get_TEX());
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindTexture(GL_TEXTURE_2D, frameTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 6);*/
 
         // Safety
-
+        glUseProgram(0);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindVertexArray(0);
 
@@ -254,6 +269,8 @@ int main(){
 
     // TERMINATION --------------------------------------------------------------------//
     
+    glDeleteProgram(frameShader);
+
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);
     glfwTerminate();

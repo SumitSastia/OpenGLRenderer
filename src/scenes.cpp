@@ -4,37 +4,31 @@
 
 void scene1::init() {
 
-    shader s1(
+    // Shaders
+    lineShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/lines.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/lines.frag"
     );
 
-    shader s2(
+    lightShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.frag"
     );
 
-    shader s3(
+    textureShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.frag"
     );
 
-    shader s4(
+    modelShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/model.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/model.frag"
     );
 
-    shader s5(
+    planeShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes.frag"
     );
-
-    // Shaders
-    lineShader = s1.get_program();
-    lightShader = s2.get_program();
-    textureShader = s3.get_program();
-    modelShader = s4.get_program();
-    planeShader = s5.get_program();
 
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
@@ -87,12 +81,17 @@ void scene1::render() const {
     shapes::instance().cube.draw(textureShader);
 
     // Plane
-    shapes::instance().square.draw(planeShader);
+    //shapes::instance().square.draw(planeShader);
 
     // Model
     glUseProgram(modelShader);
     setPointLight(modelShader, "p1", myLight->getLight());
     cube1->draw(modelShader);
+}
+
+void scene1::render_transparent() const {
+    // Plane
+    shapes::instance().square.draw(planeShader);
 }
 
 void scene1::destroy() const {

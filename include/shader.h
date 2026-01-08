@@ -13,19 +13,8 @@
 constexpr auto WIN_W = 1120;
 constexpr auto WIN_H = 700;
 
-class shader {
-
-    unsigned int vertexShader;
-    unsigned int fragmentShader;
-    unsigned int shaderProgram;
-
-public:
-
-    shader(const char* vertPath, const char* fragPath);
-
-    std::string loadShader(const char* path);
-    const unsigned int& get_program() const { return shaderProgram; }
-};
+std::string loadShaderFile(const char* path);
+const unsigned int& createShader(const char* vertPath, const char* fragPath);
 
 class line {
 

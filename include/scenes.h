@@ -26,6 +26,7 @@ public:
 	void init();
 	void update(const float& delta_time);
 	void render() const;
+	void render_transparent() const;
 
 	void destroy() const;
 };

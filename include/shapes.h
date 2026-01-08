@@ -48,4 +48,17 @@ struct shapes {
     static shapes& instance();
 };
 
+class cubeMap {
+    
+    unsigned int VBO, VAO, textureID;
+
+public:
+
+    cubeMap(const std::vector <std::string>& textureFaces);
+    ~cubeMap();
+
+    const unsigned int& get_VAO() const { return VAO; }
+    const unsigned int& get_ID() const { return textureID; }
+};
+
 #endif

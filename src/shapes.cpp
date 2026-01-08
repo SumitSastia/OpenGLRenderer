@@ -1,6 +1,8 @@
 #include <shapes.h>
 #include <camera.h>
 #include <lights.h>
+#include <stb_image.h>
+
 #include <iostream>
 
 shape::~shape() {
@@ -40,7 +42,7 @@ void shape::bindVertices(
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    //glBindVertexArray(0);
+    glBindVertexArray(0);
 }
 
 void shape::bindVertices2D(
@@ -69,7 +71,7 @@ void shape::bindVertices2D(
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    //glBindVertexArray(0);
+    glBindVertexArray(0);
 }
 
 void shape::loadTexture(const char* path) {
@@ -207,4 +209,111 @@ shapes::shapes(){
 
     square.bindVertices2D(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
     square.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/window_tint.png");
+}
+
+//-------------------------------------------------------------------------------------//
+
+cubeMap::cubeMap(const std::vector <std::string>& textureFaces) {
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    unsigned char* pixelData;
+    int width, height, nrChannels;
+
+    const unsigned int size = textureFaces.size();
+
+    for (unsigned int i = 0; i < size; i++) {
+
+        pixelData = stbi_load(
+            textureFaces[i].c_str(),
+            &width, &height,
+            &nrChannels, 0
+        );
+
+        if (pixelData) {
+
+            glTexImage2D(
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, width, height,
+                0, GL_RGB, GL_UNSIGNED_BYTE, pixelData
+            );
+        }
+        else {
+            std::cerr << "ERROR :: FAILED TO LOAD CUBEMAP!" << std::endl;
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    stbi_image_free(pixelData);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    const float skyboxVertices[] = {
+                  
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };
+
+    glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &VAO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+}
+
+cubeMap::~cubeMap() {
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteTextures(1, &textureID);
 }
