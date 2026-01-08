@@ -1,6 +1,6 @@
-#include <lights.hpp>
-#include <shader.hpp>
-#include <camera.hpp>
+#include <lights.h>
+#include <shader.h>
+#include <camera.h>
 
 lights& lights::instance() {
     static lights instance;

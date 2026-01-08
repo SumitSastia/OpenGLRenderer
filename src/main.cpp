@@ -3,12 +3,12 @@
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
-#include <shader.hpp>
-#include <camera.hpp>
-#include <lights.hpp>
-#include <models.hpp>
-#include <shapes.hpp>
-#include <scenes.hpp>
+#include <shader.h>
+#include <camera.h>
+#include <lights.h>
+#include <models.h>
+#include <shapes.h>
+#include <scenes.h>
 
 using namespace std;
 
@@ -133,28 +133,6 @@ int main(){
 
     cam.set_aspect(frameWidth, frameHeight);
     cam.set_position(glm::vec3(0.0f,0.0f,3.0f));
-    
-    // GL MATHEMATICS -----------------------------------------------------------------//
-    
-    glm::mat4 model(1.0f);
-    glm::mat4 view(1.0f);
-    glm::mat4 projection = cam.getPerspective();
-
-    glm::vec3 cubePos(0.0f,0.0f, 0.0f);
-    model = glm::translate(model, cubePos);
-
-    glm::mat3 normalModel(1.0f);
-
-    // LIGHTING -----------------------------------------------------------------------//
-
-    // LINES --------------------------------------------------------------------------//
-
-    line line1;
-    line1.initLines(glm::vec3(0.0f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f));
-
-    glm::vec3 top_normal(0.0f,3.0f,0.0f);
-    line line2;
-    line2.initLines(cubePos, top_normal);
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -178,7 +156,18 @@ int main(){
     scene1 scene1;
     scene1.init();
 
+    frame_buffer fb1(frameWidth, frameHeight);
+
+    shader frameS(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
+    );
+
+    const unsigned int& frameShader = frameS.get_program();
+
     glClearColor(0.065f,0.0f,0.1f,1.0f);
+
+    //cout << frameWidth << ", " << frameHeight << endl;
 
     // OPENGL LOOP --------------------------------------------------------------------//
 
@@ -195,8 +184,6 @@ int main(){
         cam.scroll_handler(scrollOffset);
         
         cam.look_at();
-        view = cam.getView();
-        projection = cam.getPerspective();
         
         // Updates //
         if(!isPaused){
@@ -206,9 +193,24 @@ int main(){
         scene1.update(deltaTime);
         
         // Rendering //
+        glBindFramebuffer(GL_FRAMEBUFFER, fb1.get_FBO());
+
+        glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
 
         scene1.render();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(frameShader);
+        glBindVertexArray(fb1.get_VAO());
+
+        glDisable(GL_DEPTH_TEST);
+        glBindTexture(GL_TEXTURE_2D, fb1.get_TEX());
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // Events //
         glfwPollEvents();

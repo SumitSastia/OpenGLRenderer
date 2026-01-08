@@ -1,7 +1,7 @@
-#include <models.hpp>
-#include <shader.hpp>
-#include <camera.hpp>
-#include <lights.hpp>
+#include <models.h>
+#include <shader.h>
+#include <camera.h>
+#include <lights.h>
 
 #include <iostream>
 #include <stb_image.h>

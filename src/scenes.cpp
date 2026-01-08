@@ -1,5 +1,5 @@
-#include <scenes.hpp>
-#include <camera.hpp>
+#include <scenes.h>
+#include <camera.h>
 #include <iostream>
 
 void scene1::init() {

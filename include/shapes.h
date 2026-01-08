@@ -1,8 +1,8 @@
 #ifndef SHAPES_HPP
 #define SHAPES_HPP
 
-#include <shader.hpp>
-#include <models.hpp>
+#include <shader.h>
+#include <models.h>
 
 // Hardcoded Models
 struct shape {

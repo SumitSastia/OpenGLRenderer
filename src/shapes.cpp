@@ -1,6 +1,6 @@
-#include <shapes.hpp>
-#include <camera.hpp>
-#include <lights.hpp>
+#include <shapes.h>
+#include <camera.h>
+#include <lights.h>
 #include <iostream>
 
 shape::~shape() {

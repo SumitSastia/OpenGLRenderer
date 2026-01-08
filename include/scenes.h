@@ -1,8 +1,8 @@
 #ifndef SCENES_HPP
 #define SCENES_HPP
 
-#include <shader.hpp>
-#include <lights.hpp>
+#include <shader.h>
+#include <lights.h>
 
 class scene1 {
 
