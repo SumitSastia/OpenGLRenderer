@@ -147,10 +147,16 @@ void main(){
     FragColor = vec4(ambientLight + finalColor, 1.0);
     */
 
-    // Reflection from Skybox
-
     vec3 incident_ray = normalize(vPos - viewPos);
-    vec3 reflected_ray = reflect(incident_ray, normal);
 
+    // Reflection of Skybox
+    vec3 reflected_ray = reflect(incident_ray, normal);
     FragColor = vec4(texture(skybox, reflected_ray).rgb, 1.0);
+
+    // Refraction
+
+    float ratio = 1.00 / 1.52;
+    vec3 refracted_ray = refract(incident_ray, normal, ratio);
+    FragColor = vec4(texture(skybox, refracted_ray).rgb, 1.0);
+
 }
