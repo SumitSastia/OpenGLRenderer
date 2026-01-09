@@ -153,25 +153,9 @@ int main(){
 
     // CUBEMAPS -----------------------------------------------------------------------//
 
-    vector <string> cubemapFaces = {
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Right.bmp",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Left.bmp",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Top.bmp",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Bottom.bmp",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Front.bmp",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Back.bmp"
-    };
-
-    const unsigned int cubemapShader = createShader(
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.frag"
-    );
-
-    cubeMap cm1(cubemapFaces);
-
     // SCENES -------------------------------------------------------------------------//
 
-    scene1 scene1;
+    scene1 scene1{};
     scene1.init();
 
     frame_buffer fb1(frameWidth, frameHeight);
@@ -209,8 +193,8 @@ int main(){
         
         // Rendering //
 
-        // Sampling Scene in FrameBuffer
-        //glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        // Sampling Start in FrameBuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
         glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -221,31 +205,13 @@ int main(){
         glEnable(GL_CULL_FACE);
 
         scene1.render();
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        // Skybox
-        glDepthFunc(GL_LEQUAL);
-        glDepthMask(GL_FALSE);
-        glDisable(GL_CULL_FACE);
-        glUseProgram(cubemapShader);
-
-        setMat4(cubemapShader, "projection", cam.getPerspective());
-        //setMat4(cubemapShader, "view", cam.getView());
-        setMat4(cubemapShader, "view", glm::mat4(glm::mat3(cam.getView())));
-
-        glBindVertexArray(cm1.get_VAO());
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cm1.get_ID());
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glDepthFunc(GL_LESS);
-        glDepthMask(GL_TRUE);
-        glEnable(GL_CULL_FACE);
-
         scene1.render_transparent();
 
+        // Sampling Stop
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
         // Rendering FrameBuffer
-        /*glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(frameShader);
@@ -255,7 +221,7 @@ int main(){
         glBindVertexArray(frameVAO);
 
         glBindTexture(GL_TEXTURE_2D, frameTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 6);*/
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // Safety
         glUseProgram(0);

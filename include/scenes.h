@@ -7,7 +7,7 @@
 class scene1 {
 
 	// Objects
-	unsigned int lineShader, lightShader, planeShader, modelShader, textureShader;
+	unsigned int lineShader, lightShader, planeShader, modelShader, textureShader, cubemapShader;
 	model3D* cube1;
 
 	// Light-Source
@@ -17,6 +17,9 @@ class scene1 {
 	glm::mat4 objectModel;
 	glm::mat4 lightModel;
 	glm::mat4 cubeModel;
+
+	// Skybox
+	cubeMap* skybox;
 
 public:
 

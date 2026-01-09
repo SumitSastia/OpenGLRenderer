@@ -54,6 +54,8 @@ uniform spotLight s1;
 uniform directionalLight d1;
 uniform pointLight p1;
 
+uniform samplerCube skybox;
+
 vec3 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1, vec3 t2){
 
     vec3 lightDirection = normalize(pl.position - vPos);
@@ -124,10 +126,9 @@ vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1,
 
 void main(){
 
-    // Ignoring Cube Light-Source
-
     vec3 normal = normalize(vNormal);
 
+    /*
     vec3 t1 = vec3(texture(texture1, vTextureCords));
     vec3 t2 = vec3(texture(texture1, vTextureCords));
 
@@ -144,4 +145,12 @@ void main(){
     }
 
     FragColor = vec4(ambientLight + finalColor, 1.0);
+    */
+
+    // Reflection from Skybox
+
+    vec3 incident_ray = normalize(vPos - viewPos);
+    vec3 reflected_ray = reflect(incident_ray, normal);
+
+    FragColor = vec4(texture(skybox, reflected_ray).rgb, 1.0);
 }

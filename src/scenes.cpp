@@ -30,6 +30,11 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes.frag"
     );
 
+    cubemapShader = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.frag"
+    );
+
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -46,6 +51,18 @@ void scene1::init() {
 
     // Models
     cube1 = new model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
+
+    // Skybox
+    std::vector <std::string> cubemapFaces = {
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Right.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Left.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Top.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Bottom.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Front.bmp",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/skybox/Daylight_Box_Back.bmp"
+    };
+
+    skybox = new cubeMap(cubemapFaces);
 }
 
 void scene1::update(const float& delta_time) {
@@ -80,16 +97,32 @@ void scene1::render() const {
     setPointLight(textureShader, "p1", myLight->getLight());
     shapes::instance().cube.draw(textureShader);
 
-    // Plane
-    //shapes::instance().square.draw(planeShader);
-
     // Model
     glUseProgram(modelShader);
     setPointLight(modelShader, "p1", myLight->getLight());
     cube1->draw(modelShader);
+
+    // Skybox
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_FALSE);
+    glDisable(GL_CULL_FACE);
+    glUseProgram(cubemapShader);
+
+    setMat4(cubemapShader, "projection", projection);
+    setMat4(cubemapShader, "view", glm::mat4(glm::mat3(view)));
+
+    glBindVertexArray(skybox->get_VAO());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->get_ID());
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
+    glEnable(GL_CULL_FACE);
 }
 
 void scene1::render_transparent() const {
+
     // Plane
     shapes::instance().square.draw(planeShader);
 }
@@ -104,4 +137,5 @@ void scene1::destroy() const {
 
     delete myLight;
     delete cube1;
+    delete skybox;
 }
