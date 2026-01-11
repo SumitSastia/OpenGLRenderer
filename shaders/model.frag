@@ -133,12 +133,11 @@ void main(){
     vec3 finalColor = vec3(0.0);
 
     finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
-    // // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
+    // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
 
     if(s1.isVisible){
         finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
     }
 
-    FragColor = vec4(ambientLight + finalColor, 0.5);
-    // FragColor = vec4(1,1,1,1);
+    FragColor = vec4(ambientLight + finalColor, 0.75);
 }

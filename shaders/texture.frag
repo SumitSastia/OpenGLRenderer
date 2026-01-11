@@ -127,10 +127,9 @@ vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1,
 void main(){
 
     vec3 normal = normalize(vNormal);
-
-    /*
+    
     vec3 t1 = vec3(texture(texture1, vTextureCords));
-    vec3 t2 = vec3(texture(texture1, vTextureCords));
+    vec3 t2 = vec3(texture(texture2, vTextureCords));
 
     // Ambient
     vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);
@@ -145,18 +144,28 @@ void main(){
     }
 
     FragColor = vec4(ambientLight + finalColor, 1.0);
-    */
+    
 
     vec3 incident_ray = normalize(vPos - viewPos);
 
     // Reflection of Skybox
     vec3 reflected_ray = reflect(incident_ray, normal);
-    FragColor = vec4(texture(skybox, reflected_ray).rgb, 1.0);
+    vec4 reflected_color = vec4(texture(skybox, reflected_ray).rgb, 1.0);
+
+    vec4 skybox_tex = texture(skybox, reflected_ray);
+    float avg_ambient = (skybox_tex.x + skybox_tex.y + skybox_tex.z) / 3.00;
+
+    ambientLight = ((m1.ambient + avg_ambient) * t1);
+    FragColor = vec4(ambientLight + finalColor + 0.1*skybox_tex.rgb , 1.0);
+
+    //if (gl_FrontFacing){
+    //    FragColor = vec4(0.25 * vec3(texture(texture1, vTextureCords)), 1.0);
+    //}
 
     // Refraction
 
-    float ratio = 1.00 / 1.52;
-    vec3 refracted_ray = refract(incident_ray, normal, ratio);
-    FragColor = vec4(texture(skybox, refracted_ray).rgb, 1.0);
+    //float ratio = 1.00 / 1.52;
+    //vec3 refracted_ray = refract(incident_ray, normal, ratio);
+    //FragColor = vec4(texture(skybox, refracted_ray).rgb, 1.0);
 
 }

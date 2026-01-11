@@ -15,6 +15,7 @@ constexpr auto WIN_H = 700;
 
 std::string loadShaderFile(const char* path);
 const unsigned int& createShader(const char* vertPath, const char* fragPath);
+const unsigned int& createShader2(const char* vertPath, const char* geomPath, const char* fragPath);
 
 class line {
 

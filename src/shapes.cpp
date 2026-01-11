@@ -74,8 +74,10 @@ void shape::bindVertices2D(
     glBindVertexArray(0);
 }
 
-void shape::loadTexture(const char* path) {
-    shapeTexture.load(path);
+void shape::loadTexture(const char* diffusePath, const char* specularPath) {
+
+    shapeDiffuseTexture.load(diffusePath);
+    shapeSpecularTexture.load(specularPath);
 }
 
 void shape::update(
@@ -103,14 +105,17 @@ void shape::draw(const unsigned int& shader) const {
     setInt(shader, "texture1", 0);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, shapeTexture.getID());
+    glBindTexture(GL_TEXTURE_2D, shapeDiffuseTexture.getID());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, shapeSpecularTexture.getID());
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    //glUseProgram(0);
+    glActiveTexture(GL_TEXTURE0);
 }
 
 //-------------------------------------------------------------------------------------//
@@ -189,7 +194,10 @@ shapes::shapes(){
     };
 
     cube.bindVertices(vertices, sizeof(vertices), indices, sizeof(indices));
-    cube.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wood_box.png");
+    cube.loadTexture(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wood_box.png",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/metal_frame.png"
+    );
 
     float vertices2[] = {
 
@@ -208,7 +216,10 @@ shapes::shapes(){
     };
 
     square.bindVertices2D(vertices2, sizeof(vertices2), indices2, sizeof(indices2));
-    square.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/window_tint.png");
+    square.loadTexture(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/window_tint.png",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/window_tint.png"
+    );
 }
 
 //-------------------------------------------------------------------------------------//

@@ -10,7 +10,8 @@ struct shape {
     unsigned int VBO, VAO, EBO;
     unsigned int indicesCount;
 
-    texture shapeTexture;
+    texture shapeDiffuseTexture;
+    texture shapeSpecularTexture;
 
     glm::mat4 projection;
     glm::mat4 view;
@@ -28,7 +29,7 @@ struct shape {
         const unsigned int* indices, const size_t& size_i
     );
 
-    void loadTexture(const char* path);
+    void loadTexture(const char* diffusePath, const char* specularPath);
 
     void update(
         const glm::mat4& projection,

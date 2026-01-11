@@ -15,8 +15,9 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.frag"
     );
 
-    textureShader = createShader(
+    textureShader = createShader2(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.geom",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.frag"
     );
 
@@ -74,33 +75,24 @@ void scene1::update(const float& delta_time) {
     float rotationSpeed = 1.0f;
     lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0f,1.0f,0.0f)) * lightModel;
 
-    lights::instance().update();
-
-    myLight->update(projection, view, lightModel);
-
-    shapes::instance().cube.update(projection, view, objectModel);
-    shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-
-    cube1->update(projection, view, cubeModel);
 }
 
 void scene1::render() const {
 
     const glm::mat4& projection = camera::instance().getPerspective();
     const glm::mat4& view = camera::instance().getView();
+    
+    lights::instance().update();
 
     // Light-Source
+    myLight->update(projection, view, lightModel);
     myLight->draw(lightShader);
 
     // Object
     glUseProgram(textureShader);
     setPointLight(textureShader, "p1", myLight->getLight());
+    shapes::instance().cube.update(projection, view, objectModel);
     shapes::instance().cube.draw(textureShader);
-
-    // Model
-    glUseProgram(modelShader);
-    setPointLight(modelShader, "p1", myLight->getLight());
-    cube1->draw(modelShader);
 
     // Skybox
     glDepthFunc(GL_LEQUAL);
@@ -123,7 +115,17 @@ void scene1::render() const {
 
 void scene1::render_transparent() const {
 
+    const glm::mat4& projection = camera::instance().getPerspective();
+    const glm::mat4& view = camera::instance().getView();
+
+    // Model
+    glUseProgram(modelShader);
+    setPointLight(modelShader, "p1", myLight->getLight());
+    cube1->update(projection, view, cubeModel);
+    cube1->draw(modelShader);
+
     // Plane
+    shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
     shapes::instance().square.draw(planeShader);
 }
 
