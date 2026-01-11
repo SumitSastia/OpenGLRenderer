@@ -15,9 +15,8 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.frag"
     );
 
-    textureShader = createShader2(
+    textureShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.geom",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/texture.frag"
     );
 
@@ -34,6 +33,12 @@ void scene1::init() {
     cubemapShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/cubemap.frag"
+    );
+
+    normalShader = createShader2(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/geometry/geometry.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/geometry/geometry.geom",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/geometry/geometry.frag"
     );
 
     // World Coordinates
@@ -93,6 +98,9 @@ void scene1::render() const {
     setPointLight(textureShader, "p1", myLight->getLight());
     shapes::instance().cube.update(projection, view, objectModel);
     shapes::instance().cube.draw(textureShader);
+
+    shapes::instance().cube.update(projection, view, objectModel);
+    shapes::instance().cube.draw(normalShader);
 
     // Skybox
     glDepthFunc(GL_LEQUAL);

@@ -7,7 +7,16 @@
 class scene1 {
 
 	// Objects
-	unsigned int lineShader, lightShader, planeShader, modelShader, textureShader, cubemapShader;
+	unsigned int
+		lineShader,
+		lightShader,
+		planeShader,
+		modelShader,
+		textureShader,
+		cubemapShader,
+		normalShader;
+	;
+
 	model3D* cube1;
 
 	// Light-Source
