@@ -40,10 +40,26 @@ struct shape {
     void draw(const unsigned int& shader) const;
 };
 
+struct shapeInstanced : shape {
+
+    void bindVertices(
+        const float* vertices, const size_t& size_v,
+        const unsigned int* indices, const size_t& size_i
+    );
+
+    void bindVertices2D(
+        const float* vertices, const size_t& size_v,
+        const unsigned int* indices, const size_t& size_i
+    );
+
+    void draw(const unsigned int& shader, const unsigned int& instanceCounts) const;
+};
+
 struct shapes {
 
     shape square;
     shape cube;
+    shapeInstanced cubeInstanced;
 
     shapes();
     static shapes& instance();

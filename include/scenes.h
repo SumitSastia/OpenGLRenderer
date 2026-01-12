@@ -14,7 +14,8 @@ class scene1 {
 		modelShader,
 		textureShader,
 		cubemapShader,
-		normalShader;
+		normalShader,
+		instanceShader
 	;
 
 	model3D* cube1;
@@ -29,6 +30,10 @@ class scene1 {
 
 	// Skybox
 	cubeMap* skybox;
+
+	// Multiple Cubes
+	unsigned int totalCubes;
+	glm::vec3* cubePositions;
 
 public:
 

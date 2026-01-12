@@ -41,6 +41,11 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/geometry/geometry.frag"
     );
 
+    instanceShader = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/instance/texture.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/instance/texture.frag"
+    );
+
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -69,6 +74,35 @@ void scene1::init() {
     };
 
     skybox = new cubeMap(cubemapFaces);
+
+    // Multiple Cubes
+    totalCubes = 10;
+    cubePositions = new glm::vec3[10]
+    {
+        glm::vec3(0.0f,  0.0f,  0.0f),
+        glm::vec3(2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f,  2.0f, -2.5f),
+        glm::vec3(1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+
+    glUseProgram(instanceShader);
+    setMat4(instanceShader, "projection", camera::instance().getPerspective());
+    setMat4(instanceShader, "view", camera::instance().getView());
+
+    for (unsigned int i = 0; i < totalCubes; i++) {
+
+        glm::mat4 objModels = glm::translate(glm::mat4(1.0f), cubePositions[i]);
+        objModels = glm::rotate(objModels, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
+
+        setMat4(instanceShader, ("offsetModels[" + std::to_string(i) + "]").c_str(), objModels);
+        setMat3(instanceShader, ("offsetNormals[" + std::to_string(i) + "]").c_str(), glm::transpose(glm::inverse(glm::mat3(objModels))));
+    }
 }
 
 void scene1::update(const float& delta_time) {
@@ -96,11 +130,16 @@ void scene1::render() const {
     // Object
     glUseProgram(textureShader);
     setPointLight(textureShader, "p1", myLight->getLight());
-    shapes::instance().cube.update(projection, view, objectModel);
-    shapes::instance().cube.draw(textureShader);
+    // shapes::instance().cube.update(projection, view, objectModel);
+    // shapes::instance().cube.draw(textureShader);
 
-    shapes::instance().cube.update(projection, view, objectModel);
-    shapes::instance().cube.draw(normalShader);
+    // Multiple Cubes
+    glUseProgram(instanceShader);
+    setPointLight(instanceShader, "p1", myLight->getLight());
+    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);
+
+    // Normal-Visualizer
+    // shapes::instance().cube.draw(normalShader);
 
     // Skybox
     glDepthFunc(GL_LEQUAL);
@@ -148,4 +187,6 @@ void scene1::destroy() const {
     delete myLight;
     delete cube1;
     delete skybox;
+
+    delete[] cubePositions;
 }
