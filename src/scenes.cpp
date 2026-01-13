@@ -79,7 +79,7 @@ void scene1::init() {
     totalCubes = 10;
     cubePositions = new glm::vec3[10]
     {
-        glm::vec3(0.0f,  0.0f,  0.0f),
+        glm::vec3(1.0f,  1.0f,  1.0f),
         glm::vec3(2.0f,  5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
         glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -100,8 +100,10 @@ void scene1::init() {
         glm::mat4 objModels = glm::translate(glm::mat4(1.0f), cubePositions[i]);
         objModels = glm::rotate(objModels, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
 
+        glm::mat4 objNormals = glm::transpose(glm::inverse(glm::mat3(objModels)));
+
         setMat4(instanceShader, ("offsetModels[" + std::to_string(i) + "]").c_str(), objModels);
-        setMat3(instanceShader, ("offsetNormals[" + std::to_string(i) + "]").c_str(), glm::transpose(glm::inverse(glm::mat3(objModels))));
+        setMat3(instanceShader, ("offsetNormals[" + std::to_string(i) + "]").c_str(), objNormals);
     }
 }
 

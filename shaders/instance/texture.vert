@@ -19,7 +19,7 @@ void main(){
     vec4 newPos = projection * view * offsetModels[gl_InstanceID] * vec4(aPos , 1.0);
     gl_Position = newPos;
 
-    vPos = vec3(newPos);
+    vPos = vec3(offsetModels[gl_InstanceID] * vec4(aPos , 1.0));
     vNormal = offsetNormals[gl_InstanceID] * aNormal;
     vTextureCords = aTextureCords;
 }

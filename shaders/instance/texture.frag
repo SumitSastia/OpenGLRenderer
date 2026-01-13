@@ -131,7 +131,7 @@ void main(){
     vec3 t2 = vec3(texture(texture2, vTextureCords));
 
     // Ambient
-    vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);
+    vec3 ambientLight = (0.5 * t1) * vec3(1.0,1.0,1.0);
 
     vec3 finalColor = vec3(0.0);
 
@@ -148,10 +148,6 @@ void main(){
     vec3 reflected_ray = reflect(incident_ray, normal);
     vec4 reflected_color = vec4(texture(skybox, reflected_ray).rgb, 1.0);
 
-    vec4 skybox_tex = texture(skybox, reflected_ray);
-    float avg_ambient = (skybox_tex.x + skybox_tex.y + skybox_tex.z) / 3.00;
-
-    ambientLight = ((m1.ambient + avg_ambient) * t1);
-    FragColor = vec4(ambientLight + finalColor + 0.1*skybox_tex.rgb , 1.0);
-    // FragColor = texture(texture2, vTextureCords);
+    // FragColor = vec4(ambientLight + finalColor + 0.1*skybox_tex.rgb , 1.0);
+    FragColor = vec4(ambientLight + finalColor , 1.0);
 }
