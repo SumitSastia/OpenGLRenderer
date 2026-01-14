@@ -96,14 +96,14 @@ void scene1::init() {
     setMat4(instanceShader, "view", camera::instance().getView());
 
     glm::mat4 objModels[10];
-    glm::mat4 objNormals[10];
+    glm::mat3 objNormals[10];
 
     for (unsigned int i = 0; i < totalCubes; i++) {
 
         glm::mat4 objModel = glm::translate(glm::mat4(1.0f), cubePositions[i]);
         objModel = glm::rotate(objModel, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
 
-        glm::mat4 objNormal = glm::transpose(glm::inverse(glm::mat3(objModel)));
+        glm::mat3 objNormal = glm::transpose(glm::inverse(glm::mat3(objModel)));
 
         // setMat4(instanceShader, ("offsetModels[" + std::to_string(i) + "]").c_str(), objModel);
         // setMat3(instanceShader, ("offsetNormals[" + std::to_string(i) + "]").c_str(), objNormal);
@@ -120,13 +120,14 @@ void scene1::init() {
 
     glGenBuffers(1, &instanceNormalVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceNormalVBO);
-    glBufferData(GL_ARRAY_BUFFER, totalCubes * sizeof(glm::mat4), objNormals, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, totalCubes * sizeof(glm::mat3), objNormals, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
     glBindVertexArray(shapes::instance().cubeInstanced.VAO);
 
+    std::size_t vec3Size = sizeof(glm::vec3);
     std::size_t vec4Size = sizeof(glm::vec4);
 
     glEnableVertexAttribArray(3);
@@ -147,21 +148,17 @@ void scene1::init() {
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceNormalVBO);
 
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
-    glVertexAttribDivisor(3, 1);
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 3 * vec3Size, (void*)0);
+    glVertexAttribDivisor(7, 1);
 
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
-    glVertexAttribDivisor(4, 1);
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, 3 * vec3Size, (void*)(1 * vec3Size));
+    glVertexAttribDivisor(8, 1);
 
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
-    glVertexAttribDivisor(5, 1);
-
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
-    glVertexAttribDivisor(6, 1);
+    glEnableVertexAttribArray(9);
+    glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, 3 * vec3Size, (void*)(2 * vec3Size));
+    glVertexAttribDivisor(9, 1);
 
     glBindVertexArray(0);
 }
