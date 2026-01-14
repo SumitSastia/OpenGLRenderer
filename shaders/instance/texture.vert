@@ -3,6 +3,7 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTextureCords;
+layout (location = 3) in mat4 instanceModel;
 
 out vec3 vPos;
 out vec3 vNormal;
@@ -16,10 +17,14 @@ uniform mat3 offsetNormals[10];
 
 void main(){
 
-    vec4 newPos = projection * view * offsetModels[gl_InstanceID] * vec4(aPos , 1.0);
-    gl_Position = newPos;
+    mat4 myModel = mat4(1.0);
 
-    vPos = vec3(offsetModels[gl_InstanceID] * vec4(aPos , 1.0));
-    vNormal = offsetNormals[gl_InstanceID] * aNormal;
+    // gl_Position = projection * view * offsetModels[gl_InstanceID] * vec4(aPos , 1.0);
+    // gl_Position = projection * view * myModel * vec4(aPos , 1.0);
+    gl_Position = projection * view * instanceModel * vec4(aPos , 1.0);
+
+    vPos = vec3(instanceModel * vec4(aPos , 1.0));
+    // vNormal = offsetNormals[gl_InstanceID] * aNormal;
+    vNormal = aNormal;
     vTextureCords = aTextureCords;
 }

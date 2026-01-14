@@ -176,7 +176,7 @@ void shapeInstanced::draw(const unsigned int& shader, const unsigned int& instan
     glBindTexture(GL_TEXTURE_2D, shapeSpecularTexture.getID());
 
     glBindVertexArray(VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)), instanceCounts);
+    glDrawElementsInstanced(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr, instanceCounts);
     glBindVertexArray(0);
 
     glBindTexture(GL_TEXTURE_2D, 0);

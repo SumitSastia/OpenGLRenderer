@@ -95,16 +95,54 @@ void scene1::init() {
     setMat4(instanceShader, "projection", camera::instance().getPerspective());
     setMat4(instanceShader, "view", camera::instance().getView());
 
+    glm::mat4 objModels[10];
+    glm::mat4 objNormals[10];
+
     for (unsigned int i = 0; i < totalCubes; i++) {
 
-        glm::mat4 objModels = glm::translate(glm::mat4(1.0f), cubePositions[i]);
-        objModels = glm::rotate(objModels, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
+        glm::mat4 objModel = glm::translate(glm::mat4(1.0f), cubePositions[i]);
+        objModel = glm::rotate(objModel, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
 
-        glm::mat4 objNormals = glm::transpose(glm::inverse(glm::mat3(objModels)));
+        glm::mat4 objNormal = glm::transpose(glm::inverse(glm::mat3(objModel)));
 
-        setMat4(instanceShader, ("offsetModels[" + std::to_string(i) + "]").c_str(), objModels);
-        setMat3(instanceShader, ("offsetNormals[" + std::to_string(i) + "]").c_str(), objNormals);
+        // setMat4(instanceShader, ("offsetModels[" + std::to_string(i) + "]").c_str(), objModel);
+        // setMat3(instanceShader, ("offsetNormals[" + std::to_string(i) + "]").c_str(), objNormal);
+
+        objModels[i] = objModel;
+        objNormals[i] = objNormal;
     }
+
+    // myModel = objModels[0];
+
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, totalCubes * sizeof(glm::mat4), objModels, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBindVertexArray(shapes::instance().cubeInstanced.VAO);
+
+    std::size_t vec4Size = sizeof(glm::vec4);
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+    glVertexAttribDivisor(3, 1);
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+    glVertexAttribDivisor(4, 1);
+    
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+    glVertexAttribDivisor(5, 1);
+    
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+    glVertexAttribDivisor(6, 1);
+
+    glBindVertexArray(0);
+    
 }
 
 void scene1::update(const float& delta_time) {
