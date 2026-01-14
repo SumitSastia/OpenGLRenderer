@@ -32,7 +32,8 @@ class scene1 {
 	cubeMap* skybox;
 
 	// Multiple Cubes
-	unsigned int totalCubes, instanceVBO;
+	unsigned int totalCubes;
+	unsigned int instanceModelVBO, instanceNormalVBO;
 	glm::vec3* cubePositions;
 
 	glm::mat4 myModel;

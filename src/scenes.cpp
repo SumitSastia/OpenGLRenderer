@@ -114,13 +114,17 @@ void scene1::init() {
 
     // myModel = objModels[0];
 
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glGenBuffers(1, &instanceModelVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
     glBufferData(GL_ARRAY_BUFFER, totalCubes * sizeof(glm::mat4), objModels, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &instanceNormalVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceNormalVBO);
+    glBufferData(GL_ARRAY_BUFFER, totalCubes * sizeof(glm::mat4), objNormals, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
     glBindVertexArray(shapes::instance().cubeInstanced.VAO);
 
     std::size_t vec4Size = sizeof(glm::vec4);
@@ -141,8 +145,25 @@ void scene1::init() {
     glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
     glVertexAttribDivisor(6, 1);
 
+    glBindBuffer(GL_ARRAY_BUFFER, instanceNormalVBO);
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+    glVertexAttribDivisor(3, 1);
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+    glVertexAttribDivisor(4, 1);
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+    glVertexAttribDivisor(5, 1);
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+    glVertexAttribDivisor(6, 1);
+
     glBindVertexArray(0);
-    
 }
 
 void scene1::update(const float& delta_time) {
