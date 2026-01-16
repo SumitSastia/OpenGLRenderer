@@ -75,6 +75,15 @@ struct material {
     glm::vec3 diffuse;
     glm::vec3 specular;
     float shininess;
+
+    material() {}
+
+    material(
+        const glm::vec3 ambient,
+        const glm::vec3 diffuse,
+        const glm::vec3 specular,
+        const float shininess
+    );
 };
 
 struct materials {
@@ -98,6 +107,8 @@ void setMat3(const unsigned int &shaderProgram, const char* target, const glm::m
 void setMat4(const unsigned int &shaderProgram, const char* target, const glm::mat4 &matrix);
 
 void setMaterial(const unsigned int& shaderProgram, const std::string &target);
+
+void setMaterial(const unsigned int& shaderProgram, const std::string& target, const material& value);
 
 void printVec3(const glm::vec3& vector);
 

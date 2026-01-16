@@ -80,7 +80,8 @@ void scene1::init() {
     };
 
     skybox = new cubeMap(cubemapFaces);
-    skybox_isVisible = false;
+    skybox_isVisible = true;
+    skyboxIntensity = 1.0f;
 
     // Multiple Cubes
     totalCubes = 10;
@@ -190,6 +191,14 @@ void scene1::update(const float& delta_time) {
     float rotationSpeed = 1.0f;
     lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0f,1.0f,0.0f)) * lightModel;
 
+    // Skybox
+    if (skybox_isVisible) {
+        skyboxIntensity = 1.0f;
+    }
+    else {
+        skyboxIntensity = 0.25f;
+    }
+
 }
 
 void scene1::render() const {
@@ -205,9 +214,9 @@ void scene1::render() const {
 
     // Object
     glUseProgram(textureShader);
+    setFloat(textureShader, "skyboxIntensity", skyboxIntensity);
     setPointLight(textureShader, "p1", myLight->getLight());
-    // shapes::instance().cube.update(projection, view, objectModel);
-    // shapes::instance().cube.draw(textureShader);
+    shapes::instance().cube.draw(textureShader, objectModel);
 
     // Multiple Cubes
     /*glUseProgram(instanceShader);
@@ -218,10 +227,11 @@ void scene1::render() const {
     // shapes::instance().cube.draw(normalShader);
 
     // ColoredCube
-    cc1->render();
+    // cc1->render();
 
     // Floor
     glUseProgram(planeShader);
+    setFloat(planeShader, "skyboxIntensity", 0.8 * skyboxIntensity);
     setPointLight(planeShader, "p1", myLight->getLight());
     floor.draw(planeShader, floorModel);
 

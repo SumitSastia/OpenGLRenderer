@@ -314,6 +314,18 @@ frame_buffer::~frame_buffer() {
 
 //-------------------------------------------------------------------------------------//
 
+material::material(
+    const glm::vec3 ambient,
+    const glm::vec3 diffuse,
+    const glm::vec3 specular,
+    const float shininess
+) :
+    ambient(ambient),
+    diffuse(diffuse),
+    specular(specular),
+    shininess(shininess) {
+}
+
 materials& materials::instance(){
     static materials instance;
     return instance;
@@ -411,6 +423,14 @@ void setMaterial(const unsigned int& shaderProgram, const std::string &target){
     setVec3(shaderProgram, (target + ".diffuse").c_str(), materials::instance().wood.diffuse);
     setVec3(shaderProgram, (target + ".specular").c_str(), materials::instance().wood.specular);
     setFloat(shaderProgram, (target + ".shininess").c_str(), materials::instance().glass.shininess);
+}
+
+void setMaterial(const unsigned int& shaderProgram, const std::string& target, const material& value) {
+
+    setVec3(shaderProgram, (target + ".ambient").c_str(), value.ambient);
+    setVec3(shaderProgram, (target + ".diffuse").c_str(), value.diffuse);
+    setVec3(shaderProgram, (target + ".specular").c_str(), value.specular);
+    setFloat(shaderProgram, (target + ".shininess").c_str(), value.shininess);
 }
 
 void printVec3(const glm::vec3& vector) {

@@ -33,6 +33,7 @@ class scene1 {
 	// Skybox
 	cubeMap* skybox;
 	bool skybox_isVisible;
+	float skyboxIntensity;
 
 	// Multiple Cubes
 	unsigned int totalCubes;
