@@ -74,12 +74,13 @@ void scene1::init() {
     };
 
     skybox = new cubeMap(cubemapFaces);
+    skybox_isVisible = false;
 
     // Multiple Cubes
     totalCubes = 10;
     cubePositions = new glm::vec3[10]
     {
-        glm::vec3(1.0f,  1.0f,  1.0f),
+        glm::vec3(0.0f,  0.0f,  0.0f),
         glm::vec3(2.0f,  5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
         glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -101,18 +102,10 @@ void scene1::init() {
     for (unsigned int i = 0; i < totalCubes; i++) {
 
         glm::mat4 objModel = glm::translate(glm::mat4(1.0f), cubePositions[i]);
-        objModel = glm::rotate(objModel, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
 
-        glm::mat3 objNormal = glm::transpose(glm::inverse(glm::mat3(objModel)));
-
-        // setMat4(instanceShader, ("offsetModels[" + std::to_string(i) + "]").c_str(), objModel);
-        // setMat3(instanceShader, ("offsetNormals[" + std::to_string(i) + "]").c_str(), objNormal);
-
-        objModels[i] = objModel;
-        objNormals[i] = objNormal;
+        objModels[i] = glm::rotate(objModel, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
+        objNormals[i] = glm::transpose(glm::inverse(glm::mat3(objModel)));
     }
-
-    // myModel = objModels[0];
 
     glGenBuffers(1, &instanceModelVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceModelVBO);
@@ -161,6 +154,21 @@ void scene1::init() {
     glVertexAttribDivisor(9, 1);
 
     glBindVertexArray(0);
+
+    // ColoredCube
+    cc1 = new coloredCube(colors::instance().red);
+}
+
+void scene1::input_handler(GLFWwindow* window) {
+
+    static bool toggle_KEY_G = false;
+
+    if (glfwGetKey(window, GLFW_KEY_G)) {
+
+        skybox_isVisible = (toggle_KEY_G)? skybox_isVisible : !skybox_isVisible;
+        toggle_KEY_G = true;
+    }
+    else { toggle_KEY_G = false; }
 }
 
 void scene1::update(const float& delta_time) {
@@ -192,30 +200,36 @@ void scene1::render() const {
     // shapes::instance().cube.draw(textureShader);
 
     // Multiple Cubes
-    glUseProgram(instanceShader);
+    /*glUseProgram(instanceShader);
     setPointLight(instanceShader, "p1", myLight->getLight());
-    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);
+    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);*/
 
     // Normal-Visualizer
     // shapes::instance().cube.draw(normalShader);
 
+    // ColoredCube
+    cc1->render();
+
     // Skybox
-    glDepthFunc(GL_LEQUAL);
-    glDepthMask(GL_FALSE);
-    glDisable(GL_CULL_FACE);
-    glUseProgram(cubemapShader);
+    if (skybox_isVisible) {
 
-    setMat4(cubemapShader, "projection", projection);
-    setMat4(cubemapShader, "view", glm::mat4(glm::mat3(view)));
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_CULL_FACE);
+        glUseProgram(cubemapShader);
 
-    glBindVertexArray(skybox->get_VAO());
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->get_ID());
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+        setMat4(cubemapShader, "projection", projection);
+        setMat4(cubemapShader, "view", glm::mat4(glm::mat3(view)));
 
-    glDepthFunc(GL_LESS);
-    glDepthMask(GL_TRUE);
-    glEnable(GL_CULL_FACE);
+        glBindVertexArray(skybox->get_VAO());
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->get_ID());
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glDepthFunc(GL_LESS);
+        glDepthMask(GL_TRUE);
+        glEnable(GL_CULL_FACE);
+    }
 }
 
 void scene1::render_transparent() const {
@@ -245,6 +259,7 @@ void scene1::destroy() const {
     delete myLight;
     delete cube1;
     delete skybox;
+    delete cc1;
 
     delete[] cubePositions;
 }

@@ -60,6 +60,8 @@ int main(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
     
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    glfwWindowHint(GLFW_SAMPLES, 4);
     
     // MONITOR ------------------------------------------------------------------------//
     
@@ -126,6 +128,8 @@ int main(){
     glCullFace(GL_FRONT);
     glFrontFace(GL_CCW);
 
+    glEnable(GL_MULTISAMPLE);
+
     // CAMERA -------------------------------------------------------------------------//
     
     camera& cam = camera::instance();
@@ -134,13 +138,9 @@ int main(){
     cam.set_aspect(frameWidth, frameHeight);
     cam.set_position(glm::vec3(0.0f,0.0f,3.0f));
 
-    // LOOP CONTROLLERS ---------------------------------------------------------------//
-
-    bool isRunning = true;
-
     // CUBEMAPS -----------------------------------------------------------------------//
 
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    
 
     // SCENES -------------------------------------------------------------------------//
 
@@ -158,6 +158,10 @@ int main(){
     const unsigned int& frameTexture = fb1.get_TEX();
     const unsigned int& frameVAO = fb1.get_VAO();
 
+    // LOOP CONTROLLERS ---------------------------------------------------------------//
+
+    bool isRunning = true;
+
     // OPENGL LOOP --------------------------------------------------------------------//
 
     while(!glfwWindowShouldClose(window) && isRunning){
@@ -174,6 +178,9 @@ int main(){
         cam.update(deltaTime);
 
         lights::instance().flashlight.isVisible = useFlashLight;
+
+        // Inputs //
+        scene1.input_handler(window);
         
         // Updates //
         if(!isPaused){

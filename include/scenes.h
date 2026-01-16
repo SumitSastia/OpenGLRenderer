@@ -30,13 +30,15 @@ class scene1 {
 
 	// Skybox
 	cubeMap* skybox;
+	bool skybox_isVisible;
 
 	// Multiple Cubes
 	unsigned int totalCubes;
 	unsigned int instanceModelVBO, instanceNormalVBO;
 	glm::vec3* cubePositions;
 
-	glm::mat4 myModel;
+	// ColoredCube
+	coloredCube* cc1;
 
 public:
 
@@ -44,6 +46,7 @@ public:
 	lightSource* getLight() const { return myLight; }
 
 	void init();
+	void input_handler(GLFWwindow* window);
 	void update(const float& delta_time);
 	void render() const;
 	void render_transparent() const;

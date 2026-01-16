@@ -4,6 +4,21 @@
 #include <shader.h>
 #include <models.h>
 
+// Colored Models
+struct coloredCube {
+
+    unsigned int VBO, VAO, EBO;
+    unsigned int colorShader;
+
+    glm::vec3 color;
+
+    coloredCube(const glm::vec3& color);
+    ~coloredCube();
+
+    void update(const float& delta_time);
+    void render() const;
+};
+
 // Hardcoded Models
 struct shape {
 
