@@ -26,8 +26,8 @@ void scene1::init() {
     );
 
     planeShader = createShader(
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes.frag"
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/planes.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/planes.frag"
     );
 
     cubemapShader = createShader(
@@ -54,6 +54,12 @@ void scene1::init() {
 
     cubeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 7.0f));
     cubeModel = glm::scale(cubeModel, glm::vec3(0.75f));
+
+    windowModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    
+    floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f));
+    floorModel = glm::rotate(floorModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    floorModel = glm::scale(floorModel, glm::vec3(20.0f));
 
     // Light-Source
     myLight = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
@@ -157,6 +163,10 @@ void scene1::init() {
 
     // ColoredCube
     cc1 = new coloredCube(colors::instance().red);
+
+    // Floor
+    floor = shapes::instance().square;
+    floor.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/stone_floor.jpg");
 }
 
 void scene1::input_handler(GLFWwindow* window) {
@@ -210,6 +220,11 @@ void scene1::render() const {
     // ColoredCube
     cc1->render();
 
+    // Floor
+    glUseProgram(planeShader);
+    setPointLight(planeShader, "p1", myLight->getLight());
+    floor.draw(planeShader, floorModel);
+
     // Skybox
     if (skybox_isVisible) {
 
@@ -244,8 +259,9 @@ void scene1::render_transparent() const {
     cube1->draw(modelShader);
 
     // Plane
-    shapes::instance().square.update(projection, view, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-    shapes::instance().square.draw(planeShader);
+    glUseProgram(planeShader);
+    setPointLight(planeShader, "p1", myLight->getLight());
+    shapes::instance().square.draw(planeShader, windowModel);
 }
 
 void scene1::destroy() const {

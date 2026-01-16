@@ -19,6 +19,24 @@ struct coloredCube {
     void render() const;
 };
 
+struct shape2D {
+
+    unsigned int VBO, VAO, EBO;
+    unsigned int indicesCount;
+
+    texture shape2DTexture;
+
+    ~shape2D();
+
+    void bindVertices(
+        const float* vertices, const size_t& size_v,
+        const unsigned int* indices, const size_t& size_i
+    );
+
+    void loadTexture(const char* texturePath);
+    void draw(const unsigned int& shader, const glm::mat4& model) const;
+};
+
 // Hardcoded Models
 struct shape {
 
@@ -28,10 +46,6 @@ struct shape {
     texture shapeDiffuseTexture;
     texture shapeSpecularTexture;
 
-    glm::mat4 projection;
-    glm::mat4 view;
-    glm::mat4 model;
-
     ~shape();
 
     void bindVertices(
@@ -39,20 +53,8 @@ struct shape {
         const unsigned int* indices, const size_t& size_i
     );
 
-    void bindVertices2D(
-        const float* vertices, const size_t& size_v,
-        const unsigned int* indices, const size_t& size_i
-    );
-
     void loadTexture(const char* diffusePath, const char* specularPath);
-
-    void update(
-        const glm::mat4& projection,
-        const glm::mat4& view,
-        const glm::mat4& model
-    );
-
-    void draw(const unsigned int& shader) const;
+    void draw(const unsigned int& shader, const glm::mat4& model) const;
 };
 
 struct shapeInstanced : shape {
@@ -62,17 +64,12 @@ struct shapeInstanced : shape {
         const unsigned int* indices, const size_t& size_i
     );
 
-    void bindVertices2D(
-        const float* vertices, const size_t& size_v,
-        const unsigned int* indices, const size_t& size_i
-    );
-
     void draw(const unsigned int& shader, const unsigned int& instanceCounts) const;
 };
 
 struct shapes {
 
-    shape square;
+    shape2D square;
     shape cube;
     shapeInstanced cubeInstanced;
 

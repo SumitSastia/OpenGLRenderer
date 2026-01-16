@@ -27,6 +27,8 @@ class scene1 {
 	glm::mat4 objectModel;
 	glm::mat4 lightModel;
 	glm::mat4 cubeModel;
+	glm::mat4 floorModel;
+	glm::mat4 windowModel;
 
 	// Skybox
 	cubeMap* skybox;
@@ -39,6 +41,9 @@ class scene1 {
 
 	// ColoredCube
 	coloredCube* cc1;
+
+	// Floor
+	shape2D floor;
 
 public:
 

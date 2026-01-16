@@ -37,16 +37,11 @@ struct spotLight{
 };
 
 in vec3 vPos;
-in vec3 vNormal;
-in vec2 vTextureCords;
-
+in vec2 vTexCords;
 out vec4 FragColor;
 
-uniform float alphaVal;
+uniform vec3 normal;
 uniform vec3 viewPos;
-
-uniform sampler2D texture1;
-uniform sampler2D texture2;
 
 uniform material m1;
 
@@ -54,22 +49,22 @@ uniform spotLight s1;
 uniform directionalLight d1;
 uniform pointLight p1;
 
-uniform samplerCube skybox;
+uniform sampler2D texture1;
 
-vec3 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1, vec3 t2){
+vec3 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1){
 
     vec3 lightDirection = normalize(pl.position - vPos);
 
     // Diffuse
     float diff = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuseLight = diff * (m1.diffuse*(t1-t2) + t2) * pl.color;
+    vec3 diffuseLight = diff * m1.diffuse * t1 * pl.color;
 
     // Specular
     vec3 viewDirection = normalize(viewPos - vPos);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), m1.shininess);
-    vec3 specularLight = spec * t2 * pl.color;
+    vec3 specularLight = spec * t1 * pl.color;
 
     // Attenuation
     float fragDistance = length(pl.position - vPos);
@@ -78,25 +73,25 @@ vec3 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t
     return (attenuation * vec3(diffuseLight + specularLight));
 }
 
-vec3 init_directionalLight(directionalLight dl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1, vec3 t2){
+vec3 init_directionalLight(directionalLight dl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1){
 
     vec3 lightDirection = normalize(dl.direction);
 
     // Diffuse
     float diff = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuseLight = diff * (m1.diffuse*(t1-t2) + t2) * dl.color;
+    vec3 diffuseLight = diff * m1.diffuse * t1 * dl.color;
 
     // Specular
     vec3 viewDirection = normalize(viewPos - vPos);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), m1.shininess);
-    vec3 specularLight = spec * t2 * dl.color;
+    vec3 specularLight = spec * t1 * dl.color;
 
     return vec3(diffuseLight + specularLight);
 }
 
-vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1, vec3 t2){
+vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1){
 
     vec3 lightDirection = normalize(sl.position - vPos);
 
@@ -104,14 +99,14 @@ vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1,
 
     // Diffuse
     float diff = max(dot(normal, lightDirection), 0.0);
-    vec3 diffuseLight = diff * (m1.diffuse*(t1-t2) + t2) * sl.color;
+    vec3 diffuseLight = diff * m1.diffuse * t1 * sl.color;
 
     // Specular
     vec3 viewDirection = normalize(viewPos - vPos);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), m1.shininess);
-    vec3 specularLight = spec * t2 * sl.color;
+    vec3 specularLight = spec * t1 * sl.color;
 
     // Attenuation
     float fragDistance = length(sl.position - vPos);
@@ -124,46 +119,23 @@ vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1,
     return (attenuation * intensity * vec3(diffuseLight + specularLight));
 }
 
-void main(){
+void main() {
 
-    vec3 normal = normalize(vNormal);
-    
-    vec3 t1 = vec3(texture(texture1, vTextureCords));
-    vec3 t2 = vec3(texture(texture2, vTextureCords));
+    vec3 final_normal = normalize(normal);
+    vec3 t1 = vec3(texture(texture1, vTexCords));
 
     // Ambient
     vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);
     vec3 finalColor = vec3(0.0);
 
-    finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
-    // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
+    // PointLight
+    finalColor += init_pointLight(p1, normal, vPos, viewPos, t1);
 
+    // SpotLight
     if(s1.isVisible){
-        finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
+        finalColor += init_spotLight(s1, normal, vPos, viewPos, t1);
     }
 
-    // FragColor = vec4(ambientLight + finalColor, 1.0);
-
-    vec3 incident_ray = normalize(vPos - viewPos);
-
-    // Reflection of Skybox
-    vec3 reflected_ray = reflect(incident_ray, normal);
-    vec4 reflected_color = vec4(texture(skybox, reflected_ray).rgb, 1.0);
-
-    vec4 skybox_tex = texture(skybox, reflected_ray);
-    float avg_ambient = (skybox_tex.x + skybox_tex.y + skybox_tex.z) / 3.00;
-
-    ambientLight = ((m1.ambient + avg_ambient) * t1);
-    FragColor = vec4(ambientLight + finalColor + 0.1*skybox_tex.rgb , 1.0);
-
-    //if (gl_FrontFacing){
-    //    FragColor = vec4(0.25 * vec3(texture(texture1, vTextureCords)), 1.0);
-    //}
-
-    // Refraction
-
-    //float ratio = 1.00 / 1.52;
-    //vec3 refracted_ray = refract(incident_ray, normal, ratio);
-    //FragColor = vec4(texture(skybox, refracted_ray).rgb, 1.0);
-
+    FragColor = vec4(ambientLight + finalColor, 1.0);
+    // FragColor = vec4(texture(texture1, vTexCords));
 }
