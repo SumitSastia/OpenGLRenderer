@@ -89,6 +89,8 @@ struct material {
 struct materials {
 
     material rubber, wood, plastic, concrete, glass, chrome;
+    material debug_material;
+
     materials();
 
     static materials& instance();

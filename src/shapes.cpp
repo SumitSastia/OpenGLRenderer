@@ -142,6 +142,7 @@ void shape2D::loadTexture(const char* texturePath) {
 void shape2D::draw(const unsigned int& shader, const glm::mat4& model) const {
 
     glUseProgram(shader);
+    glDisable(GL_CULL_FACE);
 
     // Vert Uniforms
     setMat4(shader, "finalMatrix", camera::instance().getPerspective() * camera::instance().getView() * model);
@@ -154,7 +155,6 @@ void shape2D::draw(const unsigned int& shader, const glm::mat4& model) const {
     setVec3(shader, "normal", normal);
     setVec3(shader, "viewPos", camera::instance().getPos());
 
-    setMaterial(shader, "m1");
     setSpotLight(shader, "s1", lights::instance().flashlight);
 
     setInt(shader, "texture1", 0);
@@ -168,6 +168,7 @@ void shape2D::draw(const unsigned int& shader, const glm::mat4& model) const {
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
+    glEnable(GL_CULL_FACE);
 }
 
 //-------------------------------------------------------------------------------------//

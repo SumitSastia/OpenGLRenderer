@@ -333,6 +333,11 @@ materials& materials::instance(){
 
 materials::materials(){
 
+    debug_material.ambient = glm::vec3(0.05f);
+    debug_material.diffuse = glm::vec3(0.5f);
+    debug_material.specular = glm::vec3(0.1f);
+    debug_material.shininess = 0.5;
+
     rubber.ambient = glm::vec3(0.02f);
     rubber.diffuse = glm::vec3(0.01f);
     rubber.specular = glm::vec3(0.4f);

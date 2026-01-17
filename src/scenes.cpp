@@ -231,7 +231,9 @@ void scene1::render() const {
 
     // Floor
     glUseProgram(planeShader);
+    setMaterial(planeShader, "m1", materials::instance().concrete);
     setFloat(planeShader, "skyboxIntensity", 0.8 * skyboxIntensity);
+
     setPointLight(planeShader, "p1", myLight->getLight());
     floor.draw(planeShader, floorModel);
 

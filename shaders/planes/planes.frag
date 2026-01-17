@@ -62,9 +62,21 @@ vec4 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec4 t
 
     // Specular
     vec3 viewDirection = normalize(viewPos - vPos);
-    vec3 reflectDirection = reflect(-lightDirection, normal);
+    float spec = 0.0;
 
-    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), m1.shininess);
+    if (m1.shininess > 2.0) {
+
+        // Phong
+        vec3 reflectDirection = reflect(-lightDirection, normal);
+        spec = pow(max(dot(viewDirection, reflectDirection), 0.0), m1.shininess);
+    }
+    else {
+
+        // Blinn-Phong
+        vec3 halfwayDirection = normalize(lightDirection + viewDirection);
+        spec = pow(max(dot(viewDirection, halfwayDirection), 0.0), m1.shininess);
+    }
+
     vec4 specularLight = spec * t1 * vec4(pl.color, 1.0);
 
     // Attenuation
