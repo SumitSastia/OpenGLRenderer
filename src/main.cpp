@@ -33,7 +33,8 @@ double cursor_dy = 0.0;
 
 float scrollOffset = 0.0f;
 
-bool useFlashLight = true;
+bool useFlashLight = false;
+bool toggle_V = false;
 
 //-----------------------------------------------------------------------------------------------//
 
@@ -111,8 +112,6 @@ int main(){
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
-    // SHADER -------------------------------------------------------------------------//
-    
     // GL TWEAKS ----------------------------------------------------------------------//
     
     glEnable(GL_BLEND);
@@ -129,6 +128,7 @@ int main(){
     glFrontFace(GL_CCW);
 
     glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_FRAMEBUFFER_SRGB);
 
     // CAMERA -------------------------------------------------------------------------//
     
@@ -138,25 +138,45 @@ int main(){
     cam.set_aspect(frameWidth, frameHeight);
     cam.set_position(glm::vec3(0.0f,0.0f,3.0f));
 
-    // CUBEMAPS -----------------------------------------------------------------------//
-
-    
-
     // SCENES -------------------------------------------------------------------------//
 
     scene1 scene1{};
     scene1.init();
 
-    frame_buffer fb1(frameWidth, frameHeight);
+    // FRAMEBUFFERS -----------------------------------------------------------------------//
 
     const unsigned int frameShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
     );
 
-    const unsigned int& frameBuffer = fb1.get_FBO();
-    const unsigned int& frameTexture = fb1.get_TEX();
-    const unsigned int& frameVAO = fb1.get_VAO();
+    const unsigned int shadowShader = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
+    );
+
+    frame_buffer mainFrame(frameWidth, frameHeight);
+    shadowFrameBuffer shadowBuffer(frameWidth, frameHeight);
+
+    const unsigned int& frameBuffer = mainFrame.get_FBO();
+    const unsigned int& frameTexture = mainFrame.get_TEX();
+    const unsigned int& frameVAO = mainFrame.get_VAO();
+    
+    // SHADOW MAPPING -----------------------------------------------------------------//
+
+    float near_plane = 1.0f, far_plane = 7.5f;
+    glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+
+    glm::mat4 lightView = glm::lookAt(
+        scene1.getLight()->getPosition(),
+        glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
+    glm::mat4 lightSpace = lightProjection * lightView;
+
+    // Camera Perspective from Light Source
+    // cam.set_position(scene1.getLight()->getPosition());
+    // cam.set_target(glm::vec3(0.0f) - scene1.getLight()->getPosition());
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -181,33 +201,54 @@ int main(){
 
         // Inputs //
         scene1.input_handler(window);
+
+        if (toggle_V) {
+            cam.set_position(scene1.getLight()->getPosition());
+            cam.set_target(glm::vec3(0.0f) - scene1.getLight()->getPosition());
+        }
         
         // Updates //
         if(!isPaused){
-
             scene1.update(deltaTime);
         }
         
         // Rendering //
 
-        // Sampling Start in FrameBuffer
+        // Rendering Scene in ShadowBuffer
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glDisable(GL_CULL_FACE);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, shadowBuffer.get_FBO());
+        glViewport(0, 0, frameWidth, frameHeight);
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        scene1.render_shadow(shadowShader, lightSpace);
+
+        // Stop Rendering in ShadowBuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Rendering Scene in FrameBuffer
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        glViewport(0, 0, frameWidth, frameHeight);
+        glEnable(GL_CULL_FACE);
 
         glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
 
         // Main Scene
         glDepthMask(GL_TRUE);
         glEnable(GL_CULL_FACE);
 
-        scene1.render();
-        scene1.render_transparent();
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, shadowBuffer.get_depthMap());
 
-        // Sampling Stop
+        scene1.render(lightSpace);
+
+        // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
-        // Rendering FrameBuffer
+        // Rendering FrameBufferTexture
         glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -275,6 +316,7 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
     isPaused = (glfwGetKey(window, GLFW_KEY_F))? !isPaused : isPaused;
     showLines = (glfwGetKey(window, GLFW_KEY_L))? !showLines : showLines;
     useFlashLight = (glfwGetKey(window, GLFW_KEY_T))? !useFlashLight : useFlashLight;
+    toggle_V = glfwGetKey(window, GLFW_KEY_V);
 }
 
 void scroll_callback(GLFWwindow* window, double offset_x, double offset_y) {

@@ -66,7 +66,7 @@ void camera::set_target(const glm::vec3 target){
 
     this->target = target;
 
-    glm::vec3 target_norm = glm::normalize(target);
+    const glm::vec3 target_norm = glm::normalize(target);
 
     pitch = asin(target_norm.y);
     yaw = atan2(target_norm.z, target_norm.x);

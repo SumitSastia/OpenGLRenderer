@@ -54,8 +54,9 @@ public:
 	void init();
 	void input_handler(GLFWwindow* window);
 	void update(const float& delta_time);
-	void render() const;
+	void render(const glm::mat4& lightSpace) const;
 	void render_transparent() const;
+	void render_shadow(const unsigned int& shader, const glm::mat4& lightSpace) const;
 
 	void destroy() const;
 };

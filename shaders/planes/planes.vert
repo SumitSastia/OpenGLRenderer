@@ -6,11 +6,15 @@ layout (location = 1) in vec2 aTexCords;
 out vec3 vPos;
 out vec2 vTexCords;
 
+out vec4 lightSpacePos;
+
 uniform mat4 finalMatrix;
+uniform mat4 lightSpace;
 uniform mat4 model;
 
 void main(){
     gl_Position = finalMatrix * vec4(aPos, 0.0, 1.0);
+    lightSpacePos = lightSpace * model * vec4(aPos, 0.0, 1.0);
 
     vPos = vec3(model * vec4(aPos, 0.0, 1.0));
     vTexCords = aTexCords;

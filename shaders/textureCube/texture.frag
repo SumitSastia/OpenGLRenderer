@@ -40,6 +40,8 @@ in vec3 vPos;
 in vec3 vNormal;
 in vec2 vTextureCords;
 
+in vec4 lightSpacePos;
+
 out vec4 FragColor;
 
 uniform float alphaVal;
@@ -47,6 +49,8 @@ uniform vec3 viewPos;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
+
+uniform sampler2D depthMap;
 
 uniform material m1;
 
@@ -56,6 +60,32 @@ uniform pointLight p1;
 
 uniform float skyboxIntensity;
 uniform samplerCube skybox;
+
+float init_shadow() {
+
+    if (lightSpacePos.w <= 0.0) {
+        return 0.0;
+    }
+
+    vec3 shadowCords = lightSpacePos.xyz / lightSpacePos.w;
+    shadowCords = shadowCords * 0.5 + 0.5;
+
+    if (shadowCords.x < 0.0 || shadowCords.x > 1.0 ||
+        shadowCords.y < 0.0 || shadowCords.y > 1.0 ||
+        shadowCords.z > 1.0 || shadowCords.z < 0.0) {
+        return 0.0;
+    }
+
+    float nearest_depth = texture(depthMap, shadowCords.xy).r;
+    float shadow = 0.0;
+    float bias = 0.0025;
+
+    if (shadowCords.z - bias > nearest_depth) {
+        shadow = 1.0;
+    }
+
+    return shadow;
+}
 
 vec4 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec4 t1, vec4 t2){
 
@@ -133,7 +163,7 @@ void main(){
     vec4 t2 = texture(texture2, vTextureCords);
 
     // Ambient
-    vec4 ambientLight = ((m1.ambient, 1.0)*t1) * vec4(1.0);
+    vec4 ambientLight = (m1.ambient, 1.0) * t1;
     vec4 finalColor = vec4(0.0);
 
     finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
@@ -150,10 +180,12 @@ void main(){
     vec4 reflected_color = vec4(texture(skybox, reflected_ray).rgb, 1.0);
 
     vec4 skybox_tex = texture(skybox, reflected_ray);
-    float avg_ambient = (skybox_tex.x + skybox_tex.y + skybox_tex.z) / 3.00;
 
     ambientLight = (vec4(m1.ambient, 1.0) * t1 + skyboxIntensity * t1) / 2.00;
-    FragColor = ambientLight + finalColor + (0.1*skybox_tex.rgb, 0.0);
+
+    float shadow = init_shadow();
+    FragColor = ambientLight + (1.0 - shadow) * finalColor;
+    // FragColor = vec4(vec3(1.0 - shadow), 1.0);
     
     // float gamma = 2.2;
     // FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / gamma));

@@ -36,6 +36,35 @@ struct spotLight{
     float quadratic;
 };
 
+in vec4 lightSpacePos;
+uniform sampler2D depthMap;
+
+float init_shadow() {
+
+    if (lightSpacePos.w <= 0.0) {
+        return 0.0;
+    }
+
+    vec3 shadowCords = lightSpacePos.xyz / lightSpacePos.w;
+    shadowCords = shadowCords * 0.5 + 0.5;
+
+    if (shadowCords.x < 0.0 || shadowCords.x > 1.0 ||
+        shadowCords.y < 0.0 || shadowCords.y > 1.0 ||
+        shadowCords.z > 1.0 || shadowCords.z < 0.0) {
+        return 0.0;
+    }
+
+    float nearest_depth = texture(depthMap, shadowCords.xy).r;
+    float shadow = 0.0;
+    float bias = 0.0025;
+
+    if (shadowCords.z - bias > nearest_depth) {
+        shadow = 1.0;
+    }
+
+    return shadow;
+}
+
 in vec3 vPos;
 in vec2 vTexCords;
 out vec4 FragColor;
@@ -149,7 +178,11 @@ void main() {
         finalColor += init_spotLight(s1, normal, vPos, viewPos, t1);
     }
     
-    FragColor = ambientLight + finalColor;
+    FragColor = ambientLight + (1.0 - init_shadow()) * finalColor;
+    FragColor = vec4(vec3(1.0 - init_shadow()), 1.0);
+
+    // float gamma = 2.2;
+    // FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / gamma));
 
     //FragColor = vec4(ambientLight + finalColor, 1.0);
     // FragColor = vec4(texture(texture1, vTexCords));

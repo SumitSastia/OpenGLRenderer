@@ -70,6 +70,21 @@ public:
     const unsigned int& get_TEX() const { return frameTexture; }
 };
 
+class shadowFrameBuffer {
+
+    unsigned int FBO, RBO, VBO, VAO, EBO;
+    unsigned int depthMap;
+
+public:
+
+    shadowFrameBuffer(const int& frameWidth, const int& frameHeight);
+    ~shadowFrameBuffer();
+
+    const unsigned int& get_FBO() const { return FBO; }
+    const unsigned int& get_VAO() const { return VAO; }
+    const unsigned int& get_depthMap() const { return depthMap; }
+};
+
 struct material {
     glm::vec3 ambient;
     glm::vec3 diffuse;

@@ -112,13 +112,7 @@ public:
         loadModel(path);
     }
 
-    void update(
-        const glm::mat4& projection,
-        const glm::mat4& view,
-        const glm::mat4& model
-    );
-
-    void draw(const unsigned int& shader) const;
+    void draw(const unsigned int& shader, const glm::mat4& model) const;
 };
 
 #endif

@@ -237,22 +237,12 @@ std::vector<meshTexture> model3D::loadMaterialTextures(aiMaterial* mat, aiTextur
     return textures;
 }
 
-void model3D::update(
-    const glm::mat4& projection,
-    const glm::mat4& view,
-    const glm::mat4& model
-) {
-    this->projection = projection;
-    this->view = view;
-    this->model = model;
-}
-
-void model3D::draw(const unsigned int& shader) const {
+void model3D::draw(const unsigned int& shader, const glm::mat4& model) const {
 
     glUseProgram(shader);
     glFrontFace(GL_CW);
 
-    setMat4(shader, "finalMatrix", projection * view * model);
+    setMat4(shader, "finalMatrix", camera::instance().getPerspective() * camera::instance().getView() * model);
     setMat4(shader, "model", model);
     setMat3(shader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model))));
     setVec3(shader, "viewPos", camera::instance().getPos());
