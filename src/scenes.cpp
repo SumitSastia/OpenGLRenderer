@@ -21,8 +21,8 @@ void scene1::init() {
     );
 
     modelShader = createShader(
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/model.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/model.frag"
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/models/model.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/models/model.frag"
     );
 
     planeShader = createShader(
@@ -188,6 +188,16 @@ void scene1::input_handler(GLFWwindow* window) {
         toggle_KEY_G = true;
     }
     else { toggle_KEY_G = false; }
+
+    if (glfwGetKey(window, GLFW_KEY_KP_ADD)) {
+
+        objectModel = glm::translate(objectModel, glm::vec3(0.0f, -0.01f, 0.0f));
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT)) {
+
+        objectModel = glm::translate(objectModel, glm::vec3(0.0f, 0.01f, 0.0f));
+    }
 }
 
 void scene1::update(const float& delta_time) {
@@ -275,10 +285,10 @@ void scene1::render(const glm::mat4& lightSpace) const {
         glEnable(GL_CULL_FACE);
     }
 
-    render_transparent();
+    render_transparent(lightSpace);
 }
 
-void scene1::render_transparent() const {
+void scene1::render_transparent(const glm::mat4& lightSpace) const {
 
     const glm::mat4& projection = camera::instance().getPerspective();
     const glm::mat4& view = camera::instance().getView();
@@ -290,6 +300,8 @@ void scene1::render_transparent() const {
 
     // Plane
     glUseProgram(planeShader);
+    setMat4(planeShader, "lightSpace", lightSpace);
+    setInt(planeShader, "depthMap", 3);
     setPointLight(planeShader, "p1", myLight->getLight());
     shapes::instance().square.draw(planeShader, windowModel);
 }
