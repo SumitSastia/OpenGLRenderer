@@ -150,11 +150,6 @@ int main(){
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
     );
 
-    const unsigned int shadowShader = createShader(
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
-    );
-
     frame_buffer mainFrame(frameWidth, frameHeight);
     shadowFrameBuffer shadowBuffer(frameWidth, frameHeight);
 
@@ -164,7 +159,7 @@ int main(){
     
     // SHADOW MAPPING -----------------------------------------------------------------//
 
-    float near_plane = 1.0f, far_plane = 20.0f, size = 5.0f;
+    /*float near_plane = 1.0f, far_plane = 20.0f, size = 5.0f;
     glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, near_plane, far_plane);
 
     glm::mat4 lightView = glm::lookAt(
@@ -172,7 +167,7 @@ int main(){
         glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
     );
 
-    glm::mat4 lightSpace = lightProjection * lightView;
+    glm::mat4 lightSpace = lightProjection * lightView;*/
 
     // Camera Perspective from Light Source
 
@@ -221,7 +216,7 @@ int main(){
         glViewport(0, 0, frameWidth, frameHeight);
 
         glClear(GL_DEPTH_BUFFER_BIT);
-        scene1.render_shadow(shadowShader, lightSpace);
+        scene1.render_shadow();
 
         // Stop Rendering in ShadowBuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -241,7 +236,7 @@ int main(){
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, shadowBuffer.get_depthMap());
 
-        scene1.render(lightSpace);
+        scene1.render();
 
         // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

@@ -51,6 +51,11 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
     );
 
+    shadowShader = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
+    );
+
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -64,7 +69,7 @@ void scene1::init() {
     
     floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f));
     floorModel = glm::rotate(floorModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    floorModel = glm::scale(floorModel, glm::vec3(20.0f));
+    floorModel = glm::scale(floorModel, glm::vec3(25.0f));
 
     worldModels.push_back(&objectModel);
     worldModels.push_back(&cubeModel);
@@ -177,6 +182,17 @@ void scene1::init() {
     // Floor
     floor = shapes::instance().square;
     floor.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/stone_floor.jpg");
+
+    // Light-Space
+    float near_plane = 1.0f, far_plane = 20.0f, size = 5.0f;
+    lightProjection = glm::ortho(-size, size, -size, size, near_plane, far_plane);
+
+    glm::mat4 lightView = glm::lookAt(
+        myLight->getPosition(),
+        glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
+    lightSpace = lightProjection * lightView;
 }
 
 void scene1::input_handler(GLFWwindow* window) {
@@ -227,6 +243,21 @@ void scene1::input_handler(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_KP_9)) {
         *(worldModels[modelCounter]) = glm::translate(*(worldModels[modelCounter]), glm::vec3(0.0f, 0.0f, 0.01f));
     }
+
+    // Light-Rotater
+    if (glfwGetKey(window, GLFW_KEY_KP_5)) {
+
+        lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel;
+
+        const glm::vec3 newLightPos = glm::vec3(lightModel[3]);
+
+        glm::mat4 lightView = glm::lookAt(
+            newLightPos,
+            glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
+        );
+
+        lightSpace = lightProjection * lightView;
+    }
 }
 
 void scene1::update(const float& delta_time) {
@@ -235,36 +266,36 @@ void scene1::update(const float& delta_time) {
     const glm::mat4& view = camera::instance().getView();
 
     // Light-Rotation
-    float rotationSpeed = 1.0f;
+    // float rotationSpeed = 1.0f;
     // lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0f,1.0f,0.0f)) * lightModel;
 
 }
 
-void scene1::render_shadow(const unsigned int& shader, const glm::mat4& lightSpace) const {
+void scene1::render_shadow() const {
 
-    glUseProgram(shader);
-    setMat4(shader, "lightSpace", lightSpace);
+    glUseProgram(shadowShader);
+    setMat4(shadowShader, "lightSpace", lightSpace);
 
     // Object
     /*setMat4(shader, "model", objectModel);
     shapes::instance().cube.drawShadow();*/
 
     // Model
-    setMat4(shader, "model", cubeModel);
+    setMat4(shadowShader, "model", cubeModel);
     cube1->drawShadow();
 
     // Window
-    setMat4(shader, "model", windowModel);
+    setMat4(shadowShader, "model", windowModel);
     shapes::instance().square.drawShadow();
 
     // Multiple Cubes - !! Uses Separate Shader
     glUseProgram(instanceShadowShader);
-    setMat4(shader, "lightSpace", lightSpace);
+    setMat4(instanceShadowShader, "lightSpace", lightSpace);
 
     shapes::instance().cubeInstanced.drawShadow(totalCubes);
 }
 
-void scene1::render(const glm::mat4& lightSpace) const {
+void scene1::render() const {
 
     const glm::mat4& projection = camera::instance().getPerspective();
     const glm::mat4& view = camera::instance().getView();
@@ -329,10 +360,10 @@ void scene1::render(const glm::mat4& lightSpace) const {
         glEnable(GL_CULL_FACE);
     }
 
-    render_transparent(lightSpace);
+    render_transparent();
 }
 
-void scene1::render_transparent(const glm::mat4& lightSpace) const {
+void scene1::render_transparent() const {
 
     const glm::mat4& projection = camera::instance().getPerspective();
     const glm::mat4& view = camera::instance().getView();

@@ -16,9 +16,15 @@ class scene1 {
 		cubemapShader,
 		normalShader,
 		instanceShader,
-		instanceShadowShader
+		instanceShadowShader,
+		shadowShader
 	;
 
+	// Light Space
+	glm::mat4 lightSpace;
+	glm::mat4 lightProjection;
+
+	// Imported Models
 	model3D* cube1;
 
 	// Light-Source
@@ -60,9 +66,9 @@ public:
 	void init();
 	void input_handler(GLFWwindow* window);
 	void update(const float& delta_time);
-	void render(const glm::mat4& lightSpace) const;
-	void render_transparent(const glm::mat4& lightSpace) const;
-	void render_shadow(const unsigned int& shader, const glm::mat4& lightSpace) const;
+	void render() const;
+	void render_transparent() const;
+	void render_shadow() const;
 
 	void destroy() const;
 };
