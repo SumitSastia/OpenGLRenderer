@@ -15,7 +15,8 @@ class scene1 {
 		textureShader,
 		cubemapShader,
 		normalShader,
-		instanceShader
+		instanceShader,
+		instanceShadowShader
 	;
 
 	model3D* cube1;
@@ -29,6 +30,9 @@ class scene1 {
 	glm::mat4 cubeModel;
 	glm::mat4 floorModel;
 	glm::mat4 windowModel;
+
+	unsigned int modelCounter;
+	std::vector <glm::mat4*> worldModels;
 
 	// Skybox
 	cubeMap* skybox;
@@ -47,6 +51,8 @@ class scene1 {
 	shape2D floor;
 
 public:
+
+	scene1() : modelCounter(0) {}
 
 	model3D* getCube() const { return cube1; }
 	lightSource* getLight() const { return myLight; }

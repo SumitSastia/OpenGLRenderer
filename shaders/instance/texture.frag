@@ -40,6 +40,8 @@ in vec3 vPos;
 in vec3 vNormal;
 in vec2 vTextureCords;
 
+in vec4 lightSpacePos;
+
 out vec4 FragColor;
 
 uniform vec3 viewPos;
@@ -54,6 +56,33 @@ uniform directionalLight d1;
 uniform pointLight p1;
 
 uniform samplerCube skybox;
+uniform sampler2D depthMap;
+
+float init_shadow() {
+
+    if (lightSpacePos.w <= 0.0) {
+        return 0.0;
+    }
+
+    vec3 shadowCords = lightSpacePos.xyz / lightSpacePos.w;
+    shadowCords = shadowCords * 0.5 + 0.5;
+
+    if (shadowCords.x < 0.0 || shadowCords.x > 1.0 ||
+        shadowCords.y < 0.0 || shadowCords.y > 1.0 ||
+        shadowCords.z > 1.0 || shadowCords.z < 0.0) {
+        return 0.0;
+    }
+
+    float nearest_depth = texture(depthMap, shadowCords.xy).r;
+    float shadow = 0.0;
+    float bias = 0.0025;
+
+    if (shadowCords.z - bias > nearest_depth) {
+        shadow = 1.0;
+    }
+
+    return shadow;
+}
 
 vec3 init_pointLight(pointLight pl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1, vec3 t2){
 

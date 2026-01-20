@@ -171,6 +171,13 @@ void shape2D::draw(const unsigned int& shader, const glm::mat4& model) const {
     glEnable(GL_CULL_FACE);
 }
 
+void shape2D::drawShadow() const {
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+    glBindVertexArray(0);
+}
+
 //-------------------------------------------------------------------------------------//
 
 shape::~shape() {
@@ -248,6 +255,13 @@ void shape::draw(const unsigned int& shader, const glm::mat4& model) const {
     glActiveTexture(GL_TEXTURE0);
 }
 
+void shape::drawShadow() const {
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+    glBindVertexArray(0);
+}
+
 //-------------------------------------------------------------------------------------//
 
 void shapeInstanced::bindVertices(
@@ -310,6 +324,13 @@ void shapeInstanced::draw(const unsigned int& shader, const unsigned int& instan
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
+}
+
+void shapeInstanced::drawShadow(const unsigned int& instanceCounts) const {
+
+    glBindVertexArray(VAO);
+    glDrawElementsInstanced(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr, instanceCounts);
+    glBindVertexArray(0);
 }
 
 //-------------------------------------------------------------------------------------//

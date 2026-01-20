@@ -35,6 +35,7 @@ struct shape2D {
 
     void loadTexture(const char* texturePath);
     void draw(const unsigned int& shader, const glm::mat4& model) const;
+    void drawShadow() const;
 };
 
 // Hardcoded Models
@@ -55,6 +56,7 @@ struct shape {
 
     void loadTexture(const char* diffusePath, const char* specularPath);
     void draw(const unsigned int& shader, const glm::mat4& model) const;
+    void drawShadow() const;
 };
 
 struct shapeInstanced : shape {
@@ -65,6 +67,7 @@ struct shapeInstanced : shape {
     );
 
     void draw(const unsigned int& shader, const unsigned int& instanceCounts) const;
+    void drawShadow(const unsigned int& instanceCounts) const;
 };
 
 struct shapes {

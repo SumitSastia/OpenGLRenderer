@@ -110,6 +110,13 @@ void mesh::draw(const unsigned int& shader) const {
     glActiveTexture(GL_TEXTURE0);
 }
 
+void mesh::drawShadow() const {
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
 //-------------------------------------------------------------------------------------//
 
 void model3D::loadModel(const std::string& path) {
@@ -255,4 +262,11 @@ void model3D::draw(const unsigned int& shader, const glm::mat4& model) const {
     }
 
     glFrontFace(GL_CCW);
+}
+
+void model3D::drawShadow() const {
+
+    for (const auto& mesh_part : meshes) {
+        mesh_part.drawShadow();
+    }
 }

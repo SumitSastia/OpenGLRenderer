@@ -46,6 +46,11 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/instance/texture.frag"
     );
 
+    instanceShadowShader = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/instanceShadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
+    );
+
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -60,6 +65,10 @@ void scene1::init() {
     floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f));
     floorModel = glm::rotate(floorModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     floorModel = glm::scale(floorModel, glm::vec3(20.0f));
+
+    worldModels.push_back(&objectModel);
+    worldModels.push_back(&cubeModel);
+    worldModels.push_back(&windowModel);
 
     // Light-Source
     myLight = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
@@ -87,7 +96,7 @@ void scene1::init() {
     totalCubes = 10;
     cubePositions = new glm::vec3[10]
     {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 5.0f,  0.0f,  0.0f),
         glm::vec3( 2.0f,  5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
         glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -173,6 +182,7 @@ void scene1::init() {
 void scene1::input_handler(GLFWwindow* window) {
 
     static bool toggle_KEY_G = false;
+    static bool toggle_KEY_M = false;
 
     if (glfwGetKey(window, GLFW_KEY_G)) {
 
@@ -189,14 +199,33 @@ void scene1::input_handler(GLFWwindow* window) {
     }
     else { toggle_KEY_G = false; }
 
-    if (glfwGetKey(window, GLFW_KEY_KP_ADD)) {
+    if (glfwGetKey(window, GLFW_KEY_M)) {
 
-        objectModel = glm::translate(objectModel, glm::vec3(0.0f, -0.01f, 0.0f));
+        if (!toggle_KEY_M) {
+            modelCounter = (modelCounter + 1) % worldModels.size();
+        }
+        toggle_KEY_M = true;
     }
+    else { toggle_KEY_M = false; }
 
-    if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT)) {
-
-        objectModel = glm::translate(objectModel, glm::vec3(0.0f, 0.01f, 0.0f));
+    // Model Position Updater
+    if (glfwGetKey(window, GLFW_KEY_KP_8)) {
+        *(worldModels[modelCounter]) = glm::translate(*(worldModels[modelCounter]), glm::vec3(0.0f, 0.01f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_2)) {
+        *(worldModels[modelCounter]) = glm::translate(*(worldModels[modelCounter]), glm::vec3(0.0f, -0.01f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_4)) {
+        *(worldModels[modelCounter]) = glm::translate(*(worldModels[modelCounter]), glm::vec3(-0.01f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_6)) {
+        *(worldModels[modelCounter]) = glm::translate(*(worldModels[modelCounter]), glm::vec3(0.01f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_7)) {
+        *(worldModels[modelCounter]) = glm::translate(*(worldModels[modelCounter]), glm::vec3(0.0f, 0.0f, -0.01f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_9)) {
+        *(worldModels[modelCounter]) = glm::translate(*(worldModels[modelCounter]), glm::vec3(0.0f, 0.0f, 0.01f));
     }
 }
 
@@ -215,12 +244,24 @@ void scene1::render_shadow(const unsigned int& shader, const glm::mat4& lightSpa
 
     glUseProgram(shader);
     setMat4(shader, "lightSpace", lightSpace);
-    setMat4(shader, "model", objectModel);
 
     // Object
-    glBindVertexArray(shapes::instance().cube.VAO);
-    glDrawElements(GL_TRIANGLES, shapes::instance().cube.indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
-    glBindVertexArray(0);
+    /*setMat4(shader, "model", objectModel);
+    shapes::instance().cube.drawShadow();*/
+
+    // Model
+    setMat4(shader, "model", cubeModel);
+    cube1->drawShadow();
+
+    // Window
+    setMat4(shader, "model", windowModel);
+    shapes::instance().square.drawShadow();
+
+    // Multiple Cubes - !! Uses Separate Shader
+    glUseProgram(instanceShadowShader);
+    setMat4(shader, "lightSpace", lightSpace);
+
+    shapes::instance().cubeInstanced.drawShadow(totalCubes);
 }
 
 void scene1::render(const glm::mat4& lightSpace) const {
@@ -235,18 +276,21 @@ void scene1::render(const glm::mat4& lightSpace) const {
     myLight->draw(lightShader);
 
     // Object
-    glUseProgram(textureShader);
+    /*glUseProgram(textureShader);
     setMat4(textureShader, "lightSpace", lightSpace);
     setInt(textureShader, "depthMap", 3);
 
     setFloat(textureShader, "skyboxIntensity", skyboxIntensity);
     setPointLight(textureShader, "p1", myLight->getLight());
-    shapes::instance().cube.draw(textureShader, objectModel);
+    shapes::instance().cube.draw(textureShader, objectModel);*/
 
     // Multiple Cubes
-    /*glUseProgram(instanceShader);
+    glUseProgram(instanceShader);
+    setMat4(instanceShader, "lightSpace", lightSpace);
+    setInt(instanceShader, "depthMap", 3);
+
     setPointLight(instanceShader, "p1", myLight->getLight());
-    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);*/
+    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);
 
     // Normal-Visualizer
     // shapes::instance().cube.draw(normalShader);

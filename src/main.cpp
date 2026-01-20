@@ -175,8 +175,6 @@ int main(){
     glm::mat4 lightSpace = lightProjection * lightView;
 
     // Camera Perspective from Light Source
-    // cam.set_position(scene1.getLight()->getPosition());
-    // cam.set_target(glm::vec3(0.0f) - scene1.getLight()->getPosition());
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 

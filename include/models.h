@@ -86,6 +86,7 @@ public:
     ~mesh();
 
     void draw(const unsigned int& shader) const ;
+    void drawShadow() const;
 };
 
 class model3D {
@@ -113,6 +114,7 @@ public:
     }
 
     void draw(const unsigned int& shader, const glm::mat4& model) const;
+    void drawShadow() const;
 };
 
 #endif
