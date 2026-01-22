@@ -77,7 +77,7 @@ class shadowFrameBuffer {
 
 public:
 
-    shadowFrameBuffer(const int& frameWidth, const int& frameHeight);
+    shadowFrameBuffer(const int& shadowWidth, const int& shadowHeight);
     ~shadowFrameBuffer();
 
     const unsigned int& get_FBO() const { return FBO; }

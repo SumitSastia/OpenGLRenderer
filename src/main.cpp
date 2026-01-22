@@ -145,31 +145,51 @@ int main(){
 
     // FRAMEBUFFERS -----------------------------------------------------------------------//
 
+    const unsigned int shadowWidth = 1024;
+    const unsigned int shadowHeight = 1024;
+
     const unsigned int frameShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
     );
 
     frame_buffer mainFrame(frameWidth, frameHeight);
-    shadowFrameBuffer shadowBuffer(frameWidth, frameHeight);
+    shadowFrameBuffer shadowBuffer(shadowWidth, shadowHeight);
 
     const unsigned int& frameBuffer = mainFrame.get_FBO();
     const unsigned int& frameTexture = mainFrame.get_TEX();
     const unsigned int& frameVAO = mainFrame.get_VAO();
     
-    // SHADOW MAPPING -----------------------------------------------------------------//
+    // POINT SHADOW -------------------------------------------------------------------//
 
-    /*float near_plane = 1.0f, far_plane = 20.0f, size = 5.0f;
-    glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, near_plane, far_plane);
+    unsigned int cubeMapFrameBuffer;
+    unsigned int depthCubeMap;
 
-    glm::mat4 lightView = glm::lookAt(
-        scene1.getLight()->getPosition(),
-        glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
-    );
+    glGenFramebuffers(1, &cubeMapFrameBuffer);
+    glGenTextures(1, &depthCubeMap);
 
-    glm::mat4 lightSpace = lightProjection * lightView;*/
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
 
-    // Camera Perspective from Light Source
+    for (unsigned int i = 0; i < 6; i++) {
+
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+            shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFrameBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, depthCubeMap, 0);
+
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -213,7 +233,7 @@ int main(){
         glDisable(GL_CULL_FACE);
 
         glBindFramebuffer(GL_FRAMEBUFFER, shadowBuffer.get_FBO());
-        glViewport(0, 0, frameWidth, frameHeight);
+        glViewport(0, 0, shadowWidth, shadowHeight);
 
         glClear(GL_DEPTH_BUFFER_BIT);
         scene1.render_shadow();

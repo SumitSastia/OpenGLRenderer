@@ -175,7 +175,7 @@ void main() {
     vec4 t1 = vec4(texture(texture1, vTexCords));
 
     // Ambient
-    vec4 ambientLight = ((vec4(m1.ambient, 1.0) * t1) + skyboxIntensity * t1) / 2.00;
+    vec4 ambientLight = vec4(vec3(((vec4(m1.ambient, 1.0) * t1) + skyboxIntensity * t1) / 2.00), t1.a);
     vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
 
     // PointLight

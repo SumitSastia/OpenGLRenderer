@@ -125,7 +125,7 @@ void scene1::init() {
         glm::mat4 objModel = glm::translate(glm::mat4(1.0f), cubePositions[i]);
 
         objModels[i] = glm::rotate(objModel, i * 15.0f, glm::vec3(1.0f, 2.0f, 3.0f));
-        objNormals[i] = glm::transpose(glm::inverse(glm::mat3(objModel)));
+        objNormals[i] = glm::transpose(glm::inverse(glm::mat3(objModels[i])));
     }
 
     glGenBuffers(1, &instanceModelVBO);
@@ -264,11 +264,6 @@ void scene1::update(const float& delta_time) {
 
     const glm::mat4& projection = camera::instance().getPerspective();
     const glm::mat4& view = camera::instance().getView();
-
-    // Light-Rotation
-    // float rotationSpeed = 1.0f;
-    // lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotationSpeed), glm::vec3(0.0f,1.0f,0.0f)) * lightModel;
-
 }
 
 void scene1::render_shadow() const {
@@ -320,6 +315,7 @@ void scene1::render() const {
     setMat4(instanceShader, "lightSpace", lightSpace);
     setInt(instanceShader, "depthMap", 3);
 
+    setFloat(instanceShader, "skyboxIntensity", skyboxIntensity);
     setPointLight(instanceShader, "p1", myLight->getLight());
     shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);
 
@@ -349,6 +345,7 @@ void scene1::render() const {
 
         setMat4(cubemapShader, "projection", projection);
         setMat4(cubemapShader, "view", glm::mat4(glm::mat3(view)));
+        setInt(cubemapShader, "cubeMap", 2);
 
         glBindVertexArray(skybox->get_VAO());
         glActiveTexture(GL_TEXTURE2);

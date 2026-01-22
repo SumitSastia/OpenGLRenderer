@@ -181,7 +181,7 @@ void main(){
 
     vec4 skybox_tex = texture(skybox, reflected_ray);
 
-    ambientLight = (vec4(m1.ambient, 1.0) * t1 + skyboxIntensity * t1) / 2.00;
+    ambientLight = vec4(vec3(((vec4(m1.ambient, 1.0) * t1) + skyboxIntensity * t1) / 2.00), t1.a);
 
     float shadow = init_shadow();
     FragColor = ambientLight + (1.0 - shadow) * finalColor;

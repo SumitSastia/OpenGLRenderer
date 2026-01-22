@@ -313,14 +313,14 @@ frame_buffer::~frame_buffer() {
     glDeleteVertexArrays(1, &VAO);
 }
 
-shadowFrameBuffer::shadowFrameBuffer(const int& frameWidth, const int& frameHeight) {
+shadowFrameBuffer::shadowFrameBuffer(const int& shadowWidth, const int& shadowHeight) {
 
     glGenFramebuffers(1, &FBO);
     glGenTextures(1, &depthMap);
 
     glBindTexture(GL_TEXTURE_2D, depthMap);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, frameWidth, frameHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
