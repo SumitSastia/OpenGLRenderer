@@ -83,6 +83,20 @@ float init_shadow() {
         shadow = 1.0;
     }
 
+    // Filtering
+    shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+
+            float PCFdepth = texture(depthMap, shadowCords.xy + vec2(x,y) * texelSize).r;
+            shadow += shadowCords.z - bias > PCFdepth ? 1.0 : 0.0;
+        }
+    }
+
+    shadow /= 9.0;
+
     return shadow;
 }
 

@@ -71,8 +71,6 @@ float init_shadow(vec4 lightSpacePos, sampler2D depthMap, vec3 normal, vec3 ligh
     }
 
     float nearest_depth = texture(depthMap, shadowCords.xy).r;
-    float shadow = 0.0;
-
     vec3 final_normal = normalize(normal);
 
     float bias = max(
@@ -80,11 +78,19 @@ float init_shadow(vec4 lightSpacePos, sampler2D depthMap, vec3 normal, vec3 ligh
         0.0005
     );
 
-    // float bias = 0.0025;
+    // Filtering
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 
-    if (shadowCords.z - bias > nearest_depth) {
-        shadow = 1.0;
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+
+            float PCFdepth = texture(depthMap, shadowCords.xy + vec2(x,y) * texelSize).r;
+            shadow += shadowCords.z - bias > PCFdepth ? 1.0 : 0.0;
+        }
     }
+
+    shadow /= 9.0;
 
     return shadow;
 }

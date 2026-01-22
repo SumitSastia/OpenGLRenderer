@@ -146,7 +146,7 @@ int main(){
     // FRAMEBUFFERS -----------------------------------------------------------------------//
 
     const unsigned int shadowWidth = 1024;
-    const unsigned int shadowHeight = 1024;
+    const unsigned int shadowHeight = shadowWidth;
 
     const unsigned int frameShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.vert",
