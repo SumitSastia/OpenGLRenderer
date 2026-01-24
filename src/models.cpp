@@ -247,6 +247,7 @@ std::vector<meshTexture> model3D::loadMaterialTextures(aiMaterial* mat, aiTextur
 void model3D::draw(const unsigned int& shader, const glm::mat4& model) const {
 
     glUseProgram(shader);
+    // glDisable(GL_CULL_FACE);
     glFrontFace(GL_CW);
 
     setMat4(shader, "finalMatrix", camera::instance().getPerspective() * camera::instance().getView() * model);
@@ -261,6 +262,7 @@ void model3D::draw(const unsigned int& shader, const glm::mat4& model) const {
         mesh_part.draw(shader);
     }
 
+    //glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
 }
 

@@ -40,7 +40,9 @@ in vec3 vPos;
 in vec3 vNormal;
 in vec2 vTextureCords;
 
-in vec4 lightSpacePos;
+uniform samplerCube depthCubeMap;
+uniform vec3 lightPos;
+uniform float far_plane;
 
 out vec4 FragColor;
 
@@ -49,8 +51,6 @@ uniform vec3 viewPos;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
-
-uniform sampler2D depthMap;
 
 uniform material m1;
 
@@ -61,28 +61,31 @@ uniform pointLight p1;
 uniform float skyboxIntensity;
 uniform samplerCube skybox;
 
-float init_shadow() {
+float init_shadow(vec3 vPos) {
 
-    if (lightSpacePos.w <= 0.0) {
-        return 0.0;
-    }
+    vec3 fragToLight = vPos - lightPos;
+    float currentDepth = length(fragToLight);
 
-    vec3 shadowCords = lightSpacePos.xyz / lightSpacePos.w;
-    shadowCords = shadowCords * 0.5 + 0.5;
-
-    if (shadowCords.x < 0.0 || shadowCords.x > 1.0 ||
-        shadowCords.y < 0.0 || shadowCords.y > 1.0 ||
-        shadowCords.z > 1.0 || shadowCords.z < 0.0) {
-        return 0.0;
-    }
-
-    float nearest_depth = texture(depthMap, shadowCords.xy).r;
     float shadow = 0.0;
-    float bias = 0.0025;
+    float bias = 0.05;
+    float samples = 4.0;
+    float offset = 0.1;
 
-    if (shadowCords.z - bias > nearest_depth) {
-        shadow = 1.0;
+    for (float x = -offset; x < offset; x += offset / (samples * 0.5)) {
+        for (float y = -offset; y < offset; y += offset / (samples * 0.5)) {
+            for (float z = -offset; z < offset; z += offset / (samples * 0.5)) {
+
+                float closestDepth = texture(depthCubeMap, fragToLight + vec3(x,y,z)).r;
+                closestDepth *= far_plane;
+
+                if (currentDepth - bias > closestDepth) {
+                    shadow += 1.0;
+                }
+            }
+        }
     }
+
+    shadow /= (samples * samples * samples);
 
     return shadow;
 }
@@ -182,11 +185,7 @@ void main(){
     vec4 skybox_tex = texture(skybox, reflected_ray);
 
     ambientLight = vec4(vec3(((vec4(m1.ambient, 1.0) * t1) + skyboxIntensity * t1) / 2.00), t1.a);
-
-    float shadow = init_shadow();
-    FragColor = ambientLight + (1.0 - shadow) * finalColor;
-
-    FragColor = ambientLight + finalColor;
+    FragColor = ambientLight + (1.0 - init_shadow(vPos)) * finalColor;
 
     // FragColor = vec4(vec3(1.0 - shadow), 1.0);
     

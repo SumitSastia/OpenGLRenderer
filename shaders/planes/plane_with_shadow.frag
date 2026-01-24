@@ -59,14 +59,28 @@ uniform float skyboxIntensity;
 float init_shadow(vec3 vPos) {
 
     vec3 fragToLight = vPos - lightPos;
-    float closestDpeth = texture(depthCubeMap, fragToLight).r;
-
-    closestDpeth *= far_plane;
-
     float currentDepth = length(fragToLight);
-    float bias = 0.05;
 
-    float shadow = currentDepth - bias > closestDpeth ? 1.0 : 0.0;
+    float shadow = 0.0;
+    float bias = 0.05;
+    float samples = 4.0;
+    float offset = 0.1;
+
+    for (float x = -offset; x < offset; x += offset / (samples * 0.5)) {
+        for (float y = -offset; y < offset; y += offset / (samples * 0.5)) {
+            for (float z = -offset; z < offset; z += offset / (samples * 0.5)) {
+
+                float closestDepth = texture(depthCubeMap, fragToLight + vec3(x,y,z)).r;
+                closestDepth *= far_plane;
+
+                if (currentDepth - bias > closestDepth) {
+                    shadow += 1.0;
+                }
+            }
+        }
+    }
+
+    shadow /= (samples * samples * samples);
 
     return shadow;
 }

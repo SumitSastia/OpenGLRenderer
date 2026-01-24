@@ -330,8 +330,8 @@ void scene1::render_shadow2(const unsigned int& shader) const {
     setFloat(shader, "far_plane", 25.0f);
 
     // Object
-    /*setMat4(shader, "model", objectModel);
-    shapes::instance().cube.drawShadow();*/
+    setMat4(shader, "model", objectModel);
+    shapes::instance().cube.drawShadow();
 
     // Model
     setMat4(shader, "model", cubeModel);
@@ -442,14 +442,15 @@ void scene1::render_2() const {
     myLight->draw(lightShader);
 
     // Object
-    /*shader = textureShader;
+    shader = textureShader;
     glUseProgram(shader);
-    setMat4(shader, "lightSpace", lightSpace);
-    setInt(shader, "depthMap", 3);
+    setInt(shader, "depthCubeMap", 0);
+    setVec3(shader, "lightPos", myLight->getPosition());
+    setFloat(shader, "far_plane", 25.0f);
     
     setFloat(shader, "skyboxIntensity", skyboxIntensity);
     setPointLight(shader, "p1", myLight->getLight());
-    shapes::instance().cube.draw(shader, objectModel);*/
+    shapes::instance().cube.draw(shader, objectModel);
 
     // Multiple Cubes
     shader = instanceShader;
