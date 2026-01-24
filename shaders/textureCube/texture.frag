@@ -185,6 +185,9 @@ void main(){
 
     float shadow = init_shadow();
     FragColor = ambientLight + (1.0 - shadow) * finalColor;
+
+    FragColor = ambientLight + finalColor;
+
     // FragColor = vec4(vec3(1.0 - shadow), 1.0);
     
     // float gamma = 2.2;

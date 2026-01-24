@@ -56,6 +56,11 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
     );
 
+    pointShadowPlanes = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/plane_with_shadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/plane_with_shadow.frag"
+    );
+
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -266,31 +271,81 @@ void scene1::update(const float& delta_time) {
     const glm::mat4& view = camera::instance().getView();
 }
 
-void scene1::render_shadow() const {
+void scene1::render_shadow(const unsigned int& shader) const {
 
-    glUseProgram(shadowShader);
-    setMat4(shadowShader, "lightSpace", lightSpace);
+    glUseProgram(shader);
+    setMat4(shader, "lightSpace", lightSpace);
 
     // Object
-    /*setMat4(shader, "model", objectModel);
-    shapes::instance().cube.drawShadow();*/
+    setMat4(shader, "model", objectModel);
+    shapes::instance().cube.drawShadow();
 
     // Model
-    setMat4(shadowShader, "model", cubeModel);
+    setMat4(shader, "model", cubeModel);
     cube1->drawShadow();
 
     // Window
-    setMat4(shadowShader, "model", windowModel);
+    setMat4(shader, "model", windowModel);
     shapes::instance().square.drawShadow();
 
     // Multiple Cubes - !! Uses Separate Shader
-    glUseProgram(instanceShadowShader);
+    /*glUseProgram(instanceShadowShader);
     setMat4(instanceShadowShader, "lightSpace", lightSpace);
 
-    shapes::instance().cubeInstanced.drawShadow(totalCubes);
+    shapes::instance().cubeInstanced.drawShadow(totalCubes);*/
+}
+
+void scene1::render_shadow2(const unsigned int& shader) const {
+
+    float aspect = 1.0f;
+    float near = 1.0f;
+    float far = 25.0f;
+
+    glm::mat4 shadPro = glm::perspective(glm::radians(90.0f), aspect, near, far);
+
+    const glm::vec3 lightPos = myLight->getPosition();
+
+    std::vector <glm::mat4> shadowMatrices = {
+
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
+    };
+
+    glUseProgram(shader);
+
+    for (unsigned int i = 0; i < 6; i++) {
+        setMat4(shader, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+    }
+
+    setVec3(shader, "lightPos", myLight->getPosition());
+    setFloat(shader, "far_plane", 25.0f);
+
+    // Object
+    setMat4(shader, "model", objectModel);
+    shapes::instance().cube.drawShadow();
+
+    // Model
+    setMat4(shader, "model", cubeModel);
+    cube1->drawShadow();
+
+    // Window
+    setMat4(shader, "model", windowModel);
+    shapes::instance().square.drawShadow();
+
+    // Multiple Cubes - !! Uses Separate Shader
+    /*glUseProgram(instanceShadowShader);
+    setMat4(instanceShadowShader, "lightSpace", lightSpace);
+
+    shapes::instance().cubeInstanced.drawShadow(totalCubes);*/
 }
 
 void scene1::render() const {
+
+    unsigned int shader = 0;
 
     const glm::mat4& projection = camera::instance().getPerspective();
     const glm::mat4& view = camera::instance().getView();
@@ -302,22 +357,23 @@ void scene1::render() const {
     myLight->draw(lightShader);
 
     // Object
-    /*glUseProgram(textureShader);
-    setMat4(textureShader, "lightSpace", lightSpace);
-    setInt(textureShader, "depthMap", 3);
+    shader = textureShader;
+    glUseProgram(shader);
+    setMat4(shader, "lightSpace", lightSpace);
+    setInt(shader, "depthMap", 3);
 
-    setFloat(textureShader, "skyboxIntensity", skyboxIntensity);
-    setPointLight(textureShader, "p1", myLight->getLight());
-    shapes::instance().cube.draw(textureShader, objectModel);*/
+    setFloat(shader, "skyboxIntensity", skyboxIntensity);
+    setPointLight(shader, "p1", myLight->getLight());
+    shapes::instance().cube.draw(shader, objectModel);
 
     // Multiple Cubes
-    glUseProgram(instanceShader);
+    /*glUseProgram(instanceShader);
     setMat4(instanceShader, "lightSpace", lightSpace);
     setInt(instanceShader, "depthMap", 3);
 
     setFloat(instanceShader, "skyboxIntensity", skyboxIntensity);
     setPointLight(instanceShader, "p1", myLight->getLight());
-    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);
+    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);*/
 
     // Normal-Visualizer
     // shapes::instance().cube.draw(normalShader);
@@ -326,14 +382,76 @@ void scene1::render() const {
     // cc1->render();
 
     // Floor
-    glUseProgram(planeShader);
-    setMat4(planeShader, "lightSpace", lightSpace);
-    setInt(planeShader, "depthMap", 3);
-    setFloat(planeShader, "skyboxIntensity", 0.8 * skyboxIntensity);
-    setMaterial(planeShader, "m1", materials::instance().concrete);
+    shader = pointShadowPlanes;
+    glUseProgram(shader);
+    setMat4(shader, "lightSpace", lightSpace);
+    setInt(shader, "depthMap", 3);
+    setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
+    setMaterial(shader, "m1", materials::instance().concrete);
 
-    setPointLight(planeShader, "p1", myLight->getLight());
-    floor.draw(planeShader, floorModel);
+    setPointLight(shader, "p1", myLight->getLight());
+    floor.draw(shader, floorModel);
+
+    // Skybox
+    if (skybox_isVisible) {
+
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_CULL_FACE);
+        glUseProgram(cubemapShader);
+
+        setMat4(cubemapShader, "projection", projection);
+        setMat4(cubemapShader, "view", glm::mat4(glm::mat3(view)));
+        setInt(cubemapShader, "cubeMap", 2);
+
+        glBindVertexArray(skybox->get_VAO());
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->get_ID());
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glDepthFunc(GL_LESS);
+        glDepthMask(GL_TRUE);
+        glEnable(GL_CULL_FACE);
+    }
+
+    render_transparent();
+}
+
+void scene1::render_2() const {
+
+    unsigned int shader = 0;
+
+    const glm::mat4& projection = camera::instance().getPerspective();
+    const glm::mat4& view = camera::instance().getView();
+
+    lights::instance().update();
+
+    // Light-Source
+    myLight->update(projection, view, lightModel);
+    myLight->draw(lightShader);
+
+    // Object
+    shader = textureShader;
+    glUseProgram(shader);
+    setMat4(shader, "lightSpace", lightSpace);
+    setInt(shader, "depthMap", 3);
+    
+    setFloat(shader, "skyboxIntensity", skyboxIntensity);
+    setPointLight(shader, "p1", myLight->getLight());
+    shapes::instance().cube.draw(shader, objectModel);
+
+    // Floor
+    shader = pointShadowPlanes;
+    glUseProgram(shader);
+    setInt(shader, "depthCubeMap", 0);
+    setVec3(shader, "lightPos", myLight->getPosition());
+    setFloat(shader, "far_plane", 25.0f);
+
+    setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
+    setMaterial(shader, "m1", materials::instance().concrete);
+
+    setPointLight(shader, "p1", myLight->getLight());
+    floor.draw(shader, floorModel);
 
     // Skybox
     if (skybox_isVisible) {

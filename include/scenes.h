@@ -17,7 +17,8 @@ class scene1 {
 		normalShader,
 		instanceShader,
 		instanceShadowShader,
-		shadowShader
+		shadowShader,
+		pointShadowPlanes
 	;
 
 	// Light Space
@@ -68,7 +69,11 @@ public:
 	void update(const float& delta_time);
 	void render() const;
 	void render_transparent() const;
-	void render_shadow() const;
+
+	void render_shadow(const unsigned int& shader) const;
+	void render_shadow2(const unsigned int& shader) const;
+
+	void render_2() const;
 
 	void destroy() const;
 };

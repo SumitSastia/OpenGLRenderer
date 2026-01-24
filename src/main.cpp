@@ -153,6 +153,17 @@ int main(){
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
     );
 
+    const unsigned int shadowShader = createShader(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
+    );
+
+    const unsigned int pointShadow = createShader2(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.geom",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.frag"
+    );
+
     frame_buffer mainFrame(frameWidth, frameHeight);
     shadowFrameBuffer shadowBuffer(shadowWidth, shadowHeight);
 
@@ -176,20 +187,42 @@ int main(){
             shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     }
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFrameBuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, depthCubeMap, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
 
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        cout << "ERROR: Cubemap shadow framebuffer incomplete!" << endl;
+    }
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    float aspect = shadowWidth / shadowHeight;
+    float near = 1.0f;
+    float far = 25.0f;
+
+    glm::mat4 shadPro = glm::perspective(glm::radians(90.0f), aspect, near, far);
+
+    const glm::vec3 lightPos = scene1.getLight()->getPosition();
+
+    vector <glm::mat4> shadowMatrices = {
+
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
+    };
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -227,8 +260,22 @@ int main(){
         
         // Rendering //
 
-        // Rendering Scene in ShadowBuffer
+        // Rendering CubeMap
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glDisable(GL_CULL_FACE);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFrameBuffer);
+        glViewport(0, 0, shadowWidth, shadowHeight);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        scene1.render_shadow2(pointShadow);
+
+        // Stop Rendering
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Rendering Scene in ShadowBuffer
+        /*glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         glDisable(GL_CULL_FACE);
 
@@ -236,10 +283,10 @@ int main(){
         glViewport(0, 0, shadowWidth, shadowHeight);
 
         glClear(GL_DEPTH_BUFFER_BIT);
-        scene1.render_shadow();
+        scene1.render_shadow(shadowShader);*/
 
         // Stop Rendering in ShadowBuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Rendering Scene in FrameBuffer
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -253,10 +300,15 @@ int main(){
         glDepthMask(GL_TRUE);
         glEnable(GL_CULL_FACE);
 
-        glActiveTexture(GL_TEXTURE3);
+        /*glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, shadowBuffer.get_depthMap());
 
-        scene1.render();
+        scene1.render();*/
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+
+        scene1.render_2();
 
         // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
