@@ -61,6 +61,12 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/plane_with_shadow.frag"
     );
 
+    pointShadowInstanced = createShader2(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/instanceShadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.geom",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.frag"
+    );
+
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -84,6 +90,11 @@ void scene1::init() {
     myLight = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
     myLight->setLightColor(colors::instance().yellow);
     myLight->setPosition(glm::vec3(3.0f, 1.5f, -3.0f));
+
+    float near = 1.0f;
+    float far = 25.0f;
+
+    shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, near, far);
 
     // Models
     cube1 = new model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
@@ -297,22 +308,16 @@ void scene1::render_shadow(const unsigned int& shader) const {
 
 void scene1::render_shadow2(const unsigned int& shader) const {
 
-    float aspect = 1.0f;
-    float near = 1.0f;
-    float far = 25.0f;
-
-    glm::mat4 shadPro = glm::perspective(glm::radians(90.0f), aspect, near, far);
-
     const glm::vec3 lightPos = myLight->getPosition();
 
-    std::vector <glm::mat4> shadowMatrices = {
+    const std::vector <glm::mat4> shadowMatrices = {
 
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
     };
 
     glUseProgram(shader);
@@ -325,8 +330,8 @@ void scene1::render_shadow2(const unsigned int& shader) const {
     setFloat(shader, "far_plane", 25.0f);
 
     // Object
-    setMat4(shader, "model", objectModel);
-    shapes::instance().cube.drawShadow();
+    /*setMat4(shader, "model", objectModel);
+    shapes::instance().cube.drawShadow();*/
 
     // Model
     setMat4(shader, "model", cubeModel);
@@ -337,10 +342,16 @@ void scene1::render_shadow2(const unsigned int& shader) const {
     shapes::instance().square.drawShadow();
 
     // Multiple Cubes - !! Uses Separate Shader
-    /*glUseProgram(instanceShadowShader);
-    setMat4(instanceShadowShader, "lightSpace", lightSpace);
+    glUseProgram(pointShadowInstanced);
 
-    shapes::instance().cubeInstanced.drawShadow(totalCubes);*/
+    for (unsigned int i = 0; i < 6; i++) {
+        setMat4(pointShadowInstanced, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+    }
+
+    setVec3(pointShadowInstanced, "lightPos", myLight->getPosition());
+    setFloat(pointShadowInstanced, "far_plane", 25.0f);
+
+    shapes::instance().cubeInstanced.drawShadow(totalCubes);
 }
 
 void scene1::render() const {
@@ -431,14 +442,25 @@ void scene1::render_2() const {
     myLight->draw(lightShader);
 
     // Object
-    shader = textureShader;
+    /*shader = textureShader;
     glUseProgram(shader);
     setMat4(shader, "lightSpace", lightSpace);
     setInt(shader, "depthMap", 3);
     
     setFloat(shader, "skyboxIntensity", skyboxIntensity);
     setPointLight(shader, "p1", myLight->getLight());
-    shapes::instance().cube.draw(shader, objectModel);
+    shapes::instance().cube.draw(shader, objectModel);*/
+
+    // Multiple Cubes
+    shader = instanceShader;
+    glUseProgram(instanceShader);
+    setInt(shader, "depthCubeMap", 0);
+    setVec3(shader, "lightPos", myLight->getPosition());
+    setFloat(shader, "far_plane", 25.0f);
+
+    setFloat(instanceShader, "skyboxIntensity", skyboxIntensity);
+    setPointLight(instanceShader, "p1", myLight->getLight());
+    shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);
 
     // Floor
     shader = pointShadowPlanes;
@@ -480,20 +502,24 @@ void scene1::render_2() const {
 
 void scene1::render_transparent() const {
 
+    unsigned int shader = 0;
+
     const glm::mat4& projection = camera::instance().getPerspective();
     const glm::mat4& view = camera::instance().getView();
 
     // Model
-    glUseProgram(modelShader);
-    setPointLight(modelShader, "p1", myLight->getLight());
-    cube1->draw(modelShader, cubeModel);
+    shader = modelShader;
+    glUseProgram(shader);
+    setPointLight(shader, "p1", myLight->getLight());
+    cube1->draw(shader, cubeModel);
 
     // Plane
-    glUseProgram(planeShader);
-    setMat4(planeShader, "lightSpace", lightSpace);
-    setInt(planeShader, "depthMap", 3);
-    setPointLight(planeShader, "p1", myLight->getLight());
-    shapes::instance().square.draw(planeShader, windowModel);
+    shader = pointShadowPlanes;
+    glUseProgram(shader);
+    setMat4(shader, "lightSpace", lightSpace);
+    setInt(shader, "depthMap", 3);
+    setPointLight(shader, "p1", myLight->getLight());
+    shapes::instance().square.draw(shader, windowModel);
 }
 
 void scene1::destroy() const {

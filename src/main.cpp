@@ -206,24 +206,6 @@ int main(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    float aspect = shadowWidth / shadowHeight;
-    float near = 1.0f;
-    float far = 25.0f;
-
-    glm::mat4 shadPro = glm::perspective(glm::radians(90.0f), aspect, near, far);
-
-    const glm::vec3 lightPos = scene1.getLight()->getPosition();
-
-    vector <glm::mat4> shadowMatrices = {
-
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadPro * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
-    };
-
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;

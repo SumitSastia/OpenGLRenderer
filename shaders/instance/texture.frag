@@ -40,7 +40,9 @@ in vec3 vPos;
 in vec3 vNormal;
 in vec2 vTextureCords;
 
-in vec4 lightSpacePos;
+uniform samplerCube depthCubeMap;
+uniform vec3 lightPos;
+uniform float far_plane;
 
 out vec4 FragColor;
 
@@ -60,42 +62,17 @@ uniform float skyboxIntensity;
 
 uniform sampler2D depthMap;
 
-float init_shadow() {
+float init_shadow(vec3 vPos) {
 
-    if (lightSpacePos.w <= 0.0) {
-        return 0.0;
-    }
+    vec3 fragToLight = vPos - lightPos;
+    float closestDpeth = texture(depthCubeMap, fragToLight).r;
 
-    vec3 shadowCords = lightSpacePos.xyz / lightSpacePos.w;
-    shadowCords = shadowCords * 0.5 + 0.5;
+    closestDpeth *= far_plane;
 
-    if (shadowCords.x < 0.0 || shadowCords.x > 1.0 ||
-        shadowCords.y < 0.0 || shadowCords.y > 1.0 ||
-        shadowCords.z > 1.0 || shadowCords.z < 0.0) {
-        return 0.0;
-    }
+    float currentDepth = length(fragToLight);
+    float bias = 0.05;
 
-    float nearest_depth = texture(depthMap, shadowCords.xy).r;
-    float shadow = 0.0;
-    float bias = 0.0025;
-
-    if (shadowCords.z - bias > nearest_depth) {
-        shadow = 1.0;
-    }
-
-    // Filtering
-    shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(depthMap, 0);
-
-    for (int x = -1; x <= 1; x++) {
-        for (int y = -1; y <= 1; y++) {
-
-            float PCFdepth = texture(depthMap, shadowCords.xy + vec2(x,y) * texelSize).r;
-            shadow += shadowCords.z - bias > PCFdepth ? 1.0 : 0.0;
-        }
-    }
-
-    shadow /= 9.0;
+    float shadow = currentDepth - bias > closestDpeth ? 1.0 : 0.0;
 
     return shadow;
 }
@@ -194,5 +171,5 @@ void main(){
     vec4 reflected_color = vec4(texture(skybox, reflected_ray).rgb, 1.0);
 
     vec4 ambientLight = vec4(vec3(((vec4(m1.ambient, 1.0) * t1) + skyboxIntensity * t1) / 2.00), t1.a);
-    FragColor = ambientLight + finalColor;
+    FragColor = ambientLight + (1.0 - init_shadow(vPos)) * finalColor;
 }

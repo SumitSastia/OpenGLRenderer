@@ -18,12 +18,14 @@ class scene1 {
 		instanceShader,
 		instanceShadowShader,
 		shadowShader,
-		pointShadowPlanes
+		pointShadowPlanes,
+		pointShadowInstanced
 	;
 
 	// Light Space
 	glm::mat4 lightSpace;
 	glm::mat4 lightProjection;
+	glm::mat4 shadowProj;
 
 	// Imported Models
 	model3D* cube1;
