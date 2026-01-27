@@ -172,6 +172,7 @@ void main(){
     vec4 finalColor = vec4(0.0);
 
     finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
+    finalColor *= (1.0 - init_shadow(vPos));
     // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
 
     if(s1.isVisible){
@@ -185,5 +186,5 @@ void main(){
     vec4 reflected_color = vec4(texture(skybox, reflected_ray).rgb, 1.0);
 
     vec4 ambientLight = vec4(vec3(((vec4(m1.ambient, 1.0) * t1) + skyboxIntensity * t1) / 2.00), t1.a);
-    FragColor = ambientLight + (1.0 - init_shadow(vPos)) * finalColor;
+    FragColor = ambientLight + finalColor;
 }

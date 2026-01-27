@@ -54,6 +54,7 @@ uniform directionalLight d1;
 uniform pointLight p1;
 
 uniform sampler2D texture1;
+
 uniform float skyboxIntensity;
 
 float init_shadow(vec3 vPos) {
@@ -165,9 +166,12 @@ vec4 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec4 t1)
     return (attenuation * intensity * (diffuseLight + specularLight));
 }
 
+uniform mat3 normalMatrix;
+
 void main() {
 
     vec3 final_normal = normalize(normal);
+
     vec4 t1 = vec4(texture(texture1, vTexCords));
 
     // Ambient
@@ -175,16 +179,16 @@ void main() {
     vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
 
     // PointLight
-    finalColor += init_pointLight(p1, normal, vPos, viewPos, t1);
+    finalColor += init_pointLight(p1, final_normal, vPos, viewPos, t1);
+    finalColor *= (1.0 - init_shadow(vPos));
 
     // SpotLight
     if(s1.isVisible){
-        finalColor += init_spotLight(s1, normal, vPos, viewPos, t1);
+        finalColor += init_spotLight(s1, final_normal, vPos, viewPos, t1);
     }
 
     vec3 lightDirection = normalize(p1.position - vPos);
     
-    FragColor = ambientLight + (1.0 - init_shadow(vPos)) * finalColor;
-    // FragColor = ambientLight + (1.0 - init_shadow(p1)) * finalColor;
-    // FragColor = vec4(vec3(1.0 - init_shadow(p1)), 1.0);
+    // FragColor = ambientLight + (1.0 - init_shadow(vPos)) * finalColor;
+    FragColor = ambientLight + finalColor;
 }

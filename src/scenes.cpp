@@ -110,8 +110,8 @@ void scene1::init() {
     };
 
     skybox = new cubeMap(cubemapFaces);
-    skybox_isVisible = true;
-    skyboxIntensity = 1.0f;
+    skybox_isVisible = false;
+    skyboxIntensity = skybox_isVisible? 1.0f : 0.25f;
 
     // Multiple Cubes
     totalCubes = 10;
@@ -197,7 +197,7 @@ void scene1::init() {
 
     // Floor
     floor = shapes::instance().square;
-    floor.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/stone_floor.jpg");
+    floor.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/brickwall.jpg");
 
     // Light-Space
     float near_plane = 1.0f, far_plane = 20.0f, size = 5.0f;
@@ -474,6 +474,7 @@ void scene1::render_2() const {
     setMaterial(shader, "m1", materials::instance().concrete);
 
     setPointLight(shader, "p1", myLight->getLight());
+
     floor.draw(shader, floorModel);
 
     // Skybox

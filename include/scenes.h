@@ -32,6 +32,7 @@ class scene1 {
 
 	// Light-Source
 	lightSource* myLight;
+	lightSource* light2;
 
 	// World Space Models
 	glm::mat4 objectModel;
@@ -58,6 +59,8 @@ class scene1 {
 
 	// Floor
 	shape2D floor;
+
+	// Developer Tools
 
 public:
 
