@@ -1,4 +1,5 @@
 #version 450 core
+#define MAX_LIGHTS 3
 
 struct material{
     vec3 ambient;
@@ -36,31 +37,46 @@ struct spotLight{
     float quadratic;
 };
 
+//*************************************************************************************//
+
 in vec3 vPos;
 in vec3 vNormal;
 in vec2 vTextureCords;
 
-uniform samplerCube depthCubeMap;
-uniform vec3 lightPos;
-uniform float far_plane;
-
 out vec4 FragColor;
 
+//*************************************************************************************//
+
+uniform samplerCube depthCubeMap;
+uniform vec3 lightPos;
 uniform vec3 viewPos;
+uniform float far_plane;
+
+//*************************************************************************************//
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
 
-uniform material m1;
+//*************************************************************************************//
 
+uniform material m1;
 uniform spotLight s1;
 uniform directionalLight d1;
 uniform pointLight p1;
+
+//*************************************************************************************//
 
 uniform samplerCube skybox;
 uniform float skyboxIntensity;
 
 uniform sampler2D depthMap;
+
+//*************************************************************************************//
+
+uniform int lights_count;
+uniform pointLight plights[MAX_LIGHTS];
+
+//*************************************************************************************//
 
 float init_shadow(vec3 vPos) {
 
@@ -165,15 +181,16 @@ void main(){
     
     vec4 t1 = (texture(texture1, vTextureCords));
     vec4 t2 = (texture(texture2, vTextureCords));
-
-    // Ambient
-    // vec3 ambientLight = (0.5 * t1) * vec3(1.0,1.0,1.0);
+    
+    float alpha = t1.a;
 
     vec4 finalColor = vec4(0.0);
 
-    finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
-    finalColor *= (1.0 - init_shadow(vPos));
-    // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
+    for (int i = 0; i < lights_count; i++) {
+        
+        finalColor += init_pointLight(plights[i], normal, vPos, viewPos, t1, t2);
+        if (i == 0) { finalColor *= (1.0 - init_shadow(vPos)); }
+    }
 
     if(s1.isVisible){
         finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
@@ -185,6 +202,8 @@ void main(){
     vec3 reflected_ray = reflect(incident_ray, normal);
     vec4 reflected_color = vec4(texture(skybox, reflected_ray).rgb, 1.0);
 
+    // Ambient
     vec4 ambientLight = vec4(vec3(((vec4(m1.ambient, 1.0) * t1) + skyboxIntensity * t1) / 2.00), t1.a);
     FragColor = ambientLight + finalColor;
+    FragColor = vec4(FragColor.rgb, alpha);
 }

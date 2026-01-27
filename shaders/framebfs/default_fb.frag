@@ -10,21 +10,10 @@ const float offset = 1.0 / 300.0;
 
 void main() {
 
-	if (normalRender) {
-
-		// const float gamma = 1.0;
-		// const float exposure = 1.0;
-		// 
-		// vec3 hdrColor = texture(screen, vTexCords).rgb;
-		// 
-		// vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
-		// mapped = pow(mapped, vec3(1.0 / gamma));
-		// 
-		// FragColor = vec4(mapped, 1.0);
-
+	if( normalRender ) {
 		FragColor = texture(screen, vTexCords);
 	}
-	else {
+	else{
 		// Inversion
 		// FragColor = vec4(vec3(1.0 - texture(screen, vTexCords)), 1.0);
 

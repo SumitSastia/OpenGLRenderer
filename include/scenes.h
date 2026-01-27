@@ -32,12 +32,16 @@ class scene1 {
 	model3D* cube1;
 
 	// Light-Source
+	unsigned int lights_count;
+	pointLight* lights;
+
 	lightSource* myLight;
 	lightSource* light2;
 
 	// World Space Models
 	glm::mat4 objectModel;
 	glm::mat4 lightModel;
+	glm::mat4 lightModel2;
 	glm::mat4 cubeModel;
 	glm::mat4 floorModel;
 	glm::mat4 windowModel;

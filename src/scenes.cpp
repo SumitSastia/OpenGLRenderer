@@ -73,6 +73,9 @@ void scene1::init() {
     lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -3.0f));
     lightModel = glm::scale(lightModel, glm::vec3(0.5f));
 
+    lightModel2 = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 1.5f, 3.0f));
+    lightModel2 = glm::scale(lightModel2, glm::vec3(0.5f));
+
     cubeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 7.0f));
     cubeModel = glm::scale(cubeModel, glm::vec3(0.75f));
 
@@ -87,9 +90,21 @@ void scene1::init() {
     worldModels.push_back(&windowModel);
 
     // Light-Source
+    lights_count = 2;
+
     myLight = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
     myLight->setLightColor(colors::instance().yellow);
     myLight->setPosition(glm::vec3(3.0f, 1.5f, -3.0f));
+
+    light2 = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel2);
+    light2->setLightColor(colors::instance().pink);
+    light2->setPosition(glm::vec3(-3.0f, 1.5f, 3.0f));
+
+    lights = new pointLight[lights_count]
+    {
+        myLight->getLight(),
+        light2->getLight()
+    };
 
     float near = 1.0f;
     float far = 25.0f;
@@ -441,6 +456,9 @@ void scene1::render_2() const {
     myLight->update(projection, view, lightModel);
     myLight->draw(lightShader);
 
+    light2->update(projection, view, lightModel2);
+    light2->draw(lightShader);
+
     // Object
     shader = textureShader;
     glUseProgram(shader);
@@ -455,6 +473,13 @@ void scene1::render_2() const {
     // Multiple Cubes
     shader = instanceShader;
     glUseProgram(instanceShader);
+
+    setInt(shader, "lights_count", lights_count);
+
+    for (unsigned int i = 0; i < lights_count; i++) {
+        setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]);
+    }
+
     setInt(shader, "depthCubeMap", 0);
     setVec3(shader, "lightPos", myLight->getPosition());
     setFloat(shader, "far_plane", 25.0f);

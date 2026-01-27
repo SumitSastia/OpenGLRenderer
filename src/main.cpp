@@ -171,6 +171,7 @@ int main(){
     const unsigned int& frameTexture = mainFrame.get_TEX();
     const unsigned int& frameVAO = mainFrame.get_VAO();
 
+    frame main_frame(frameWidth, frameHeight);
     HDR_frame HDR_frame(frameWidth, frameHeight);
     
     // POINT SHADOW -------------------------------------------------------------------//
@@ -273,8 +274,8 @@ int main(){
         // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Rendering Scene in FrameBuffer
-        // glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, HDR_frame.fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, main_frame.fbo);
+        // glBindFramebuffer(GL_FRAMEBUFFER, HDR_frame.fbo);
         glViewport(0, 0, frameWidth, frameHeight);
         glEnable(GL_CULL_FACE);
 
@@ -299,7 +300,10 @@ int main(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         // Rendering FrameBufferTexture
-        HDR_frame.render();
+        
+        main_frame.render();
+        // HDR_frame.render();
+
         /*glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

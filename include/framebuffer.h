@@ -13,3 +13,15 @@ struct HDR_frame {
 	void init();
 	void render() const;
 };
+
+struct frame {
+
+	unsigned int fbo, rbo, vbo, vao;
+	unsigned int texture_id;
+	unsigned int shader;
+
+	frame(const int& frameWidth, const int& frameHeight);
+
+	void init();
+	void render() const;
+};
