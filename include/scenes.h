@@ -3,6 +3,7 @@
 
 #include <shader.h>
 #include <lights.h>
+#include <framebuffer.h>
 
 class scene1 {
 

@@ -18,6 +18,7 @@ add_executable(${TARGET_NAME}
     src/models.cpp
     src/shapes.cpp
     src/scenes.cpp
+    src/framebuffer.cpp
 )
 
 # including headers & linkers

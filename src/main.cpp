@@ -170,6 +170,8 @@ int main(){
     const unsigned int& frameBuffer = mainFrame.get_FBO();
     const unsigned int& frameTexture = mainFrame.get_TEX();
     const unsigned int& frameVAO = mainFrame.get_VAO();
+
+    HDR_frame HDR_frame(frameWidth, frameHeight);
     
     // POINT SHADOW -------------------------------------------------------------------//
 
@@ -271,7 +273,8 @@ int main(){
         // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Rendering Scene in FrameBuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        // glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, HDR_frame.fbo);
         glViewport(0, 0, frameWidth, frameHeight);
         glEnable(GL_CULL_FACE);
 
@@ -296,7 +299,8 @@ int main(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         // Rendering FrameBufferTexture
-        glDisable(GL_DEPTH_TEST);
+        HDR_frame.render();
+        /*glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(frameShader);
@@ -306,7 +310,7 @@ int main(){
         glBindVertexArray(frameVAO);
 
         glBindTexture(GL_TEXTURE_2D, frameTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 6);*/
 
         // Safety
         glUseProgram(0);
