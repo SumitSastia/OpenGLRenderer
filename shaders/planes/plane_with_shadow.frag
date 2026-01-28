@@ -1,4 +1,5 @@
 #version 450 core
+#define MAX_LIGHTS 3
 
 struct material{
     vec3 ambient;
@@ -56,6 +57,13 @@ uniform pointLight p1;
 uniform sampler2D texture1;
 
 uniform float skyboxIntensity;
+
+//*************************************************************************************//
+
+uniform int lights_count;
+uniform pointLight plights[MAX_LIGHTS];
+
+//*************************************************************************************//
 
 float init_shadow(vec3 vPos) {
 
@@ -166,8 +174,11 @@ void main() {
     vec3 finalColor = vec3(0.0);
 
     // PointLight
-    finalColor += init_pointLight(p1, final_normal, vPos, viewPos, t1);
-    finalColor *= (1.0 - init_shadow(vPos));
+    for (int i = 0; i < lights_count; i++) {
+        
+        finalColor += init_pointLight(plights[i], normal, vPos, viewPos, t1);
+        if (i == 0) { finalColor *= (1.0 - init_shadow(vPos)); }
+    }
 
     // SpotLight
     if(s1.isVisible){

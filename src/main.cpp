@@ -148,11 +148,6 @@ int main(){
     const unsigned int shadowWidth = 1024;
     const unsigned int shadowHeight = shadowWidth;
 
-    const unsigned int frameShader = createShader(
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/frame_buffer.frag"
-    );
-
     const unsigned int shadowShader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.vert",
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/shadow/shadow.frag"
@@ -164,15 +159,12 @@ int main(){
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.frag"
     );
 
-    frame_buffer mainFrame(frameWidth, frameHeight);
     shadowFrameBuffer shadowBuffer(shadowWidth, shadowHeight);
 
-    const unsigned int& frameBuffer = mainFrame.get_FBO();
-    const unsigned int& frameTexture = mainFrame.get_TEX();
-    const unsigned int& frameVAO = mainFrame.get_VAO();
+    default_frame* default_FB = new default_frame(frameWidth, frameHeight);
+    HDR_frame* HDR_FB = new HDR_frame(frameWidth, frameHeight);
 
-    frame main_frame(frameWidth, frameHeight);
-    HDR_frame HDR_frame(frameWidth, frameHeight);
+    frameBuffer* mainFrame = default_FB;
     
     // POINT SHADOW -------------------------------------------------------------------//
 
@@ -208,6 +200,8 @@ int main(){
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    pointShadow_frame* pl_frame = new pointShadow_frame(shadowWidth, shadowHeight);
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -250,32 +244,18 @@ int main(){
         glDepthFunc(GL_LESS);
         glDisable(GL_CULL_FACE);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFrameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, pl_frame->fbo);
         glViewport(0, 0, shadowWidth, shadowHeight);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        scene1.render_shadow2(pointShadow);
+        scene1.render_pointShadow(pointShadow);
 
         // Stop Rendering
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // Rendering Scene in ShadowBuffer
-        /*glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-        glDisable(GL_CULL_FACE);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, shadowBuffer.get_FBO());
-        glViewport(0, 0, shadowWidth, shadowHeight);
-
-        glClear(GL_DEPTH_BUFFER_BIT);
-        scene1.render_shadow(shadowShader);*/
-
-        // Stop Rendering in ShadowBuffer
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
         // Rendering Scene in FrameBuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, main_frame.fbo);
-        // glBindFramebuffer(GL_FRAMEBUFFER, HDR_frame.fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
+
         glViewport(0, 0, frameWidth, frameHeight);
         glEnable(GL_CULL_FACE);
 
@@ -286,35 +266,16 @@ int main(){
         glDepthMask(GL_TRUE);
         glEnable(GL_CULL_FACE);
 
-        /*glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, shadowBuffer.get_depthMap());
-
-        scene1.render();*/
-
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, pl_frame->texture_id);
 
-        scene1.render_2();
+        scene1.render_with_pointLight();
 
         // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         // Rendering FrameBufferTexture
-        
-        main_frame.render();
-        // HDR_frame.render();
-
-        /*glDisable(GL_DEPTH_TEST);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glUseProgram(frameShader);
-        setBool(frameShader, "normalRender", true);
-        setMat4(frameShader, "model", glm::mat4(1.0f));
-
-        glBindVertexArray(frameVAO);
-
-        glBindTexture(GL_TEXTURE_2D, frameTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 6);*/
+        mainFrame->render();
 
         // Safety
         glUseProgram(0);
@@ -327,8 +288,6 @@ int main(){
     }
 
     // TERMINATION --------------------------------------------------------------------//
-    
-    glDeleteProgram(frameShader);
 
     stbi_image_free(windowIcon->pixels);
     glfwDestroyWindow(window);

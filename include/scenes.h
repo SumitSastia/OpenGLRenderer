@@ -81,9 +81,9 @@ public:
 	void render_transparent() const;
 
 	void render_shadow(const unsigned int& shader) const;
-	void render_shadow2(const unsigned int& shader) const;
+	void render_pointShadow(const unsigned int& shader) const;
 
-	void render_2() const;
+	void render_with_pointLight() const;
 
 	void destroy() const;
 };

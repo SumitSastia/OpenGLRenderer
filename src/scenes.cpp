@@ -276,6 +276,7 @@ void scene1::input_handler(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_KP_5)) {
 
         lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel;
+        lightModel2 = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel2;
 
         const glm::vec3 newLightPos = glm::vec3(lightModel[3]);
 
@@ -318,7 +319,7 @@ void scene1::render_shadow(const unsigned int& shader) const {
     shapes::instance().cubeInstanced.drawShadow(totalCubes);*/
 }
 
-void scene1::render_shadow2(const unsigned int& shader) const {
+void scene1::render_pointShadow(const unsigned int& shader) const {
 
     const glm::vec3 lightPos = myLight->getPosition();
 
@@ -440,7 +441,7 @@ void scene1::render() const {
     render_transparent();
 }
 
-void scene1::render_2() const {
+void scene1::render_with_pointLight() const {
 
     unsigned int shader = 0;
 
@@ -488,6 +489,13 @@ void scene1::render_2() const {
     // Floor
     shader = pointShadowPlanes;
     glUseProgram(shader);
+
+    setInt(shader, "lights_count", lights_count);
+
+    for (unsigned int i = 0; i < lights_count; i++) {
+        setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]->getLight());
+    }
+
     setInt(shader, "depthCubeMap", 0);
     setVec3(shader, "lightPos", myLight->getPosition());
     setFloat(shader, "far_plane", 25.0f);

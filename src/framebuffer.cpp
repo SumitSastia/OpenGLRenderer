@@ -10,7 +10,7 @@ HDR_frame::HDR_frame(const int& frameWidth, const int& frameHeight) {
     glGenTextures(1, &texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -93,7 +93,7 @@ void HDR_frame::render() const {
 
 //-------------------------------------------------------------------------------------//
 
-frame::frame(const int& frameWidth, const int& frameHeight) {
+default_frame::default_frame(const int& frameWidth, const int& frameHeight) {
 
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -159,7 +159,7 @@ frame::frame(const int& frameWidth, const int& frameHeight) {
     this->init();
 }
 
-void frame::init() {
+void default_frame::init() {
 
     shader = createShader(
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
@@ -167,7 +167,7 @@ void frame::init() {
     );
 }
 
-void frame::render() const {
+void default_frame::render() const {
 
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -180,4 +180,39 @@ void frame::render() const {
 
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+//-------------------------------------------------------------------------------------//
+
+pointShadow_frame::pointShadow_frame(const int& shadowWidth, const int& shadowHeight) {
+
+    glGenFramebuffers(1, &fbo);
+    glGenTextures(1, &texture_id);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+
+    for (unsigned int i = 0; i < 6; i++) {
+
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+            shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_id, 0);
+
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "ERROR: Cubemap shadow framebuffer incomplete!" << std::endl;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
