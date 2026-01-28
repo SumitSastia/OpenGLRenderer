@@ -100,11 +100,8 @@ void scene1::init() {
     light2->setLightColor(colors::instance().pink);
     light2->setPosition(glm::vec3(-3.0f, 1.5f, 3.0f));
 
-    lights = new pointLight[lights_count]
-    {
-        myLight->getLight(),
-        light2->getLight()
-    };
+    lights.push_back(myLight);
+    lights.push_back(light2);
 
     float near = 1.0f;
     float far = 25.0f;
@@ -477,7 +474,7 @@ void scene1::render_2() const {
     setInt(shader, "lights_count", lights_count);
 
     for (unsigned int i = 0; i < lights_count; i++) {
-        setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]);
+        setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]->getLight());
     }
 
     setInt(shader, "depthCubeMap", 0);

@@ -33,7 +33,7 @@ class scene1 {
 
 	// Light-Source
 	unsigned int lights_count;
-	pointLight* lights;
+	std::vector <lightSource*> lights;
 
 	lightSource* myLight;
 	lightSource* light2;

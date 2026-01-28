@@ -127,6 +127,8 @@ void main(){
     vec3 t1 = vec3(texture(texture_diffuse1, vTexCords));
     vec3 t2 = vec3(texture(texture_diffuse1, vTexCords));
 
+    float alpha = texture(texture_diffuse1, vTexCords).a;
+
     // Ambient
     vec3 ambientLight = (m1.ambient*t1) * vec3(1.0,1.0,1.0);
 
