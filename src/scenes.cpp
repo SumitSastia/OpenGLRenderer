@@ -367,6 +367,54 @@ void scene1::render_pointShadow(const unsigned int& shader) const {
     shapes::instance().cubeInstanced.drawShadow(totalCubes);
 }
 
+void scene1::render_pointShadow2(const unsigned int& shader) const {
+
+    const glm::vec3 lightPos = light2->getPosition();
+
+    const std::vector <glm::mat4> shadowMatrices = {
+
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
+    };
+
+    glUseProgram(shader);
+
+    for (unsigned int i = 0; i < 6; i++) {
+        setMat4(shader, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+    }
+
+    setVec3(shader, "lightPos", myLight->getPosition());
+    setFloat(shader, "far_plane", 25.0f);
+
+    // Object
+    setMat4(shader, "model", objectModel);
+    shapes::instance().cube.drawShadow();
+
+    // Model
+    setMat4(shader, "model", cubeModel);
+    cube1->drawShadow();
+
+    // Window
+    setMat4(shader, "model", windowModel);
+    shapes::instance().square.drawShadow();
+
+    // Multiple Cubes - !! Uses Separate Shader
+    glUseProgram(pointShadowInstanced);
+
+    for (unsigned int i = 0; i < 6; i++) {
+        setMat4(pointShadowInstanced, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+    }
+
+    setVec3(pointShadowInstanced, "lightPos", light2->getPosition());
+    setFloat(pointShadowInstanced, "far_plane", 25.0f);
+
+    shapes::instance().cubeInstanced.drawShadow(totalCubes);
+}
+
 void scene1::render() const {
 
     unsigned int shader = 0;
@@ -496,8 +544,10 @@ void scene1::render_with_pointLight() const {
         setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]->getLight());
     }
 
-    setInt(shader, "depthCubeMap", 0);
-    setVec3(shader, "lightPos", myLight->getPosition());
+    setInt(shader, "depthCubeMap1", 0);
+    setInt(shader, "depthCubeMap2", 1);
+    setVec3(shader, "lightPos1", myLight->getPosition());
+    setVec3(shader, "lightPos2", light2->getPosition());
     setFloat(shader, "far_plane", 25.0f);
 
     setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);

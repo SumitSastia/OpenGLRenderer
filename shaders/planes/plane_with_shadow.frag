@@ -37,9 +37,17 @@ struct spotLight{
     float quadratic;
 };
 
-uniform samplerCube depthCubeMap;
-uniform vec3 lightPos;
+//*************************************************************************************//
+
+uniform samplerCube depthCubeMap1;
+uniform samplerCube depthCubeMap2;
+
+uniform vec3 lightPos1;
+uniform vec3 lightPos2;
+
 uniform float far_plane;
+
+//*************************************************************************************//
 
 in vec3 vPos;
 in vec2 vTexCords;
@@ -65,7 +73,7 @@ uniform pointLight plights[MAX_LIGHTS];
 
 //*************************************************************************************//
 
-float init_shadow(vec3 vPos) {
+float init_shadow(vec3 vPos, samplerCube depthCubeMap, vec3 lightPos) {
 
     vec3 fragToLight = vPos - lightPos;
     float currentDepth = length(fragToLight);
@@ -173,11 +181,20 @@ void main() {
     vec3 ambientLight = vec3(((m1.ambient * t1) + skyboxIntensity * t1) / 2.00);
     vec3 finalColor = vec3(0.0);
 
+    vec3 lightColors[MAX_LIGHTS];
+
     // PointLight
     for (int i = 0; i < lights_count; i++) {
         
-        finalColor += init_pointLight(plights[i], normal, vPos, viewPos, t1);
-        if (i == 0) { finalColor *= (1.0 - init_shadow(vPos)); }
+        lightColors[i] = init_pointLight(plights[i], normal, vPos, viewPos, t1);
+
+        if (i == 0) { lightColors[i] *= vec3(1.0 - init_shadow(vPos, depthCubeMap1, lightPos1)); }
+        if (i == 1) { lightColors[i] *= vec3(1.0 - init_shadow(vPos, depthCubeMap2, lightPos2)); }
+    }
+
+    for (int i = 0; i < lights_count; i++) {
+        
+        finalColor += lightColors[i];
     }
 
     // SpotLight

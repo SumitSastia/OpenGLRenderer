@@ -202,6 +202,7 @@ int main(){
     glBindTexture(GL_TEXTURE_2D, 0);
 
     pointShadow_frame* pl_frame = new pointShadow_frame(shadowWidth, shadowHeight);
+    pointShadow_frame* pl_frame2 = new pointShadow_frame(shadowWidth, shadowHeight);
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -250,8 +251,11 @@ int main(){
 
         scene1.render_pointShadow(pointShadow);
 
-        // Stop Rendering
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, pl_frame2->fbo);
+        glViewport(0, 0, shadowWidth, shadowHeight);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        scene1.render_pointShadow2(pointShadow);
 
         // Rendering Scene in FrameBuffer
         glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
@@ -268,6 +272,9 @@ int main(){
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, pl_frame->texture_id);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, pl_frame2->texture_id);
 
         scene1.render_with_pointLight();
 

@@ -82,6 +82,7 @@ public:
 
 	void render_shadow(const unsigned int& shader) const;
 	void render_pointShadow(const unsigned int& shader) const;
+	void render_pointShadow2(const unsigned int& shader) const;
 
 	void render_with_pointLight() const;
 
