@@ -7,7 +7,7 @@
 
 class scene1 {
 
-	// Objects
+	// Shaders
 	unsigned int
 		lineShader,
 		lightShader,
@@ -21,6 +21,10 @@ class scene1 {
 		shadowShader,
 		pointShadowPlanes,
 		pointShadowInstanced
+	;
+
+	unsigned int
+		pointShadow_frame_shader;
 	;
 
 	// Light Space
@@ -65,6 +69,9 @@ class scene1 {
 	// Floor
 	shape2D floor;
 
+	// FrameBuffers
+	std::vector <pointShadow_frame*> light_frames;
+
 	// Developer Tools
 
 public:
@@ -72,17 +79,18 @@ public:
 	scene1() : modelCounter(0) {}
 
 	model3D* getCube() const { return cube1; }
-	lightSource* getLight() const { return myLight; }
+	std::vector <lightSource*> getLights() const { return lights; }
 
 	void init();
 	void input_handler(GLFWwindow* window);
+
 	void update(const float& delta_time);
+
 	void render() const;
 	void render_transparent() const;
 
 	void render_shadow(const unsigned int& shader) const;
-	void render_pointShadow(const unsigned int& shader) const;
-	void render_pointShadow2(const unsigned int& shader) const;
+	void render_pointShadow() const;
 
 	void render_with_pointLight() const;
 

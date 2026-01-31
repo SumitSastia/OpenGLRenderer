@@ -201,9 +201,6 @@ int main(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    pointShadow_frame* pl_frame = new pointShadow_frame(shadowWidth, shadowHeight);
-    pointShadow_frame* pl_frame2 = new pointShadow_frame(shadowWidth, shadowHeight);
-
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
@@ -229,8 +226,8 @@ int main(){
         scene1.input_handler(window);
 
         if (toggle_V) {
-            cam.set_position(scene1.getLight()->getPosition());
-            cam.set_target(glm::vec3(0.0f) - scene1.getLight()->getPosition());
+            cam.set_position(scene1.getLights()[1]->getPosition());
+            cam.set_target(glm::vec3(0.0f) - scene1.getLights()[1]->getPosition());
         }
         
         // Updates //
@@ -240,22 +237,8 @@ int main(){
         
         // Rendering //
 
-        // Rendering CubeMap
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-        glDisable(GL_CULL_FACE);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, pl_frame->fbo);
-        glViewport(0, 0, shadowWidth, shadowHeight);
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        scene1.render_pointShadow(pointShadow);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, pl_frame2->fbo);
-        glViewport(0, 0, shadowWidth, shadowHeight);
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        scene1.render_pointShadow2(pointShadow);
+        // Rendering CubeMap Shadows
+        scene1.render_pointShadow();
 
         // Rendering Scene in FrameBuffer
         glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
@@ -267,15 +250,6 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Main Scene
-        glDepthMask(GL_TRUE);
-        glEnable(GL_CULL_FACE);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, pl_frame->texture_id);
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, pl_frame2->texture_id);
-
         scene1.render_with_pointLight();
 
         // Rendering Stop

@@ -39,13 +39,13 @@ struct spotLight{
 
 //*************************************************************************************//
 
-uniform samplerCube depthCubeMap1;
-uniform samplerCube depthCubeMap2;
-
-uniform vec3 lightPos1;
-uniform vec3 lightPos2;
+uniform vec3 lightPos[MAX_LIGHTS];
+uniform samplerCube depthCubeMap[MAX_LIGHTS];
 
 uniform float far_plane;
+
+uniform int lights_count;
+uniform pointLight plights[MAX_LIGHTS];
 
 //*************************************************************************************//
 
@@ -67,9 +67,6 @@ uniform sampler2D texture1;
 uniform float skyboxIntensity;
 
 //*************************************************************************************//
-
-uniform int lights_count;
-uniform pointLight plights[MAX_LIGHTS];
 
 //*************************************************************************************//
 
@@ -187,9 +184,7 @@ void main() {
     for (int i = 0; i < lights_count; i++) {
         
         lightColors[i] = init_pointLight(plights[i], normal, vPos, viewPos, t1);
-
-        if (i == 0) { lightColors[i] *= vec3(1.0 - init_shadow(vPos, depthCubeMap1, lightPos1)); }
-        if (i == 1) { lightColors[i] *= vec3(1.0 - init_shadow(vPos, depthCubeMap2, lightPos2)); }
+        lightColors[i] *= (1.0 - init_shadow(vPos, depthCubeMap[i], lightPos[i]));
     }
 
     for (int i = 0; i < lights_count; i++) {

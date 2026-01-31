@@ -67,6 +67,12 @@ void scene1::init() {
         "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.frag"
     );
 
+    pointShadow_frame_shader = createShader2(
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.vert",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.geom",
+        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.frag"
+    );
+
     // World Coordinates
     objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -94,11 +100,11 @@ void scene1::init() {
 
     myLight = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
     myLight->setLightColor(colors::instance().yellow);
-    myLight->setPosition(glm::vec3(3.0f, 1.5f, -3.0f));
+    myLight->setPosition(lightModel[3]);
 
     light2 = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel2);
     light2->setLightColor(colors::instance().pink);
-    light2->setPosition(glm::vec3(-3.0f, 1.5f, 3.0f));
+    light2->setPosition(lightModel2[3]);
 
     lights.push_back(myLight);
     lights.push_back(light2);
@@ -221,6 +227,11 @@ void scene1::init() {
     );
 
     lightSpace = lightProjection * lightView;
+
+    // FrameBuffers
+    light_frames.push_back(new pointShadow_frame());
+    light_frames.push_back(new pointShadow_frame());
+
 }
 
 void scene1::input_handler(GLFWwindow* window) {
@@ -278,14 +289,14 @@ void scene1::input_handler(GLFWwindow* window) {
         lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel;
         lightModel2 = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel2;
 
-        const glm::vec3 newLightPos = glm::vec3(lightModel[3]);
+        /*const glm::vec3 newLightPos = glm::vec3(lightModel[3]);
 
         glm::mat4 lightView = glm::lookAt(
             newLightPos,
             glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
         );
 
-        lightSpace = lightProjection * lightView;
+        lightSpace = lightProjection * lightView;*/
     }
 }
 
@@ -319,59 +330,20 @@ void scene1::render_shadow(const unsigned int& shader) const {
     shapes::instance().cubeInstanced.drawShadow(totalCubes);*/
 }
 
-void scene1::render_pointShadow(const unsigned int& shader) const {
+void scene1::render_pointShadow() const {
 
-    const glm::vec3 lightPos = myLight->getPosition();
+    const unsigned int& shader = pointShadow_frame_shader;
 
-    const std::vector <glm::mat4> shadowMatrices = {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDisable(GL_CULL_FACE);
 
-        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
-        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
-        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
-        shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
-    };
+    for (unsigned int i = 0; i < lights_count; i++) {
 
-    glUseProgram(shader);
+        const unsigned int currentFrame = light_frames[i]->fbo;
+        const glm::vec3 lightPos = lights[i]->getPosition();
 
-    for (unsigned int i = 0; i < 6; i++) {
-        setMat4(shader, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
-    }
-
-    setVec3(shader, "lightPos", myLight->getPosition());
-    setFloat(shader, "far_plane", 25.0f);
-
-    // Object
-    setMat4(shader, "model", objectModel);
-    shapes::instance().cube.drawShadow();
-
-    // Model
-    setMat4(shader, "model", cubeModel);
-    cube1->drawShadow();
-
-    // Window
-    setMat4(shader, "model", windowModel);
-    shapes::instance().square.drawShadow();
-
-    // Multiple Cubes - !! Uses Separate Shader
-    glUseProgram(pointShadowInstanced);
-
-    for (unsigned int i = 0; i < 6; i++) {
-        setMat4(pointShadowInstanced, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
-    }
-
-    setVec3(pointShadowInstanced, "lightPos", myLight->getPosition());
-    setFloat(pointShadowInstanced, "far_plane", 25.0f);
-
-    shapes::instance().cubeInstanced.drawShadow(totalCubes);
-}
-
-void scene1::render_pointShadow2(const unsigned int& shader) const {
-
-    const glm::vec3 lightPos = light2->getPosition();
-
-    const std::vector <glm::mat4> shadowMatrices = {
+        const std::vector <glm::mat4> shadowMatrices = {
 
         shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
         shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
@@ -379,40 +351,47 @@ void scene1::render_pointShadow2(const unsigned int& shader) const {
         shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
         shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
         shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
-    };
+        };
 
-    glUseProgram(shader);
+        glBindFramebuffer(GL_FRAMEBUFFER, currentFrame);
+        glViewport(0, 0, shadowSize, shadowSize);
+        glClear(GL_DEPTH_BUFFER_BIT);
 
-    for (unsigned int i = 0; i < 6; i++) {
-        setMat4(shader, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+        glUseProgram(shader);
+
+        for (unsigned int i = 0; i < 6; i++) {
+            setMat4(shader, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+        }
+
+        setVec3(shader, "lightPos", myLight->getPosition());
+        setFloat(shader, "far_plane", 25.0f);
+
+        // Object
+        setMat4(shader, "model", objectModel);
+        shapes::instance().cube.drawShadow();
+
+        // Model
+        setMat4(shader, "model", cubeModel);
+        cube1->drawShadow();
+
+        // Window
+        setMat4(shader, "model", windowModel);
+        shapes::instance().square.drawShadow();
+
+        // Multiple Cubes - !! Uses Separate Shader
+        glUseProgram(pointShadowInstanced);
+
+        for (unsigned int i = 0; i < 6; i++) {
+            setMat4(pointShadowInstanced, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+        }
+
+        setVec3(pointShadowInstanced, "lightPos", lightPos);
+        setFloat(pointShadowInstanced, "far_plane", 25.0f);
+
+        shapes::instance().cubeInstanced.drawShadow(totalCubes);
     }
 
-    setVec3(shader, "lightPos", myLight->getPosition());
-    setFloat(shader, "far_plane", 25.0f);
-
-    // Object
-    setMat4(shader, "model", objectModel);
-    shapes::instance().cube.drawShadow();
-
-    // Model
-    setMat4(shader, "model", cubeModel);
-    cube1->drawShadow();
-
-    // Window
-    setMat4(shader, "model", windowModel);
-    shapes::instance().square.drawShadow();
-
-    // Multiple Cubes - !! Uses Separate Shader
-    glUseProgram(pointShadowInstanced);
-
-    for (unsigned int i = 0; i < 6; i++) {
-        setMat4(pointShadowInstanced, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
-    }
-
-    setVec3(pointShadowInstanced, "lightPos", light2->getPosition());
-    setFloat(pointShadowInstanced, "far_plane", 25.0f);
-
-    shapes::instance().cubeInstanced.drawShadow(totalCubes);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void scene1::render() const {
@@ -491,6 +470,15 @@ void scene1::render() const {
 
 void scene1::render_with_pointLight() const {
 
+    glDepthMask(GL_TRUE);
+    glEnable(GL_CULL_FACE);
+
+    for (unsigned int i = 0; i < lights_count; i++) {
+
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, light_frames[i]->texture_id);
+    }
+
     unsigned int shader = 0;
 
     const glm::mat4& projection = camera::instance().getPerspective();
@@ -544,10 +532,10 @@ void scene1::render_with_pointLight() const {
         setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]->getLight());
     }
 
-    setInt(shader, "depthCubeMap1", 0);
-    setInt(shader, "depthCubeMap2", 1);
-    setVec3(shader, "lightPos1", myLight->getPosition());
-    setVec3(shader, "lightPos2", light2->getPosition());
+    setInt(shader, "depthCubeMap[0]", 0);
+    setInt(shader, "depthCubeMap[1]", 1);
+    setVec3(shader, "lightPos[0]", myLight->getPosition());
+    setVec3(shader, "lightPos[1]", light2->getPosition());
     setFloat(shader, "far_plane", 25.0f);
 
     setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
@@ -616,6 +604,8 @@ void scene1::destroy() const {
     delete cube1;
     delete skybox;
     delete cc1;
+
+    for (auto& ptr : light_frames) delete ptr;
 
     delete[] cubePositions;
 }

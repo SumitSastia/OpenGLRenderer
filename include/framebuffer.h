@@ -2,6 +2,8 @@
 
 #include <shader.h>
 
+#define shadowSize 1024
+
 struct frameBuffer {
 
 	unsigned int fbo, rbo, vbo, vao;
@@ -34,4 +36,5 @@ struct pointShadow_frame {
 	unsigned int texture_id;
 
 	pointShadow_frame(const int& shadowWidth, const int& shadowHeight);
+	pointShadow_frame() : pointShadow_frame(shadowSize, shadowSize) {}
 };
