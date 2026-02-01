@@ -43,12 +43,13 @@ in vec3 vPos;
 in vec3 vNormal;
 in vec2 vTextureCords;
 
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 //*************************************************************************************//
 
-uniform samplerCube depthCubeMap;
-uniform vec3 lightPos;
+uniform samplerCube depthCubeMap[MAX_LIGHTS];
+uniform vec3 lightPos[MAX_LIGHTS];
 uniform vec3 viewPos;
 uniform float far_plane;
 
@@ -78,7 +79,7 @@ uniform pointLight plights[MAX_LIGHTS];
 
 //*************************************************************************************//
 
-float init_shadow(vec3 vPos) {
+float init_shadow(vec3 vPos, samplerCube depthCubeMap, vec3 lightPos) {
 
     vec3 fragToLight = vPos - lightPos;
     float currentDepth = length(fragToLight);
@@ -185,11 +186,18 @@ void main(){
     float alpha = texture(texture1, vTextureCords).a;
 
     vec3 finalColor = vec3(0.0);
+    vec3 lightColors[MAX_LIGHTS];
+
+    // PointLight
+    for (int i = 0; i < lights_count; i++) {
+        
+        lightColors[i] = init_pointLight(plights[i], normal, vPos, viewPos, t1, t2);
+        lightColors[i] *= (1.0 - init_shadow(vPos, depthCubeMap[i], lightPos[i]));
+    }
 
     for (int i = 0; i < lights_count; i++) {
         
-        finalColor += init_pointLight(plights[i], normal, vPos, viewPos, t1, t2);
-        if (i == 0) { finalColor *= (1.0 - init_shadow(vPos)); }
+        finalColor += lightColors[i];
     }
 
     if(s1.isVisible){
@@ -206,4 +214,14 @@ void main(){
     vec3 ambientLight = vec3(((m1.ambient * t1) + skyboxIntensity * t1) / 2.00);
 
     FragColor = vec4(ambientLight + finalColor, alpha);
+
+    // Bloom
+    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+	
+	if (brightness > 0.75) {
+		BrightColor = FragColor;
+	}
+	else {
+		BrightColor = vec4(0.0,0.0,0.0,1.0);
+	}
 }

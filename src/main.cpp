@@ -140,7 +140,7 @@ int main(){
 
     // SCENES -------------------------------------------------------------------------//
 
-    scene1 scene1{};
+    scenes::scene1 scene1{};
     scene1.init();
 
     // FRAMEBUFFERS -----------------------------------------------------------------------//
@@ -161,45 +161,12 @@ int main(){
 
     shadowFrameBuffer shadowBuffer(shadowWidth, shadowHeight);
 
-    default_frame* default_FB = new default_frame(frameWidth, frameHeight);
-    HDR_frame* HDR_FB = new HDR_frame(frameWidth, frameHeight);
+    frameBuffers::default_frame* default_FB = new frameBuffers::default_frame(frameWidth, frameHeight);
+    frameBuffers::HDR_frame* HDR_FB = new frameBuffers::HDR_frame(frameWidth, frameHeight);
 
-    frameBuffer* mainFrame = default_FB;
-    
-    // POINT SHADOW -------------------------------------------------------------------//
+    frameBuffers::bloom_frame* bloom_frame = new frameBuffers::bloom_frame(frameWidth, frameHeight);
 
-    unsigned int cubeMapFrameBuffer;
-    unsigned int depthCubeMap;
-
-    glGenFramebuffers(1, &cubeMapFrameBuffer);
-    glGenTextures(1, &depthCubeMap);
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
-
-    for (unsigned int i = 0; i < 6; i++) {
-
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
-            shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    }
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, cubeMapFrameBuffer);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
-
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        cout << "ERROR: Cubemap shadow framebuffer incomplete!" << endl;
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    frameBuffers::frameBuffer* mainFrame = bloom_frame;
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -246,7 +213,9 @@ int main(){
         glViewport(0, 0, frameWidth, frameHeight);
         glEnable(GL_CULL_FACE);
 
-        glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
+        // glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Main Scene

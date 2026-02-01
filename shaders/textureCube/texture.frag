@@ -1,4 +1,5 @@
 #version 450 core
+#define MAX_LIGHTS 3
 
 struct material{
     vec3 ambient;
@@ -40,14 +41,16 @@ in vec3 vPos;
 in vec3 vNormal;
 in vec2 vTextureCords;
 
-uniform samplerCube depthCubeMap;
-uniform vec3 lightPos;
+uniform samplerCube depthCubeMap[MAX_LIGHTS];
+uniform vec3 lightPos[MAX_LIGHTS];
+uniform vec3 viewPos;
 uniform float far_plane;
 
-out vec4 FragColor;
+uniform int lights_count;
+uniform pointLight plights[MAX_LIGHTS];
 
-uniform float alphaVal;
-uniform vec3 viewPos;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
@@ -56,12 +59,11 @@ uniform material m1;
 
 uniform spotLight s1;
 uniform directionalLight d1;
-uniform pointLight p1;
 
 uniform float skyboxIntensity;
 uniform samplerCube skybox;
 
-float init_shadow(vec3 vPos) {
+float init_shadow(vec3 vPos, samplerCube depthCubeMap, vec3 lightPos) {
 
     vec3 fragToLight = vPos - lightPos;
     float currentDepth = length(fragToLight);
@@ -169,12 +171,21 @@ void main(){
 
     // Ambient
     vec3 ambientLight = m1.ambient * t1;
+
     vec3 finalColor = vec3(0.0);
+    vec3 lightColors[MAX_LIGHTS];
 
-    finalColor += init_pointLight(p1, normal, vPos, viewPos, t1, t2);
-    finalColor *= 1.0 - init_shadow(vPos);
+    // PointLight
+    for (int i = 0; i < lights_count; i++) {
+        
+        lightColors[i] = init_pointLight(plights[i], normal, vPos, viewPos, t1, t2);
+        lightColors[i] *= (1.0 - init_shadow(vPos, depthCubeMap[i], lightPos[i]));
+    }
 
-    // finalColor += init_directionalLight(d1, normal, vPos, viewPos, t1, t2);
+    for (int i = 0; i < lights_count; i++) {
+        
+        finalColor += lightColors[i];
+    }
 
     if(s1.isVisible){
         finalColor += init_spotLight(s1, normal, vPos, viewPos, t1, t2);
@@ -190,6 +201,16 @@ void main(){
 
     ambientLight = vec3(((m1.ambient * t1) + skyboxIntensity * t1) / 2.00);
     FragColor = vec4(ambientLight + finalColor, alpha);
+
+    // Bloom
+    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+	
+	if (brightness > 0.75) {
+		BrightColor = FragColor;
+	}
+	else {
+		BrightColor = vec4(0.0,0.0,0.0,1.0);
+	}
 
     // FragColor = vec4(vec3(1.0 - shadow), 1.0);
     

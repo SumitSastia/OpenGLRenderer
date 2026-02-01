@@ -5,96 +5,99 @@
 #include <lights.h>
 #include <framebuffer.h>
 
-class scene1 {
+namespace scenes {
 
-	// Shaders
-	unsigned int
-		lineShader,
-		lightShader,
-		planeShader,
-		modelShader,
-		textureShader,
-		cubemapShader,
-		normalShader,
-		instanceShader,
-		instanceShadowShader,
-		shadowShader,
-		pointShadowPlanes,
-		pointShadowInstanced
-	;
+	class scene1 {
 
-	unsigned int
-		pointShadow_frame_shader;
-	;
+		// Shaders
+		unsigned int
+			lineShader,
+			lightShader,
+			planeShader,
+			modelShader,
+			textureShader,
+			cubemapShader,
+			normalShader,
+			instanceShader,
+			instanceShadowShader,
+			shadowShader,
+			pointShadowPlanes,
+			pointShadowInstanced
+			;
 
-	// Light Space
-	glm::mat4 lightSpace;
-	glm::mat4 lightProjection;
-	glm::mat4 shadowProj;
+		unsigned int
+			pointShadow_frame_shader;
+		;
 
-	// Imported Models
-	model3D* cube1;
+		// Light Space
+		glm::mat4 lightSpace;
+		glm::mat4 lightProjection;
+		glm::mat4 shadowProj;
 
-	// Light-Source
-	unsigned int lights_count;
-	std::vector <lightSource*> lights;
+		// Imported Models
+		model3D* cube1;
 
-	lightSource* myLight;
-	lightSource* light2;
+		// Light-Source
+		unsigned int lights_count;
+		std::vector <lightSource*> lights;
 
-	// World Space Models
-	glm::mat4 objectModel;
-	glm::mat4 lightModel;
-	glm::mat4 lightModel2;
-	glm::mat4 cubeModel;
-	glm::mat4 floorModel;
-	glm::mat4 windowModel;
+		lightSource* myLight;
+		lightSource* light2;
 
-	unsigned int modelCounter;
-	std::vector <glm::mat4*> worldModels;
+		// World Space Models
+		glm::mat4 objectModel;
+		glm::mat4 lightModel;
+		glm::mat4 lightModel2;
+		glm::mat4 cubeModel;
+		glm::mat4 floorModel;
+		glm::mat4 windowModel;
 
-	// Skybox
-	cubeMap* skybox;
-	bool skybox_isVisible;
-	float skyboxIntensity;
+		unsigned int modelCounter;
+		std::vector <glm::mat4*> worldModels;
 
-	// Multiple Cubes
-	unsigned int totalCubes;
-	unsigned int instanceModelVBO, instanceNormalVBO;
-	glm::vec3* cubePositions;
+		// Skybox
+		cubeMap* skybox;
+		bool skybox_isVisible;
+		float skyboxIntensity;
 
-	// ColoredCube
-	coloredCube* cc1;
+		// Multiple Cubes
+		unsigned int totalCubes;
+		unsigned int instanceModelVBO, instanceNormalVBO;
+		glm::vec3* cubePositions;
 
-	// Floor
-	shape2D floor;
+		// ColoredCube
+		coloredCube* cc1;
 
-	// FrameBuffers
-	std::vector <pointShadow_frame*> light_frames;
+		// Floor
+		shape2D floor;
 
-	// Developer Tools
+		// FrameBuffers
+		std::vector <frameBuffers::pointShadow_frame*> light_frames;
 
-public:
+		// Developer Tools
 
-	scene1() : modelCounter(0) {}
+	public:
 
-	model3D* getCube() const { return cube1; }
-	std::vector <lightSource*> getLights() const { return lights; }
+		scene1() : modelCounter(0) {}
 
-	void init();
-	void input_handler(GLFWwindow* window);
+		model3D* getCube() const { return cube1; }
+		std::vector <lightSource*> getLights() const { return lights; }
 
-	void update(const float& delta_time);
+		void init();
+		void input_handler(GLFWwindow* window);
 
-	void render() const;
-	void render_transparent() const;
+		void update(const float& delta_time);
 
-	void render_shadow(const unsigned int& shader) const;
-	void render_pointShadow() const;
+		void render() const;
+		void render_transparent() const;
 
-	void render_with_pointLight() const;
+		void render_shadow(const unsigned int& shader) const;
+		void render_pointShadow() const;
 
-	void destroy() const;
-};
+		void render_with_pointLight() const;
+
+		void destroy() const;
+	};
+}
 
 #endif

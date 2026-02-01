@@ -4,37 +4,51 @@
 
 #define shadowSize 1024
 
-struct frameBuffer {
+namespace frameBuffers {
 
-	unsigned int fbo, rbo, vbo, vao;
-	unsigned int texture_id;
-	unsigned int shader;
+	struct frameBuffer {
 
-	virtual void init() {}
-	virtual void render() const {}
-};
+		unsigned int fbo, rbo, vbo, vao;
+		unsigned int texture_id;
+		unsigned int shader;
 
-struct HDR_frame : public frameBuffer {
+		virtual void init() {}
+		virtual void render() const {}
+	};
 
-	HDR_frame(const int& frameWidth, const int& frameHeight);
+	struct HDR_frame : public frameBuffer {
 
-	void init();
-	void render() const;
-};
+		HDR_frame(const int& frameWidth, const int& frameHeight);
 
-struct default_frame : public frameBuffer {
+		void init();
+		void render() const;
+	};
 
-	default_frame(const int& frameWidth, const int& frameHeight);
+	struct bloom_frame : public frameBuffer {
 
-	void init() override;
-	void render() const override;
-};
+		unsigned int colorBuffers[2];
+		unsigned int attachments[2];
 
-struct pointShadow_frame {
+		bloom_frame(const int& frameWidth, const int& frameHeight);
 
-	unsigned int fbo;
-	unsigned int texture_id;
+		void init() override;
+		void render() const override;
+	};
 
-	pointShadow_frame(const int& shadowWidth, const int& shadowHeight);
-	pointShadow_frame() : pointShadow_frame(shadowSize, shadowSize) {}
-};
+	struct default_frame : public frameBuffer {
+
+		default_frame(const int& frameWidth, const int& frameHeight);
+
+		void init() override;
+		void render() const override;
+	};
+
+	struct pointShadow_frame {
+
+		unsigned int fbo;
+		unsigned int texture_id;
+
+		pointShadow_frame(const int& shadowWidth, const int& shadowHeight);
+		pointShadow_frame() : pointShadow_frame(shadowSize, shadowSize) {}
+	};
+}

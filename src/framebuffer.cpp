@@ -1,218 +1,326 @@
 #include <iostream>
 #include <framebuffer.h>
 
-HDR_frame::HDR_frame(const int& frameWidth, const int& frameHeight) {
+namespace frameBuffers {
 
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    HDR_frame::HDR_frame(const int& frameWidth, const int& frameHeight) {
 
-    // Texture Attachment
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        // Texture Attachment
+        glGenTextures(1, &texture_id);
+        glBindTexture(GL_TEXTURE_2D, texture_id);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-    // Render Object
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
 
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        // Render Object
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "ERROR :: UNABLE TO COMPLETE HDR-FRAME-BUFFER!" << std::endl;
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cerr << "ERROR :: UNABLE TO COMPLETE HDR-FRAME-BUFFER!" << std::endl;
+        }
+        else {
+
+            // Vertices Binding
+            const float vertices[] = {
+
+                // Position  // Cords
+                -1.0f, 1.0f, 0.0f, 1.0f,
+                 1.0f, 1.0f, 1.0f, 1.0f,
+                -1.0f,-1.0f, 0.0f, 0.0f,
+
+                 1.0f, 1.0f, 1.0f, 1.0f,
+                 1.0f,-1.0f, 1.0f, 0.0f,
+                -1.0f,-1.0f, 0.0f, 0.0f
+            };
+
+            glGenBuffers(1, &vbo);
+            glGenVertexArrays(1, &vao);
+
+            glBindVertexArray(vao);
+
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+
+            glBindVertexArray(0);
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        this->init();
     }
-    else {
 
-        // Vertices Binding
-        const float vertices[] = {
+    void HDR_frame::init() {
 
-            // Position  // Cords
-            -1.0f, 1.0f, 0.0f, 1.0f,
-             1.0f, 1.0f, 1.0f, 1.0f,
-            -1.0f,-1.0f, 0.0f, 0.0f,
-                               
-             1.0f, 1.0f, 1.0f, 1.0f,
-             1.0f,-1.0f, 1.0f, 0.0f,
-            -1.0f,-1.0f, 0.0f, 0.0f
-        };
+        shader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/frame_buffer.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/frame_buffer.frag"
+        );
+    }
 
-        glGenBuffers(1, &vbo);
-        glGenVertexArrays(1, &vao);
+    void HDR_frame::render() const {
+
+        glDisable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glUseProgram(shader);
+        setBool(shader, "normalRender", true);
+        setMat4(shader, "model", glm::mat4(1.0f));
 
         glBindVertexArray(vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, texture_id);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //-------------------------------------------------------------------------------------//
 
-    this->init();
-}
+    bloom_frame::bloom_frame(const int& frameWidth, const int& frameHeight) {
 
-void HDR_frame::init() {
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    shader = createShader(
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/frame_buffer.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/frame_buffer.frag"
-    );
-}
+        // Texture Attachment
+        glGenTextures(2, colorBuffers);
 
-void HDR_frame::render() const {
+        for (unsigned int i = 0; i < 2; i++) {
 
-    glDisable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
 
-    glUseProgram(shader);
-    setBool(shader, "normalRender", true);
-    setMat4(shader, "model", glm::mat4(1.0f));
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
 
-    glBindVertexArray(vao);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glBindTexture(GL_TEXTURE_2D, 0);
 
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+        }
 
+        // Render Object
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 
-//-------------------------------------------------------------------------------------//
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-default_frame::default_frame(const int& frameWidth, const int& frameHeight) {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        attachments[0] = GL_COLOR_ATTACHMENT0;
+        attachments[1] = GL_COLOR_ATTACHMENT1;
+ 
+        glDrawBuffers(2, attachments);
 
-    // Texture Attachment
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cerr << "ERROR :: UNABLE TO COMPLETE HDR-FRAME-BUFFER!" << std::endl;
+        }
+        else {
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+            // Vertices Binding
+            const float vertices[] = {
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+                // Position  // Cords
+                -1.0f, 1.0f, 0.0f, 1.0f,
+                 1.0f, 1.0f, 1.0f, 1.0f,
+                -1.0f,-1.0f, 0.0f, 0.0f,
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
+                 1.0f, 1.0f, 1.0f, 1.0f,
+                 1.0f,-1.0f, 1.0f, 0.0f,
+                -1.0f,-1.0f, 0.0f, 0.0f
+            };
 
-    // Render Object
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+            glGenBuffers(1, &vbo);
+            glGenVertexArrays(1, &vao);
 
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            glBindVertexArray(vao);
 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "ERROR :: UNABLE TO COMPLETE HDR-FRAME-BUFFER!" << std::endl;
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+
+            glBindVertexArray(0);
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        this->init();
     }
-    else {
 
-        // Vertices Binding
-        const float vertices[] = {
+    void bloom_frame::init() {
 
-            // Position  // Cords
-            -1.0f, 1.0f, 0.0f, 1.0f,
-             1.0f, 1.0f, 1.0f, 1.0f,
-            -1.0f,-1.0f, 0.0f, 0.0f,
+        shader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/bloom.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/bloom.frag"
+        );
+    }
 
-             1.0f, 1.0f, 1.0f, 1.0f,
-             1.0f,-1.0f, 1.0f, 0.0f,
-            -1.0f,-1.0f, 0.0f, 0.0f
-        };
+    void bloom_frame::render() const {
 
-        glGenBuffers(1, &vbo);
-        glGenVertexArrays(1, &vao);
+        glDisable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shader);
+        setInt(shader, "screen", 0);
+        setInt(shader, "bloom", 1);
 
         glBindVertexArray(vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
 
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glBindVertexArray(0);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //-------------------------------------------------------------------------------------//
 
-    this->init();
-}
+    default_frame::default_frame(const int& frameWidth, const int& frameHeight) {
 
-void default_frame::init() {
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    shader = createShader(
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
-        "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.frag"
-    );
-}
+        // Texture Attachment
+        glGenTextures(1, &texture_id);
+        glBindTexture(GL_TEXTURE_2D, texture_id);
 
-void default_frame::render() const {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
-    glDisable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-    glUseProgram(shader);
-    setBool(shader, "normalRender", true);
-    setMat4(shader, "model", glm::mat4(1.0f));
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
 
-    glBindVertexArray(vao);
+        // Render Object
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-//-------------------------------------------------------------------------------------//
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-pointShadow_frame::pointShadow_frame(const int& shadowWidth, const int& shadowHeight) {
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cerr << "ERROR :: UNABLE TO COMPLETE HDR-FRAME-BUFFER!" << std::endl;
+        }
+        else {
 
-    glGenFramebuffers(1, &fbo);
-    glGenTextures(1, &texture_id);
+            // Vertices Binding
+            const float vertices[] = {
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+                // Position  // Cords
+                -1.0f, 1.0f, 0.0f, 1.0f,
+                 1.0f, 1.0f, 1.0f, 1.0f,
+                -1.0f,-1.0f, 0.0f, 0.0f,
 
-    for (unsigned int i = 0; i < 6; i++) {
+                 1.0f, 1.0f, 1.0f, 1.0f,
+                 1.0f,-1.0f, 1.0f, 0.0f,
+                -1.0f,-1.0f, 0.0f, 0.0f
+            };
 
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
-            shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+            glGenBuffers(1, &vbo);
+            glGenVertexArrays(1, &vao);
+
+            glBindVertexArray(vao);
+
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+
+            glBindVertexArray(0);
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        this->init();
     }
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    void default_frame::init() {
 
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_id, 0);
-
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "ERROR: Cubemap shadow framebuffer incomplete!" << std::endl;
+        shader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.frag"
+        );
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    void default_frame::render() const {
+
+        glDisable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glUseProgram(shader);
+        setBool(shader, "normalRender", true);
+        setMat4(shader, "model", glm::mat4(1.0f));
+
+        glBindVertexArray(vao);
+
+        glBindTexture(GL_TEXTURE_2D, texture_id);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    //-------------------------------------------------------------------------------------//
+
+    pointShadow_frame::pointShadow_frame(const int& shadowWidth, const int& shadowHeight) {
+
+        glGenFramebuffers(1, &fbo);
+        glGenTextures(1, &texture_id);
+
+        glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+
+        for (unsigned int i = 0; i < 6; i++) {
+
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+                shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_id, 0);
+
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << "ERROR: Cubemap shadow framebuffer incomplete!" << std::endl;
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }
