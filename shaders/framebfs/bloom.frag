@@ -8,9 +8,8 @@ uniform sampler2D bloom;
 
 void main() {
 	
-	const float bloomStrength = 0.1;
+	const float bloomStrength = 0.5;
 
 	FragColor = texture(screen, vTexCords);
-
 	FragColor.rgb += bloomStrength * texture(bloom, vTexCords).rgb;
 }

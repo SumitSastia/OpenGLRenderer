@@ -12,7 +12,7 @@ namespace frameBuffers {
         glGenTextures(1, &texture_id);
         glBindTexture(GL_TEXTURE_2D, texture_id);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -72,7 +72,7 @@ namespace frameBuffers {
     void HDR_frame::init() {
 
         shader = createShader(
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/frame_buffer.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/frame_buffer.frag"
         );
     }
@@ -94,7 +94,8 @@ namespace frameBuffers {
 
     //-------------------------------------------------------------------------------------//
 
-    bloom_frame::bloom_frame(const int& frameWidth, const int& frameHeight) {
+    bloom_frame::bloom_frame(const int& frameWidth, const int& frameHeight) :
+        _blur_frame(frameWidth, frameHeight) {
 
         glGenFramebuffers(1, &fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -174,12 +175,39 @@ namespace frameBuffers {
     void bloom_frame::init() {
 
         shader = createShader(
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/bloom.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/bloom.frag"
+        );
+
+        blurShader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/blur.frag"
         );
     }
 
     void bloom_frame::render() const {
+
+        bool horizontal = true;
+        bool first_itr = true;
+        int amount = 10;
+
+        glUseProgram(blurShader);
+
+        for (unsigned int i = 0; i < amount; i++) {
+
+            glBindFramebuffer(GL_FRAMEBUFFER, _blur_frame.fbo[horizontal]);
+            setBool(blurShader, "horizontal", horizontal);
+
+            glBindTexture(GL_TEXTURE_2D, first_itr ? colorBuffers[1] : _blur_frame.texture_buffers[!horizontal]);
+
+            glBindVertexArray(vao);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            horizontal = !horizontal;
+            first_itr = false;
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glDisable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -193,9 +221,39 @@ namespace frameBuffers {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
+        glBindTexture(GL_TEXTURE_2D, _blur_frame.texture_buffers[1]);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    //-------------------------------------------------------------------------------------//
+
+    blur_frame::blur_frame(const int& frameWidth, const int& frameHeight) {
+
+        glGenFramebuffers(2, fbo);
+        glGenTextures(2, texture_buffers);
+
+        for (unsigned int i = 0; i < 2; i++) {
+
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo[i]);
+            glBindTexture(GL_TEXTURE_2D, texture_buffers[i]);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_buffers[i], 0);
+        }
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cerr << "ERROR :: UNABLE TO COMPLETE HDR-FRAME-BUFFER!" << std::endl;
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     //-------------------------------------------------------------------------------------//

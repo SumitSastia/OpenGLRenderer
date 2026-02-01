@@ -24,10 +24,21 @@ namespace frameBuffers {
 		void render() const;
 	};
 
+	struct blur_frame {
+
+		unsigned int fbo[2];
+		unsigned int texture_buffers[2];
+
+		blur_frame(const int& frameWidth, const int& frameHeight);
+	};
+
 	struct bloom_frame : public frameBuffer {
 
 		unsigned int colorBuffers[2];
 		unsigned int attachments[2];
+
+		blur_frame _blur_frame;
+		unsigned int blurShader;
 
 		bloom_frame(const int& frameWidth, const int& frameHeight);
 
