@@ -155,7 +155,7 @@ void shape2D::draw(const unsigned int& shader, const glm::mat4& model) const {
     setVec3(shader, "normal", normal);
     setVec3(shader, "viewPos", camera::instance().getPos());
 
-    setSpotLight(shader, "s1", lights::instance().flashlight);
+    setSpotLight(shader, "s1", lights::lights::instance().flashlight);
 
     setInt(shader, "texture1", 0);
     setInt(shader, "normal_map", 1);
@@ -237,7 +237,7 @@ void shape::draw(const unsigned int& shader, const glm::mat4& model) const {
     setVec3(shader, "viewPos", camera::instance().getPos());
 
     setMaterial(shader, "m1");
-    setSpotLight(shader, "s1", lights::instance().flashlight);
+    setSpotLight(shader, "s1", lights::lights::instance().flashlight);
 
     setInt(shader, "texture1", 0);
     setInt(shader, "texture2", 1);
@@ -308,7 +308,7 @@ void shapeInstanced::draw(const unsigned int& shader, const unsigned int& instan
 
     setVec3(shader, "viewPos", camera::instance().getPos());
     setMaterial(shader, "m1");
-    setSpotLight(shader, "s1", lights::instance().flashlight);
+    setSpotLight(shader, "s1", lights::lights::instance().flashlight);
 
     setInt(shader, "texture1", 0);
     setInt(shader, "texture2", 1);

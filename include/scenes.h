@@ -1,5 +1,4 @@
-#ifndef SCENES_HPP
-#define SCENES_HPP
+#pragma once
 
 #include <shader.h>
 #include <lights.h>
@@ -35,14 +34,14 @@ namespace scenes {
 		glm::mat4 shadowProj;
 
 		// Imported Models
-		model3D* cube1;
+		models::model3D* cube1;
 
 		// Light-Source
 		unsigned int lights_count;
-		std::vector <lightSource*> lights;
+		std::vector <lights::lightSource*> lights;
 
-		lightSource* myLight;
-		lightSource* light2;
+		lights::lightSource* myLight;
+		lights::lightSource* light2;
 
 		// World Space Models
 		glm::mat4 objectModel;
@@ -80,8 +79,8 @@ namespace scenes {
 
 		scene1() : modelCounter(0) {}
 
-		model3D* getCube() const { return cube1; }
-		std::vector <lightSource*> getLights() const { return lights; }
+		models::model3D* getCube() const { return cube1; }
+		std::vector <lights::lightSource*> getLights() const { return lights; }
 
 		void init();
 		void input_handler(GLFWwindow* window);
@@ -99,5 +98,3 @@ namespace scenes {
 		void destroy() const;
 	};
 }
-
-#endif

@@ -187,7 +187,7 @@ int main(){
         cam.scroll_handler(scrollOffset);
         cam.update(deltaTime);
 
-        lights::instance().flashlight.isVisible = useFlashLight;
+        lights::lights::instance().flashlight.isVisible = useFlashLight;
 
         // Inputs //
         scene1.input_handler(window);

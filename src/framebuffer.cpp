@@ -95,7 +95,7 @@ namespace frameBuffers {
     //-------------------------------------------------------------------------------------//
 
     bloom_frame::bloom_frame(const int& frameWidth, const int& frameHeight) :
-        _blur_frame(frameWidth, frameHeight) {
+        _blur_frame(frameWidth / 1.5, frameHeight / 1.5) {
 
         glGenFramebuffers(1, &fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -221,7 +221,7 @@ namespace frameBuffers {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, _blur_frame.texture_buffers[1]);
+        glBindTexture(GL_TEXTURE_2D, _blur_frame.texture_buffers[0]);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }

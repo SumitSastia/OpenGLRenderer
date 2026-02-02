@@ -1,5 +1,4 @@
-#ifndef MYWINDOW_HPP
-#define MYWINDOW_HPP
+#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -128,5 +127,3 @@ void setMaterial(const unsigned int& shaderProgram, const std::string &target);
 void setMaterial(const unsigned int& shaderProgram, const std::string& target, const material& value);
 
 void printVec3(const glm::vec3& vector);
-
-#endif

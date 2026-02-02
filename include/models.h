@@ -1,6 +1,4 @@
-#ifndef MODELS_HPP
-#define MODELS_HPP
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -10,111 +8,112 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-struct vertex {
+namespace models {
 
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 textureCords;
+    struct vertex {
 
-    vertex(
-        const glm::vec3& position = glm::vec3(0.0f),
-        const glm::vec3& normal = glm::vec3(0.0f),
-        const glm::vec2& textureCords = glm::vec3(0.0f)
-    ) :
-        position(position),
-        normal(normal),
-        textureCords(textureCords) {
-    }
-};
+        glm::vec3 position;
+        glm::vec3 normal;
+        glm::vec2 textureCords;
 
-struct meshTexture {
+        vertex(
+            const glm::vec3& position = glm::vec3(0.0f),
+            const glm::vec3& normal = glm::vec3(0.0f),
+            const glm::vec2& textureCords = glm::vec3(0.0f)
+        ) :
+            position(position),
+            normal(normal),
+            textureCords(textureCords) {
+        }
+    };
 
-    unsigned int id;
-    std::string type;
-    std::string checkPath;
+    struct meshTexture {
 
-    void loadTexture(const char* path, const std::string& directory);
-};
+        unsigned int id;
+        std::string type;
+        std::string checkPath;
 
-class mesh {
+        void loadTexture(const char* path, const std::string& directory);
+    };
 
-    unsigned int VBO, VAO, EBO;
-    void setupMesh();
+    class mesh {
 
-public:
+        unsigned int VBO, VAO, EBO;
+        void setupMesh();
 
-    std::vector <vertex> vertices;
-    std::vector <unsigned int> indices;
-    std::vector <meshTexture> textures;
+    public:
 
-    mesh(
-        const std::vector <vertex>& vertices,
-        const std::vector <unsigned int>& indices,
-        const std::vector <meshTexture>& textures
-    ) :
-        vertices(vertices),
-        indices(indices),
-        textures(textures),
-        VBO(0), VAO(0), EBO(0) {
+        std::vector <vertex> vertices;
+        std::vector <unsigned int> indices;
+        std::vector <meshTexture> textures;
 
-        setupMesh();
-    }
+        mesh(
+            const std::vector <vertex>& vertices,
+            const std::vector <unsigned int>& indices,
+            const std::vector <meshTexture>& textures
+        ) :
+            vertices(vertices),
+            indices(indices),
+            textures(textures),
+            VBO(0), VAO(0), EBO(0) {
 
-    // Disable Copying
-    mesh(const mesh&) = delete;
-    mesh& operator=(const mesh&) = delete;
+            setupMesh();
+        }
 
-    // Move
-    mesh(mesh&& other) noexcept {
-        *this = std::move(other);
-    }
+        // Disable Copying
+        mesh(const mesh&) = delete;
+        mesh& operator=(const mesh&) = delete;
 
-    mesh& operator=(mesh&& other) noexcept {
+        // Move
+        mesh(mesh&& other) noexcept {
+            *this = std::move(other);
+        }
 
-        VBO = other.VBO;
-        VAO = other.VAO;
-        EBO = other.EBO;
+        mesh& operator=(mesh&& other) noexcept {
 
-        vertices = other.vertices;
-        indices = other.indices;
-        textures = other.textures;
+            VBO = other.VBO;
+            VAO = other.VAO;
+            EBO = other.EBO;
 
-        other.VBO = other.VAO = other.EBO = 0;
-        return *this;
-    }
+            vertices = other.vertices;
+            indices = other.indices;
+            textures = other.textures;
 
-    ~mesh();
+            other.VBO = other.VAO = other.EBO = 0;
+            return *this;
+        }
 
-    void draw(const unsigned int& shader) const ;
-    void drawShadow() const;
-};
+        ~mesh();
 
-class model3D {
+        void draw(const unsigned int& shader) const;
+        void drawShadow() const;
+    };
 
-    glm::mat4 projection;
-    glm::mat4 view;
-    glm::mat4 model;
+    class model3D {
 
-    std::vector <mesh> meshes;
-    std::string directory;
+        glm::mat4 projection;
+        glm::mat4 view;
+        glm::mat4 model;
 
-    std::vector <meshTexture> loadedTextures;
+        std::vector <mesh> meshes;
+        std::string directory;
 
-    void loadModel(const std::string& path);
+        std::vector <meshTexture> loadedTextures;
 
-    void processNode(aiNode* node, const aiScene* scene);
-    mesh processMesh(aiMesh* mesh, const aiScene* scene);
+        void loadModel(const std::string& path);
 
-    std::vector<meshTexture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& type_str) const;
+        void processNode(aiNode* node, const aiScene* scene);
+        mesh processMesh(aiMesh* mesh, const aiScene* scene);
 
-public:
+        std::vector<meshTexture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& type_str) const;
 
-    model3D(const char* path) : directory("") {
-        loadModel(path);
-    }
+    public:
 
-    void draw(const unsigned int& shader, const glm::mat4& model) const;
-    void drawShadow() const;
-};
+        model3D(const char* path) : directory("") {
+            loadModel(path);
+        }
 
-#endif
+        void draw(const unsigned int& shader, const glm::mat4& model) const;
+        void drawShadow() const;
+    };
+}

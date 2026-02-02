@@ -1,5 +1,4 @@
-#ifndef SHAPES_HPP
-#define SHAPES_HPP
+#pragma once
 
 #include <shader.h>
 #include <models.h>
@@ -92,5 +91,3 @@ public:
     const unsigned int& get_VAO() const { return VAO; }
     const unsigned int& get_ID() const { return textureID; }
 };
-
-#endif

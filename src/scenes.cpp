@@ -101,12 +101,12 @@ namespace scenes {
         // Light-Source
         lights_count = 2;
 
-        myLight = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
-        myLight->setLightColor(colors::instance().yellow);
+        myLight = new lights::lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
+        myLight->setLightColor(colors::yellow);
         myLight->setPosition(lightModel[3]);
 
-        light2 = new lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel2);
-        light2->setLightColor(colors::instance().pink);
+        light2 = new lights::lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel2);
+        light2->setLightColor(colors::pink);
         light2->setPosition(lightModel2[3]);
 
         lights.push_back(myLight);
@@ -118,7 +118,7 @@ namespace scenes {
         shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, near, far);
 
         // Models
-        cube1 = new model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
+        cube1 = new models::model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
 
         // Skybox
         std::vector <std::string> cubemapFaces = {
@@ -214,7 +214,7 @@ namespace scenes {
         glBindVertexArray(0);
 
         // ColoredCube
-        cc1 = new coloredCube(colors::instance().red);
+        cc1 = new coloredCube(colors::red);
 
         // Floor
         floor = shapes::instance().square;
@@ -404,7 +404,7 @@ namespace scenes {
         const glm::mat4& projection = camera::instance().getPerspective();
         const glm::mat4& view = camera::instance().getView();
 
-        lights::instance().update();
+        lights::lights::instance().update();
 
         // Light-Source
         myLight->update(projection, view, lightModel);
@@ -487,7 +487,7 @@ namespace scenes {
         const glm::mat4& projection = camera::instance().getPerspective();
         const glm::mat4& view = camera::instance().getView();
 
-        lights::instance().update();
+        lights::lights::instance().update();
 
         // Light-Source
         myLight->update(projection, view, lightModel);

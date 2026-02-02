@@ -1,5 +1,4 @@
-#ifndef LIGHTS_HPP
-#define LIGHTS_HPP
+#pragma once
 
 #include <string>
 
@@ -12,103 +11,101 @@
 
 #include <shapes.h>
 
-struct directionalLight{
+namespace lights {
 
-    glm::vec3 direction;
-    glm::vec3 color;
-};
+    struct directionalLight {
 
-struct pointLight{
+        glm::vec3 direction;
+        glm::vec3 color;
+    };
 
-    glm::vec3 position;
-    glm::vec3 color;
+    struct pointLight {
 
-    float constant;
-    float linear;
-    float quadratic;
-};
+        glm::vec3 position;
+        glm::vec3 color;
 
-struct spotLight{
+        float constant;
+        float linear;
+        float quadratic;
+    };
 
-    glm::vec3 position;
-    glm::vec3 direction;
-    glm::vec3 color;
+    struct spotLight {
 
-    bool isVisible;
+        glm::vec3 position;
+        glm::vec3 direction;
+        glm::vec3 color;
 
-    float cutOffangle;
-    float outerCutOff;
+        bool isVisible;
 
-    float constant;
-    float linear;
-    float quadratic;
-};
+        float cutOffangle;
+        float outerCutOff;
 
-struct lights{
+        float constant;
+        float linear;
+        float quadratic;
+    };
 
-    pointLight cubelight;
-    directionalLight sunlight;
-    spotLight flashlight;
+    struct lights {
 
-    lights();
-    static lights& instance();
+        pointLight cubelight;
+        directionalLight sunlight;
+        spotLight flashlight;
 
-    void update();
-};
+        lights();
+        static lights& instance();
 
-void setPointLight(const unsigned int &shaderProgram, const std::string &target, const pointLight &pl);
+        void update();
+    };
 
-void setSpotLight(const unsigned int &shaderProgram, const std::string &target, const spotLight &sl);
+    void setPointLight(const unsigned int& shaderProgram, const std::string& target, const pointLight& pl);
 
-void setDirectionalLight(const unsigned int &shaderProgram, const std::string &target, const directionalLight &dl);
+    void setSpotLight(const unsigned int& shaderProgram, const std::string& target, const spotLight& sl);
 
-struct colors {
+    void setDirectionalLight(const unsigned int& shaderProgram, const std::string& target, const directionalLight& dl);
 
-    glm::vec3 red;
-    glm::vec3 orange;
-    glm::vec3 yellow;
-    glm::vec3 green;
-    glm::vec3 blue;
-    glm::vec3 pink;
-    glm::vec3 white;
-    glm::vec3 black;
-    glm::vec3 gray;
+    class lightSource {
 
-    colors();
-    static colors& instance();
-};
+        pointLight src;
+        shape srcShape;
 
-class lightSource {
+        glm::mat4 projection;
+        glm::mat4 view;
+        glm::mat4 model;
 
-    pointLight src;
-    shape srcShape;
+    public:
 
-    glm::mat4 projection;
-    glm::mat4 view;
-    glm::mat4 model;
+        lightSource(
+            const glm::mat4& projection,
+            const glm::mat4& view,
+            const glm::mat4& model
+        );
 
-public:
+        void setLightColor(const glm::vec3& color);
+        void setPosition(const glm::vec3& position);
 
-    lightSource(
-        const glm::mat4& projection,
-        const glm::mat4& view,
-        const glm::mat4& model
-    );
+        glm::vec3 getPosition() const { return src.position; }
+        glm::vec3 getLightColor() const { return src.color; }
+        const pointLight& getLight() const { return src; }
 
-    void setLightColor(const glm::vec3& color);
-    void setPosition(const glm::vec3& position);
+        void update(
+            const glm::mat4& projection,
+            const glm::mat4& view,
+            const glm::mat4& model
+        );
 
-    glm::vec3 getPosition() const { return src.position; }
-    glm::vec3 getLightColor() const { return src.color; }
-    const pointLight& getLight() const { return src; }
+        void draw(const unsigned int& shader) const;
+    };
+}
 
-    void update(
-        const glm::mat4& projection,
-        const glm::mat4& view,
-        const glm::mat4& model
-    );
+namespace colors {
 
-    void draw(const unsigned int& shader) const;
-};
-
-#endif
+    const glm::vec3 red    { 1.0f, 0.0f, 0.0f };
+    const glm::vec3 orange { 0.945f, 0.352f, 0.133f };
+    const glm::vec3 yellow { 1.0f, 1.0f, 0.0f };
+    const glm::vec3 green  { 0.0f, 1.0f, 0.0f };
+    const glm::vec3 blue   { 0.0f, 0.0f, 1.0f };
+    const glm::vec3 pink   { 0.89f, 0.239f, 0.58f };
+    const glm::vec3 white  { 1.0f, 1.0f, 1.0f };
+    const glm::vec3 black  { 0.0f, 0.0f, 0.0f };
+    const glm::vec3 gray   { 0.392f, 0.392f, 0.392f };
+}

@@ -1,5 +1,4 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -62,5 +61,3 @@ public:
     glm::mat4 getPerspective() const { return projection; }
     glm::vec3 getTarget() const { return target; }
 };
-
-#endif
