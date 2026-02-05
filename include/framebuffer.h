@@ -62,4 +62,19 @@ namespace frameBuffers {
 		pointShadow_frame(const int& shadowWidth, const int& shadowHeight);
 		pointShadow_frame() : pointShadow_frame(shadowSize, shadowSize) {}
 	};
+
+	// Deferred Shading
+	struct g_buffer {
+
+		unsigned int fbo, rbo, vbo, vao;
+		unsigned int gPosition, gNormal, gTexture;
+
+		unsigned int attachments[3];
+		unsigned int shader;
+
+		g_buffer(const int& frameWidth, const int& frameHeight);
+
+		void init();
+		void render() const;
+	};
 }

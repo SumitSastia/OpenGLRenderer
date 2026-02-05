@@ -21,7 +21,8 @@ namespace scenes {
 			instanceShadowShader,
 			shadowShader,
 			pointShadowPlanes,
-			pointShadowInstanced
+			pointShadowInstanced,
+			gbufferShader
 			;
 
 		unsigned int
@@ -74,10 +75,14 @@ namespace scenes {
 		std::vector <frameBuffers::pointShadow_frame*> light_frames;
 
 		// Developer Tools
+		texture wood;
 
 	public:
 
-		scene1() : modelCounter(0) {}
+		scene1() : modelCounter(0) {
+
+			wood.load("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wood_box.png");
+		}
 
 		models::model3D* getCube() const { return cube1; }
 		std::vector <lights::lightSource*> getLights() const { return lights; }
@@ -94,6 +99,7 @@ namespace scenes {
 		void render_pointShadow() const;
 
 		void render_with_pointLight() const;
+		void render_g_buffer() const;
 
 		void destroy() const;
 	};

@@ -8,7 +8,7 @@ layout (location = 7) in mat3 instanceNormal;
 
 out vec3 vPos;
 out vec3 vNormal;
-out vec2 vTextureCords;
+out vec2 vTexCords;
 
 out vec4 lightSpacePos;
 
@@ -23,5 +23,5 @@ void main(){
 
     vPos = vec3(instanceModel * vec4(aPos , 1.0));
     vNormal = instanceNormal * aNormal;
-    vTextureCords = aTextureCords;
+    vTexCords = aTextureCords;
 }

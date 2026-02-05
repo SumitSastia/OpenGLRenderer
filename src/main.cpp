@@ -168,6 +168,9 @@ int main(){
 
     frameBuffers::frameBuffer* mainFrame = bloom_frame;
 
+    // G-Buffer
+    frameBuffers::g_buffer* g_buffer = new frameBuffers::g_buffer(frameWidth, frameHeight);
+
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
     bool isRunning = true;
@@ -208,7 +211,8 @@ int main(){
         scene1.render_pointShadow();
 
         // Rendering Scene in FrameBuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
+        // glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, g_buffer->fbo);
 
         glViewport(0, 0, frameWidth, frameHeight);
         glEnable(GL_CULL_FACE);
@@ -219,13 +223,15 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Main Scene
-        scene1.render_with_pointLight();
+        // scene1.render_with_pointLight();
+        scene1.render_g_buffer();
 
         // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         // Rendering FrameBufferTexture
-        mainFrame->render();
+        // mainFrame->render();
+        g_buffer->render();
 
         // Safety
         glUseProgram(0);

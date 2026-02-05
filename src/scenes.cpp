@@ -75,10 +75,15 @@ namespace scenes {
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.frag"
         );
 
+        gbufferShader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer.frag"
+        );
+
         // World Coordinates
         objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
-        lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -1.5f, -3.0f));
+        lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -3.0f));
         lightModel = glm::scale(lightModel, glm::vec3(0.5f));
 
         lightModel2 = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 1.5f, 3.0f));
@@ -118,7 +123,7 @@ namespace scenes {
         shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, near, far);
 
         // Models
-        cube1 = new models::model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/cube.obj");
+        cube1 = new models::model3D("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/models/test_cube/sphere.obj");
 
         // Skybox
         std::vector <std::string> cubemapFaces = {
@@ -578,6 +583,33 @@ namespace scenes {
         }
 
         render_transparent();
+    }
+
+    void scene1::render_g_buffer() const {
+
+        glDepthMask(GL_TRUE);
+        glEnable(GL_CULL_FACE);
+
+        const glm::mat4& projection = camera::instance().getPerspective();
+        const glm::mat4& view = camera::instance().getView();
+
+        glUseProgram(gbufferShader);
+
+        setMat4(gbufferShader, "projection", projection);
+        setMat4(gbufferShader, "view", view);
+        setMat4(gbufferShader, "model", objectModel);
+        setMat4(gbufferShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(objectModel))));
+        
+        // Object
+        setInt(gbufferShader, "texture1", 0);
+        setInt(gbufferShader, "texture2", 1);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, wood.getID());
+
+        glBindVertexArray(shapes::instance().cube.VAO);
+        glDrawElements(GL_TRIANGLES, shapes::instance().cube.indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+        glBindVertexArray(0);
     }
 
     void scene1::render_transparent() const {

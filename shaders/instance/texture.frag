@@ -41,7 +41,7 @@ struct spotLight{
 
 in vec3 vPos;
 in vec3 vNormal;
-in vec2 vTextureCords;
+in vec2 vTexCords;
 
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
@@ -180,10 +180,10 @@ void main(){
 
     vec3 normal = normalize(vNormal);
     
-    vec3 t1 = (texture(texture1, vTextureCords)).rgb;
-    vec3 t2 = (texture(texture2, vTextureCords)).rgb;
+    vec3 t1 = (texture(texture1, vTexCords)).rgb;
+    vec3 t2 = (texture(texture2, vTexCords)).rgb;
     
-    float alpha = texture(texture1, vTextureCords).a;
+    float alpha = texture(texture1, vTexCords).a;
 
     vec3 finalColor = vec3(0.0);
     vec3 lightColors[MAX_LIGHTS];
