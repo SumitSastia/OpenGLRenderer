@@ -110,6 +110,11 @@ struct materials {
     static materials& instance();
 };
 
+//namespace materials {
+//
+//    material
+//}
+
 void setBool(const unsigned int& shaderProgram, const char* target, const bool& value);
 
 void setInt(const unsigned int &shaderProgram, const char* target, const int &value);

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <framebuffer.h>
+#include <lights.h>
+#include <camera.h>
 
 namespace frameBuffers {
 
@@ -473,7 +475,7 @@ namespace frameBuffers {
 
         shader = createShader(
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.frag"
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/deferred.frag"
         );
     }
 
@@ -483,12 +485,27 @@ namespace frameBuffers {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shader);
-        setBool(shader, "normalRender", true);
-        setMat4(shader, "model", glm::mat4(1.0f));
+
+        setVec3(shader, "lights[0].position", glm::vec3(3.0f, 1.5f, -3.0f));
+        setVec3(shader, "lights[0].color", colors::yellow);
+
+        setInt(shader, "gPosition", 0);
+        setInt(shader, "gNormal", 1);
+        setInt(shader, "gTexture", 2);
+
+        setVec3(shader, "viewPos", camera::instance().getPos());
 
         glBindVertexArray(vao);
 
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, gTexture);
+
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 }
