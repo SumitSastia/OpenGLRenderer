@@ -232,6 +232,7 @@ int main(){
         // Rendering FrameBufferTexture
         // mainFrame->render();
         g_buffer->render();
+        scene1.render_lights();
 
         // Safety
         glUseProgram(0);

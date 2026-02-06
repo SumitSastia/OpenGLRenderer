@@ -585,6 +585,17 @@ namespace scenes {
         render_transparent();
     }
 
+    void scene1::render_lights() const {
+
+        glDepthMask(GL_TRUE);
+        glEnable(GL_CULL_FACE);
+
+        // Light-Source
+        myLight->update(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
+        myLight->draw(lightShader);
+
+    }
+
     void scene1::render_g_buffer() const {
 
         glDepthMask(GL_TRUE);
@@ -598,7 +609,7 @@ namespace scenes {
         setMat4(gbufferShader, "projection", projection);
         setMat4(gbufferShader, "view", view);
         setMat4(gbufferShader, "model", objectModel);
-        setMat4(gbufferShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(objectModel))));
+        setMat3(gbufferShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(objectModel))));
         
         // Object
         setInt(gbufferShader, "texture1", 0);

@@ -99,6 +99,8 @@ namespace scenes {
 		void render_pointShadow() const;
 
 		void render_with_pointLight() const;
+
+		void render_lights() const;
 		void render_g_buffer() const;
 
 		void destroy() const;

@@ -20,8 +20,8 @@ uniform sampler2D texture2;
 void main() {
 
 	gPosition = vec4(vPos, 1.0);
-	gNormal = vec4((vNormal), 1.0);
-	gNormal = vec4(0,1,0,1);
+	gNormal = vec4(vNormal, 1.0);
+	// gNormal = vec4(0,0,-1,1);
 
 	gTexture.rgb = texture(texture1, vTexCords).rgb;
 	// gTexture.a = texture(texture2, vTexCords).r;
