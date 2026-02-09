@@ -381,7 +381,7 @@ namespace scenes {
                 setMat4(shader, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
             }
 
-            setVec3(shader, "lightPos", myLight->getPosition());
+            setVec3(shader, "lightPos", lightPos);
             setFloat(shader, "far_plane", 25.0f);
 
             // Object
@@ -633,14 +633,20 @@ namespace scenes {
     void scene1::render_final(const frameBuffers::g_buffer* _g_buffer) const {
 
         const unsigned int shader = _g_buffer->get_shader();
-        glUseProgram(shader);
 
+        glUseProgram(shader);
         setInt(shader, "lights_count", lights_count);
+        setFloat(shader, "far_plane", 25.0f);
 
         for (unsigned int i = 0; i < lights_count; i++) {
 
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, light_frames[i]->texture_id);
+
             setVec3(shader, ("lights[" + std::to_string(i) + "].position").c_str(), lights[i]->getPosition());
             setVec3(shader, ("lights[" + std::to_string(i) + "].color").c_str(), lights[i]->getLightColor());
+            // setInt(shader, ("lights[" + std::to_string(i) + "].depthMap").c_str(), i);
+            setInt(shader, ("depthCubeMap[" + std::to_string(i) + "]").c_str(), i);
         }
 
         // setVec3(shader, "lights[0].position", lights[0]->getPosition());

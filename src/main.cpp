@@ -173,6 +173,11 @@ int main(){
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
+    int maxUnits;
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxUnits);
+
+    // cout << "MAX UNITS:" << maxUnits << endl;
+
     bool isRunning = true;
 
     // OPENGL LOOP --------------------------------------------------------------------//
@@ -208,7 +213,7 @@ int main(){
         // Rendering //
 
         // Rendering CubeMap Shadows
-        // scene1.render_pointShadow();
+        scene1.render_pointShadow();
 
         // Rendering Scene in FrameBuffer
         // glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
@@ -236,9 +241,8 @@ int main(){
         // mainFrame->render();
 
         // Lighting Pass
-        // g_buffer->render();
         scene1.render_final(g_buffer);
-
+        
         glBindFramebuffer(GL_READ_FRAMEBUFFER, g_buffer->fbo);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         
@@ -248,7 +252,7 @@ int main(){
             GL_DEPTH_BUFFER_BIT,
             GL_NEAREST
         );
-
+        
         scene1.render_lights();
 
         // Safety

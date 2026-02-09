@@ -183,7 +183,6 @@ void main(){
     }
 
     for (int i = 0; i < lights_count; i++) {
-        
         finalColor += lightColors[i];
     }
 
