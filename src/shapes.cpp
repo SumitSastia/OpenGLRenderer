@@ -158,7 +158,6 @@ void shape2D::draw(const unsigned int& shader, const glm::mat4& model) const {
     setSpotLight(shader, "s1", lights::lights::instance().flashlight);
 
     setInt(shader, "texture1", 0);
-    setInt(shader, "normal_map", 1);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, shape2DTexture.getID());

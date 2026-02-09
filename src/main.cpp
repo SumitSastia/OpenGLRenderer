@@ -236,7 +236,8 @@ int main(){
         // mainFrame->render();
 
         // Lighting Pass
-        g_buffer->render();
+        // g_buffer->render();
+        scene1.render_final(g_buffer);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, g_buffer->fbo);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

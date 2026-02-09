@@ -481,19 +481,6 @@ namespace frameBuffers {
 
     void g_buffer::render() const {
 
-        // glDisable(GL_DEPTH_TEST);
-      
-        glUseProgram(shader);
-
-        setVec3(shader, "lights[0].position", glm::vec3(3.0f, 1.5f, -3.0f));
-        setVec3(shader, "lights[0].color", colors::yellow);
-
-        setInt(shader, "gPosition", 0);
-        setInt(shader, "gNormal", 1);
-        setInt(shader, "gTexture", 2);
-
-        setVec3(shader, "viewPos", camera::instance().getPos());
-
         glBindVertexArray(vao);
 
         glActiveTexture(GL_TEXTURE0);

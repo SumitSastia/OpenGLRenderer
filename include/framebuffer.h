@@ -76,5 +76,7 @@ namespace frameBuffers {
 
 		void init();
 		void render() const;
+
+		const unsigned int get_shader() const { return shader; }
 	};
 }

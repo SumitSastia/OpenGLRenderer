@@ -13,6 +13,8 @@ struct light {
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gTexture;
+
+uniform int lights_count;
 uniform light lights[MAX_LIGHTS];
 uniform vec3 viewPos;
 
@@ -30,18 +32,29 @@ void main() {
 
 	vec3 viewDirection = normalize(viewPos - fragPos);
 
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < lights_count; i++) {
 
-		vec3 lightDirection = normalize(lights[i].position - fragPos);
-		vec3 diffuse = max(dot(normal, lightDirection), 0.0) * albedo * lights[i].color;
-		finalColor += diffuse;
+		float fragDistance = length(lights[i].position - fragPos);
+		float attenuation = 1.0 / (1.0 + 0.001*fragDistance + 0.016*fragDistance*fragDistance);
 
-		// Specular
-		vec3 viewDirection = normalize(viewPos - fragPos);
-		vec3 reflectDirection = reflect(-lightDirection, normal);
-		
-		float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
-		finalColor += spec * specular * lights[i].color;
+		if (attenuation > 0.0) {
+
+			vec3 lightDirection = normalize(lights[i].position - fragPos);
+
+			// Diffuse
+			vec3 diffuse = max(dot(normal, lightDirection), 0.0) * albedo * lights[i].color;
+			finalColor += diffuse;
+
+			// Specular
+			vec3 viewDirection = normalize(viewPos - fragPos);
+			vec3 halfwayDirection = normalize(lightDirection + viewDirection);
+
+			float spec = pow(max(dot(normal, halfwayDirection), 0.0), 32.0);
+			finalColor += spec * specular * lights[i].color;
+
+			// Attenuation
+			finalColor *= attenuation;
+		}
 	}
 
 	FragColor = vec4(ambient + finalColor, 1.0);

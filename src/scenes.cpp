@@ -599,12 +599,12 @@ namespace scenes {
         const glm::mat4& projection = camera::instance().getPerspective();
         const glm::mat4& view = camera::instance().getView();
 
-        // glDepthMask(GL_TRUE);
-        glEnable(GL_CULL_FACE);
-
         // Light-Source
         myLight->update(projection, view, lightModel);
         myLight->draw(lightShader);
+
+        light2->update(projection, view, lightModel2);
+        light2->draw(lightShader);
     }
 
     void scene1::render_g_buffer() const {
@@ -627,7 +627,33 @@ namespace scenes {
         cube1->draw_gbuffer(gbufferShader, cubeModel);
 
         // Window
-        shapes::instance().square.draw_gbuffer(gbufferPlanes, windowModel);
+        // shapes::instance().square.draw_gbuffer(gbufferPlanes, windowModel);
+    }
+
+    void scene1::render_final(const frameBuffers::g_buffer* _g_buffer) const {
+
+        const unsigned int shader = _g_buffer->get_shader();
+        glUseProgram(shader);
+
+        setInt(shader, "lights_count", lights_count);
+
+        for (unsigned int i = 0; i < lights_count; i++) {
+
+            setVec3(shader, ("lights[" + std::to_string(i) + "].position").c_str(), lights[i]->getPosition());
+            setVec3(shader, ("lights[" + std::to_string(i) + "].color").c_str(), lights[i]->getLightColor());
+        }
+
+        // setVec3(shader, "lights[0].position", lights[0]->getPosition());
+        // setVec3(shader, "lights[0].color", lights[0]->getLightColor());
+
+        setInt(shader, "gPosition", 0);
+        setInt(shader, "gNormal", 1);
+        setInt(shader, "gTexture", 2);
+
+        setVec3(shader, "viewPos", camera::instance().getPos());
+
+        _g_buffer->render();
+        // render_transparent();
     }
 
     void scene1::render_transparent() const {
@@ -638,10 +664,10 @@ namespace scenes {
         const glm::mat4& view = camera::instance().getView();
 
         // Model
-        shader = modelShader;
+        /*shader = modelShader;
         glUseProgram(shader);
         setPointLight(shader, "p1", myLight->getLight());
-        cube1->draw(shader, cubeModel);
+        cube1->draw(shader, cubeModel);*/
 
         // Plane
         shader = pointShadowPlanes;
