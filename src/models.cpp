@@ -108,8 +108,19 @@ namespace models {
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+    }
 
+    void mesh::draw_gbuffer(const unsigned int& shader) const {
+
+        setInt(shader, "texture1", 0);
+        setInt(shader, "texture2", 1);
+     
         glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures[0].id);
+
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+        glBindVertexArray(0);
     }
 
     void mesh::drawShadow() const {
@@ -265,6 +276,23 @@ namespace models {
         }
 
         //glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+    }
+
+    void model3D::draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const {
+
+        glUseProgram(shader);
+        glFrontFace(GL_CW);
+
+        setMat4(shader, "projection", camera::instance().getPerspective());
+        setMat4(shader, "view", camera::instance().getView());
+        setMat4(shader, "model", model);
+        setMat3(shader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model))));
+        
+        for (const auto& mesh_part : meshes) {
+            mesh_part.draw_gbuffer(shader);
+        }
+
         glFrontFace(GL_CCW);
     }
 

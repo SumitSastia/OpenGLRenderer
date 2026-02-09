@@ -86,6 +86,7 @@ namespace models {
         ~mesh();
 
         void draw(const unsigned int& shader) const;
+        void draw_gbuffer(const unsigned int& shader) const;
         void drawShadow() const;
     };
 
@@ -114,6 +115,7 @@ namespace models {
         }
 
         void draw(const unsigned int& shader, const glm::mat4& model) const;
+        void draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const;
         void drawShadow() const;
     };
 }

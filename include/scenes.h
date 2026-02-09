@@ -22,7 +22,9 @@ namespace scenes {
 			shadowShader,
 			pointShadowPlanes,
 			pointShadowInstanced,
-			gbufferShader
+			gbufferShader,
+			gbufferInstanced,
+			gbufferPlanes
 			;
 
 		unsigned int

@@ -350,61 +350,6 @@ shadowFrameBuffer::~shadowFrameBuffer() {
 
 //-------------------------------------------------------------------------------------//
 
-material::material(
-    const glm::vec3 ambient,
-    const glm::vec3 diffuse,
-    const glm::vec3 specular,
-    const float shininess
-) :
-    ambient(ambient),
-    diffuse(diffuse),
-    specular(specular),
-    shininess(shininess) {
-}
-
-materials& materials::instance(){
-    static materials instance;
-    return instance;
-}
-
-materials::materials(){
-
-    debug_material.ambient = glm::vec3(0.05f);
-    debug_material.diffuse = glm::vec3(0.5f);
-    debug_material.specular = glm::vec3(0.1f);
-    debug_material.shininess = 0.5;
-
-    rubber.ambient = glm::vec3(0.02f);
-    rubber.diffuse = glm::vec3(0.01f);
-    rubber.specular = glm::vec3(0.4f);
-    rubber.shininess = 10.0f;
-
-    wood.ambient = glm::vec3(0.2f, 0.15f, 0.1f);
-    wood.diffuse = glm::vec3(0.4f, 0.3f, 0.2f);
-    wood.specular = glm::vec3(0.05f);
-    wood.shininess = 8.0f;
-
-    plastic.ambient = glm::vec3(0.1f);
-    plastic.diffuse = glm::vec3(0.6f);
-    plastic.specular = glm::vec3(0.2f);
-    plastic.shininess = 16.0f;
-
-    concrete.ambient = glm::vec3(0.05f);
-    concrete.diffuse = glm::vec3(0.5f);
-    concrete.specular = glm::vec3(0.1f);
-    concrete.shininess = 4.0f;
-
-    glass.ambient = glm::vec3(0.0f);
-    glass.diffuse = glm::vec3(0.3f);
-    glass.specular = glm::vec3(0.9f);
-    glass.shininess = 96.0f;
-
-    chrome.ambient = glm::vec3(0.25f);
-    chrome.diffuse = glm::vec3(0.4f);
-    chrome.specular = glm::vec3(0.774f);
-    chrome.shininess = 76.8f;
-}
-
 void setBool(const unsigned int& shaderProgram, const char* target, const bool& value) {
 
     glUniform1i(
@@ -460,10 +405,10 @@ void setMat4(const unsigned int &shaderProgram, const char* target, const glm::m
 
 void setMaterial(const unsigned int& shaderProgram, const std::string &target){
 
-    setVec3(shaderProgram, (target + ".ambient").c_str(), materials::instance().wood.ambient);
-    setVec3(shaderProgram, (target + ".diffuse").c_str(), materials::instance().wood.diffuse);
-    setVec3(shaderProgram, (target + ".specular").c_str(), materials::instance().wood.specular);
-    setFloat(shaderProgram, (target + ".shininess").c_str(), materials::instance().glass.shininess);
+    setVec3(shaderProgram, (target + ".ambient").c_str(), materials::wood.ambient);
+    setVec3(shaderProgram, (target + ".diffuse").c_str(), materials::wood.diffuse);
+    setVec3(shaderProgram, (target + ".specular").c_str(), materials::wood.specular);
+    setFloat(shaderProgram, (target + ".shininess").c_str(), materials::glass.shininess);
 }
 
 void setMaterial(const unsigned int& shaderProgram, const std::string& target, const material& value) {

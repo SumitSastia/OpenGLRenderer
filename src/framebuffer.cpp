@@ -481,9 +481,8 @@ namespace frameBuffers {
 
     void g_buffer::render() const {
 
-        glDisable(GL_DEPTH_TEST);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        // glDisable(GL_DEPTH_TEST);
+      
         glUseProgram(shader);
 
         setVec3(shader, "lights[0].position", glm::vec3(3.0f, 1.5f, -3.0f));

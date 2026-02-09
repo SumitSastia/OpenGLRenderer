@@ -85,35 +85,36 @@ public:
 };
 
 struct material {
+
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
     float shininess;
 
-    material() {}
+    material() : shininess(0) {}
 
     material(
         const glm::vec3 ambient,
         const glm::vec3 diffuse,
         const glm::vec3 specular,
         const float shininess
-    );
+    ) :
+        ambient(ambient),
+        diffuse(diffuse),
+        specular(specular),
+        shininess(shininess) {
+    }
 };
 
-struct materials {
+namespace materials {
 
-    material rubber, wood, plastic, concrete, glass, chrome;
-    material debug_material;
-
-    materials();
-
-    static materials& instance();
-};
-
-//namespace materials {
-//
-//    material
-//}
+    const material rubber   { glm::vec3(0.02f), glm::vec3(0.01f), glm::vec3(0.4f), 10.0f };
+    const material wood     { glm::vec3(0.2f, 0.15f, 0.1f), glm::vec3(0.4f, 0.3f, 0.2f), glm::vec3(0.05f), 8.0f };
+    const material plastic  { glm::vec3(0.1f), glm::vec3(0.6f), glm::vec3(0.2f), 16.0f };
+    const material concrete { glm::vec3(0.05f), glm::vec3(0.5f), glm::vec3(0.1f), 4.0f };
+    const material glass    { glm::vec3(0.0f), glm::vec3(0.3f), glm::vec3(0.9f), 96.0f };
+    const material chrome   { glm::vec3(0.25f), glm::vec3(0.4f), glm::vec3(0.774f), 76.8f };
+}
 
 void setBool(const unsigned int& shaderProgram, const char* target, const bool& value);
 

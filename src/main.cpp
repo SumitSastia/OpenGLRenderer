@@ -114,8 +114,8 @@ int main(){
     
     // GL TWEAKS ----------------------------------------------------------------------//
     
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -208,13 +208,14 @@ int main(){
         // Rendering //
 
         // Rendering CubeMap Shadows
-        scene1.render_pointShadow();
+        // scene1.render_pointShadow();
 
         // Rendering Scene in FrameBuffer
         // glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, g_buffer->fbo);
 
         glViewport(0, 0, frameWidth, frameHeight);
+        glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
 
         // glClearColor(0.065f, 0.0f, 0.1f, 1.0f);
@@ -230,8 +231,23 @@ int main(){
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
         // Rendering FrameBufferTexture
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         // mainFrame->render();
+
+        // Lighting Pass
         g_buffer->render();
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, g_buffer->fbo);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        
+        glBlitFramebuffer(
+            0, 0, frameWidth, frameHeight,
+            0, 0, frameWidth, frameHeight,
+            GL_DEPTH_BUFFER_BIT,
+            GL_NEAREST
+        );
+
         scene1.render_lights();
 
         // Safety

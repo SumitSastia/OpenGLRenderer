@@ -80,6 +80,16 @@ namespace scenes {
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer.frag"
         );
 
+        gbufferInstanced = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/instance/texture.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer.frag"
+        );
+
+        gbufferPlanes = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/gbuffer.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/gbuffer.frag"
+        );
+
         // World Coordinates
         objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -446,7 +456,7 @@ namespace scenes {
         setMat4(shader, "lightSpace", lightSpace);
         setInt(shader, "depthMap", 3);
         setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
-        setMaterial(shader, "m1", materials::instance().concrete);
+        setMaterial(shader, "m1", materials::concrete);
 
         setPointLight(shader, "p1", myLight->getLight());
         floor.draw(shader, floorModel);
@@ -535,7 +545,6 @@ namespace scenes {
         setFloat(shader, "far_plane", 25.0f);
 
         setFloat(instanceShader, "skyboxIntensity", skyboxIntensity);
-        setPointLight(instanceShader, "p1", myLight->getLight());
         shapes::instance().cubeInstanced.draw(instanceShader, totalCubes);
 
         // Floor
@@ -554,7 +563,7 @@ namespace scenes {
         setFloat(shader, "far_plane", 25.0f);
 
         setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
-        setMaterial(shader, "m1", materials::instance().concrete);
+        setMaterial(shader, "m1", materials::concrete);
 
         setPointLight(shader, "p1", myLight->getLight());
 
@@ -587,40 +596,38 @@ namespace scenes {
 
     void scene1::render_lights() const {
 
-        glDepthMask(GL_TRUE);
+        const glm::mat4& projection = camera::instance().getPerspective();
+        const glm::mat4& view = camera::instance().getView();
+
+        // glDepthMask(GL_TRUE);
         glEnable(GL_CULL_FACE);
 
         // Light-Source
-        myLight->update(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
+        myLight->update(projection, view, lightModel);
         myLight->draw(lightShader);
-
     }
 
     void scene1::render_g_buffer() const {
 
-        glDepthMask(GL_TRUE);
-        glEnable(GL_CULL_FACE);
+        unsigned int shader = 0;
 
         const glm::mat4& projection = camera::instance().getPerspective();
         const glm::mat4& view = camera::instance().getView();
 
-        glUseProgram(gbufferShader);
-
-        setMat4(gbufferShader, "projection", projection);
-        setMat4(gbufferShader, "view", view);
-        setMat4(gbufferShader, "model", objectModel);
-        setMat3(gbufferShader, "normalModel", glm::transpose(glm::inverse(glm::mat3(objectModel))));
-        
         // Object
-        setInt(gbufferShader, "texture1", 0);
-        setInt(gbufferShader, "texture2", 1);
+        shapes::instance().cube.draw_gbuffer(gbufferShader, objectModel);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, wood.getID());
+        // Multiple Cubes
+        shapes::instance().cubeInstanced.draw_gbuffer(gbufferInstanced, totalCubes);
 
-        glBindVertexArray(shapes::instance().cube.VAO);
-        glDrawElements(GL_TRIANGLES, shapes::instance().cube.indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
-        glBindVertexArray(0);
+        // Floor
+        floor.draw_gbuffer(gbufferPlanes, floorModel);
+
+        // Model
+        cube1->draw_gbuffer(gbufferShader, cubeModel);
+
+        // Window
+        shapes::instance().square.draw_gbuffer(gbufferPlanes, windowModel);
     }
 
     void scene1::render_transparent() const {
@@ -639,9 +646,6 @@ namespace scenes {
         // Plane
         shader = pointShadowPlanes;
         glUseProgram(shader);
-        setMat4(shader, "lightSpace", lightSpace);
-        setInt(shader, "depthMap", 3);
-        setPointLight(shader, "p1", myLight->getLight());
         shapes::instance().square.draw(shader, windowModel);
     }
 
