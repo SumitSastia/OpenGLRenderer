@@ -565,8 +565,6 @@ namespace scenes {
         setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
         setMaterial(shader, "m1", materials::concrete);
 
-        setPointLight(shader, "p1", myLight->getLight());
-
         floor.draw(shader, floorModel);
 
         // Skybox
@@ -678,6 +676,21 @@ namespace scenes {
         // Plane
         shader = pointShadowPlanes;
         glUseProgram(shader);
+
+        setInt(shader, "lights_count", lights_count);
+
+        for (unsigned int i = 0; i < lights_count; i++) {
+
+            setInt(shader, ("depthCubeMap[" + std::to_string(i) + "]").c_str(), i);
+            setVec3(shader, ("lightPos[" + std::to_string(i) + "]").c_str(), lights[i]->getPosition());
+            setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]->getLight());
+        }
+
+        setFloat(shader, "far_plane", 25.0f);
+
+        setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
+        setMaterial(shader, "m1", materials::concrete);
+
         shapes::instance().square.draw(shader, windowModel);
     }
 

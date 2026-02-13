@@ -115,7 +115,7 @@ int main(){
     // GL TWEAKS ----------------------------------------------------------------------//
     
     // glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -238,9 +238,12 @@ int main(){
         // Rendering FrameBufferTexture
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // mainFrame->render();
+        mainFrame->render();
 
         // Lighting Pass
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+
         scene1.render_final(g_buffer);
         
         glBindFramebuffer(GL_READ_FRAMEBUFFER, g_buffer->fbo);
@@ -253,7 +256,12 @@ int main(){
             GL_NEAREST
         );
         
+        glEnable(GL_DEPTH_TEST);
         scene1.render_lights();
+
+        glEnable(GL_BLEND);
+        scene1.render_transparent();
+        glDisable(GL_BLEND);
 
         // Safety
         glUseProgram(0);
