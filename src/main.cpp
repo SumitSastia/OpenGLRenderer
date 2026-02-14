@@ -143,6 +143,8 @@ int main(){
     scenes::scene1 scene1{};
     scene1.init();
 
+    scenes::scene2 scene2{};
+
     // FRAMEBUFFERS -----------------------------------------------------------------------//
 
     const unsigned int shadowWidth = 1024;
@@ -243,8 +245,6 @@ int main(){
         // Lighting Pass
         glDisable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
-
-        scene1.render_final(g_buffer);
         
         glBindFramebuffer(GL_READ_FRAMEBUFFER, g_buffer->fbo);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -255,13 +255,14 @@ int main(){
             GL_DEPTH_BUFFER_BIT,
             GL_NEAREST
         );
+
+        scene1.render_final(g_buffer);
         
         glEnable(GL_DEPTH_TEST);
         scene1.render_lights();
-
-        glEnable(GL_BLEND);
         scene1.render_transparent();
-        glDisable(GL_BLEND);
+
+        scene2.render();
 
         // Safety
         glUseProgram(0);

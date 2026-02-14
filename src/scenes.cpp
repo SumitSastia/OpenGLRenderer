@@ -526,7 +526,6 @@ namespace scenes {
         setFloat(shader, "far_plane", 25.0f);
 
         setFloat(shader, "skyboxIntensity", skyboxIntensity);
-        setPointLight(shader, "p1", myLight->getLight());
         shapes::instance().cube.draw(shader, objectModel);
 
         // Multiple Cubes
@@ -603,6 +602,28 @@ namespace scenes {
 
         light2->update(projection, view, lightModel2);
         light2->draw(lightShader);
+
+        // Skybox
+        if (skybox_isVisible) {
+
+            glDepthFunc(GL_LEQUAL);
+            glDepthMask(GL_FALSE);
+            glDisable(GL_CULL_FACE);
+            glUseProgram(cubemapShader);
+
+            setMat4(cubemapShader, "projection", camera::instance().getPerspective());
+            setMat4(cubemapShader, "view", glm::mat4(glm::mat3(camera::instance().getView())));
+            setInt(cubemapShader, "cubeMap", 2);
+
+            glBindVertexArray(skybox->get_VAO());
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->get_ID());
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            glDepthFunc(GL_LESS);
+            glDepthMask(GL_TRUE);
+            glEnable(GL_CULL_FACE);
+        }
     }
 
     void scene1::render_g_buffer() const {
@@ -635,6 +656,7 @@ namespace scenes {
         glUseProgram(shader);
         setInt(shader, "lights_count", lights_count);
         setFloat(shader, "far_plane", 25.0f);
+        setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
 
         for (unsigned int i = 0; i < lights_count; i++) {
 
@@ -643,12 +665,8 @@ namespace scenes {
 
             setVec3(shader, ("lights[" + std::to_string(i) + "].position").c_str(), lights[i]->getPosition());
             setVec3(shader, ("lights[" + std::to_string(i) + "].color").c_str(), lights[i]->getLightColor());
-            // setInt(shader, ("lights[" + std::to_string(i) + "].depthMap").c_str(), i);
             setInt(shader, ("depthCubeMap[" + std::to_string(i) + "]").c_str(), i);
         }
-
-        // setVec3(shader, "lights[0].position", lights[0]->getPosition());
-        // setVec3(shader, "lights[0].color", lights[0]->getLightColor());
 
         setInt(shader, "gPosition", 0);
         setInt(shader, "gNormal", 1);
@@ -657,10 +675,12 @@ namespace scenes {
         setVec3(shader, "viewPos", camera::instance().getPos());
 
         _g_buffer->render();
-        // render_transparent();
+        
     }
 
     void scene1::render_transparent() const {
+
+        glEnable(GL_BLEND);
 
         unsigned int shader = 0;
 
@@ -692,6 +712,8 @@ namespace scenes {
         setMaterial(shader, "m1", materials::concrete);
 
         shapes::instance().square.draw(shader, windowModel);
+
+        glDisable(GL_BLEND);
     }
 
     void scene1::destroy() const {
@@ -710,5 +732,33 @@ namespace scenes {
         for (auto& ptr : light_frames) delete ptr;
 
         delete[] cubePositions;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    void scene2::init() {
+
+        textureCube_Shader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/textureCube/texture2.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/textureCube/texture2.frag"
+        );
+
+        wall_model = glm::translate(glm::mat4(1.0f), glm::vec3(-7.5f, 0.0f, 0.0f));
+        wall_model = glm::scale(wall_model, glm::vec3(0.2f, 3.0f, 7.5f));
+
+        cube_model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.5, 0.0f, 0.0f));
+
+        wall = shapes::instance().cube;
+
+        wall.loadTexture(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wall.png",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wall.png"
+        );
+    }
+
+    void scene2::render() const {
+
+        wall.draw(textureCube_Shader, wall_model);
+        shapes::instance().cube.draw(textureCube_Shader, cube_model);
     }
 }

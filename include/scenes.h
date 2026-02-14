@@ -108,4 +108,29 @@ namespace scenes {
 
 		void destroy() const;
 	};
+
+	class scene2 {
+
+		unsigned int textureCube_Shader;
+
+		shape wall;
+
+		glm::mat4 wall_model;
+		glm::mat4 cube_model;
+
+	public:
+
+		scene2() {
+			this->init();
+		}
+
+		void init();
+		void input_handler();
+
+		void update(const float& delta_time);
+
+		void render() const;
+
+		void destroy();
+	};
 }

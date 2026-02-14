@@ -23,6 +23,8 @@ uniform light lights[MAX_LIGHTS];
 uniform samplerCube depthCubeMap[MAX_LIGHTS];
 uniform vec3 viewPos;
 
+uniform float skyboxIntensity;
+
 float init_shadow(vec3 vPos, samplerCube depthCubeMap, vec3 lightPos) {
 
     vec3 fragToLight = vPos - lightPos;
@@ -90,7 +92,7 @@ void main() {
 	float specular = texture(gTexture, vTexCords).a;
 
 	// Ambient Lighting
-	vec3 ambient = albedo * 0.2;
+	vec3 ambient = albedo * skyboxIntensity;
 
 	vec3 finalColor = vec3(0.0);
 	vec3 lightColors[MAX_LIGHTS];
