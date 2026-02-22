@@ -48,8 +48,6 @@ namespace scenes {
 
 		// World Space Models
 		glm::mat4 objectModel;
-		glm::mat4 lightModel;
-		glm::mat4 lightModel2;
 		glm::mat4 cubeModel;
 		glm::mat4 floorModel;
 		glm::mat4 windowModel;
@@ -88,6 +86,7 @@ namespace scenes {
 
 		models::model3D* getCube() const { return cube1; }
 		std::vector <lights::lightSource*> getLights() const { return lights; }
+		unsigned int getGbufferShader() const { return gbufferShader; }
 
 		void init();
 		void input_handler(GLFWwindow* window);
@@ -113,7 +112,7 @@ namespace scenes {
 
 		unsigned int textureCube_Shader;
 
-		shape wall;
+		specShape wall;
 
 		glm::mat4 wall_model;
 		glm::mat4 cube_model;
@@ -129,7 +128,7 @@ namespace scenes {
 
 		void update(const float& delta_time);
 
-		void render() const;
+		void render(const unsigned int& shader) const;
 
 		void destroy();
 	};

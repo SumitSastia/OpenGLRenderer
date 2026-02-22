@@ -4,11 +4,58 @@
 
 #define shadowSize 1024
 
+namespace gfx::internal {
+
+	class screen {
+		
+	public:
+		static unsigned int vbo, vao;
+
+		screen() {
+			const float vertices[] = {
+
+				// Position  // Cords
+				-1.0f, 1.0f, 0.0f, 1.0f,
+				 1.0f, 1.0f, 1.0f, 1.0f,
+				-1.0f,-1.0f, 0.0f, 0.0f,
+
+				 1.0f, 1.0f, 1.0f, 1.0f,
+				 1.0f,-1.0f, 1.0f, 0.0f,
+				-1.0f,-1.0f, 0.0f, 0.0f
+			};
+
+			glGenBuffers(1, &vbo);
+			glGenVertexArrays(1, &vao);
+
+			glBindVertexArray(vao);
+
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+			glEnableVertexAttribArray(1);
+
+			glBindVertexArray(0);
+		}
+
+		static screen& instance() {
+
+			static screen instance {};
+			return instance;
+		}
+	};
+}
+
 namespace frameBuffers {
+
+	const unsigned int get_defaultVAO();
 
 	struct frameBuffer {
 
-		unsigned int fbo, rbo, vbo, vao;
+		unsigned int fbo, rbo;
 		unsigned int texture_id;
 		unsigned int shader;
 
@@ -66,7 +113,7 @@ namespace frameBuffers {
 	// Deferred Shading
 	struct g_buffer {
 
-		unsigned int fbo, rbo, vbo, vao;
+		unsigned int fbo, rbo;
 		unsigned int gPosition, gNormal, gTexture;
 
 		unsigned int attachments[3];
@@ -78,5 +125,11 @@ namespace frameBuffers {
 		void render() const;
 
 		const unsigned int get_shader() const { return shader; }
+	};
+
+	struct ssao {
+
+		unsigned int fbo;
+		unsigned int texture_id;
 	};
 }

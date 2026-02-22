@@ -45,22 +45,30 @@ struct shape {
     unsigned int indicesCount;
 
     texture shapeDiffuseTexture;
-    texture shapeSpecularTexture;
-
-    ~shape();
 
     void bindVertices(
         const float* vertices, const size_t& size_v,
         const unsigned int* indices, const size_t& size_i
     );
 
-    void loadTexture(const char* diffusePath, const char* specularPath);
+    void loadTexture(const char* diffusePath);
     void draw(const unsigned int& shader, const glm::mat4& model) const;
     void draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const;
     void drawShadow() const;
 };
 
-struct shapeInstanced : shape {
+struct specShape : public shape {
+
+    texture shapeSpecularTexture;
+
+    ~specShape();
+
+    void loadTexture(const char* diffusePath, const char* specularPath);
+    void draw(const unsigned int& shader, const glm::mat4& model) const;
+    void draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const;
+};
+
+struct shapeInstanced : specShape {
 
     void bindVertices(
         const float* vertices, const size_t& size_v,
@@ -76,7 +84,7 @@ struct shapeInstanced : shape {
 struct shapes {
 
     shape2D square;
-    shape cube;
+    specShape cube;
     shapeInstanced cubeInstanced;
 
     shapes();

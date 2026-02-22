@@ -20,4 +20,7 @@ void main() {
 
 	gTexture.rgb = texture(texture1, vTexCords).rgb;
 	gTexture.a = texture(texture2, vTexCords).r;
+
+	gTexture = vec4(vec3(0.9), 1.0);
+
 }

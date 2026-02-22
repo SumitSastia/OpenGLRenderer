@@ -66,33 +66,24 @@ namespace lights {
     class lightSource {
 
         pointLight src;
-        shape srcShape;
+        specShape srcShape;
 
-        glm::mat4 projection;
-        glm::mat4 view;
         glm::mat4 model;
 
     public:
 
-        lightSource(
-            const glm::mat4& projection,
-            const glm::mat4& view,
-            const glm::mat4& model
-        );
+        lightSource(const glm::mat4& model);
 
         void setLightColor(const glm::vec3& color);
         void setPosition(const glm::vec3& position);
 
-        glm::vec3 getPosition() const { return src.position; }
-        glm::vec3 getLightColor() const { return src.color; }
         const pointLight& getLight() const { return src; }
 
-        void update(
-            const glm::mat4& projection,
-            const glm::mat4& view,
-            const glm::mat4& model
-        );
+        glm::vec3 getPosition() const { return src.position; }
+        glm::vec3 getLightColor() const { return src.color; }
+        glm::mat4 getModel() const { return model; }
 
+        void update(const glm::mat4& model);
         void draw(const unsigned int& shader) const;
     };
 }

@@ -75,17 +75,12 @@ namespace lights {
 
     //-------------------------------------------------------------------------------------//
 
-    lightSource::lightSource(
-        const glm::mat4& projection,
-        const glm::mat4& view,
-        const glm::mat4& model
-    ) :
-        projection(projection),
-        view(view),
-        model(model) {
+    lightSource::lightSource(const glm::mat4& model) : model(model) {
 
         src = lights::instance().cubelight;
         srcShape = shapes::instance().cube;
+
+        src.position = glm::vec3(model[3]);
     }
 
     void lightSource::setLightColor(const glm::vec3& color) {
@@ -96,15 +91,9 @@ namespace lights {
         src.position = position;
     }
 
-    void lightSource::update(
-        const glm::mat4& projection,
-        const glm::mat4& view,
-        const glm::mat4& model
-    ) {
-        this->projection = projection;
-        this->view = view;
-        this->model = model;
+    void lightSource::update(const glm::mat4& model) {
 
+        this->model = model;
         src.position = glm::vec3(model[3]);
     }
 
@@ -112,7 +101,7 @@ namespace lights {
 
         glUseProgram(shader);
 
-        setMat4(shader, "finalMatrix", projection * view * model);
+        setMat4(shader, "finalMatrix", camera::instance().getPerspective() * camera::instance().getView() * model);
         setVec3(shader, "lightColor", src.color);
 
         glBindVertexArray(srcShape.VAO);

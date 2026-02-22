@@ -93,12 +93,6 @@ namespace scenes {
         // World Coordinates
         objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
-        lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -3.0f));
-        lightModel = glm::scale(lightModel, glm::vec3(0.5f));
-
-        lightModel2 = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 1.5f, 3.0f));
-        lightModel2 = glm::scale(lightModel2, glm::vec3(0.5f));
-
         cubeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 7.0f));
         cubeModel = glm::scale(cubeModel, glm::vec3(0.75f));
 
@@ -108,7 +102,6 @@ namespace scenes {
         floorModel = glm::rotate(floorModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         floorModel = glm::scale(floorModel, glm::vec3(25.0f));
 
-        worldModels.push_back(&lightModel);
         worldModels.push_back(&objectModel);
         worldModels.push_back(&cubeModel);
         worldModels.push_back(&windowModel);
@@ -116,13 +109,19 @@ namespace scenes {
         // Light-Source
         lights_count = 2;
 
-        myLight = new lights::lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel);
+        glm::mat4 lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -3.0f));
+        lightModel = glm::scale(lightModel, glm::vec3(0.5f));
+
+        myLight = new lights::lightSource(lightModel);
         myLight->setLightColor(colors::yellow);
         myLight->setPosition(lightModel[3]);
 
-        light2 = new lights::lightSource(camera::instance().getPerspective(), camera::instance().getView(), lightModel2);
+        lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 1.5f, 3.0f));
+        lightModel = glm::scale(lightModel, glm::vec3(0.5f));
+
+        light2 = new lights::lightSource(lightModel);
         light2->setLightColor(colors::pink);
-        light2->setPosition(lightModel2[3]);
+        light2->setPosition(lightModel[3]);
 
         lights.push_back(myLight);
         lights.push_back(light2);
@@ -250,6 +249,8 @@ namespace scenes {
         light_frames.push_back(new frameBuffers::pointShadow_frame());
         light_frames.push_back(new frameBuffers::pointShadow_frame());
 
+        // ShadowRendering
+        this->render_pointShadow();
     }
 
     void scene1::input_handler(GLFWwindow* window) {
@@ -304,8 +305,19 @@ namespace scenes {
         // Light-Rotater
         if (glfwGetKey(window, GLFW_KEY_KP_5)) {
 
-            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel;
-            lightModel2 = glm::rotate(glm::mat4(1.0f), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel2;
+            const float rotation_speed = 2.0f;
+
+            glm::mat4 lightModel = lights[0]->getModel();
+
+            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotation_speed), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel;
+            lights[0]->update(lightModel);
+
+            lightModel = lights[1]->getModel();
+
+            lightModel = glm::rotate(glm::mat4(1.0f), glm::radians(rotation_speed), glm::vec3(0.0f, 1.0f, 0.0f)) * lightModel;
+            lights[1]->update(lightModel);
+
+            this->render_pointShadow();
 
             /*const glm::vec3 newLightPos = glm::vec3(lightModel[3]);
 
@@ -421,19 +433,16 @@ namespace scenes {
 
         lights::lights::instance().update();
 
-        // Light-Source
-        myLight->update(projection, view, lightModel);
-        myLight->draw(lightShader);
 
         // Object
         shader = textureShader;
         glUseProgram(shader);
-        setMat4(shader, "lightSpace", lightSpace);
-        setInt(shader, "depthMap", 3);
-
-        setFloat(shader, "skyboxIntensity", skyboxIntensity);
-        setPointLight(shader, "p1", myLight->getLight());
-        shapes::instance().cube.draw(shader, objectModel);
+        // setMat4(shader, "lightSpace", lightSpace);
+        // setInt(shader, "depthMap", 3);
+        // 
+        // setFloat(shader, "skyboxIntensity", skyboxIntensity);
+        // setPointLight(shader, "p1", myLight->getLight());
+        // shapes::instance().cube.draw(shader, objectModel);
 
         // Multiple Cubes
         /*glUseProgram(instanceShader);
@@ -451,15 +460,15 @@ namespace scenes {
         // cc1->render();
 
         // Floor
-        shader = pointShadowPlanes;
-        glUseProgram(shader);
-        setMat4(shader, "lightSpace", lightSpace);
-        setInt(shader, "depthMap", 3);
-        setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
-        setMaterial(shader, "m1", materials::concrete);
-
-        setPointLight(shader, "p1", myLight->getLight());
-        floor.draw(shader, floorModel);
+        // shader = pointShadowPlanes;
+        // glUseProgram(shader);
+        // setMat4(shader, "lightSpace", lightSpace);
+        // setInt(shader, "depthMap", 3);
+        // setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
+        // setMaterial(shader, "m1", materials::concrete);
+        // 
+        // setPointLight(shader, "p1", myLight->getLight());
+        // floor.draw(shader, floorModel);
 
         // Skybox
         if (skybox_isVisible) {
@@ -505,11 +514,9 @@ namespace scenes {
         lights::lights::instance().update();
 
         // Light-Source
-        myLight->update(projection, view, lightModel);
-        myLight->draw(lightShader);
-
-        light2->update(projection, view, lightModel2);
-        light2->draw(lightShader);
+        for (unsigned int i = 0; i < lights_count; i++) {
+            lights[i]->draw(lightShader);
+        }
 
         // Object
         shader = textureShader;
@@ -597,11 +604,9 @@ namespace scenes {
         const glm::mat4& view = camera::instance().getView();
 
         // Light-Source
-        myLight->update(projection, view, lightModel);
-        myLight->draw(lightShader);
-
-        light2->update(projection, view, lightModel2);
-        light2->draw(lightShader);
+        for (unsigned int i = 0; i < lights_count; i++) {
+            lights[i]->draw(lightShader);
+        }
 
         // Skybox
         if (skybox_isVisible) {
@@ -645,8 +650,6 @@ namespace scenes {
         // Model
         cube1->draw_gbuffer(gbufferShader, cubeModel);
 
-        // Window
-        // shapes::instance().square.draw_gbuffer(gbufferPlanes, windowModel);
     }
 
     void scene1::render_final(const frameBuffers::g_buffer* _g_buffer) const {
@@ -673,6 +676,7 @@ namespace scenes {
         setInt(shader, "gTexture", 2);
 
         setVec3(shader, "viewPos", camera::instance().getPos());
+        lights::setSpotLight(shader, "torch", lights::lights::instance().flashlight);
 
         _g_buffer->render();
         
@@ -756,9 +760,9 @@ namespace scenes {
         );
     }
 
-    void scene2::render() const {
+    void scene2::render(const unsigned int& shader) const {
 
-        wall.draw(textureCube_Shader, wall_model);
-        shapes::instance().cube.draw(textureCube_Shader, cube_model);
+        wall.draw_gbuffer(shader, wall_model);
+        shapes::instance().cube.draw_gbuffer(shader, cube_model);
     }
 }

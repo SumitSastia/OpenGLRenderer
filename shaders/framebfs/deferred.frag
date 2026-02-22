@@ -8,7 +8,21 @@ const int MAX_LIGHTS = 16;
 struct light {
 	vec3 position;
 	vec3 color;
-	// samplerCube depthMap;
+};
+
+struct spotLight{
+    vec3 position;
+    vec3 direction;
+    vec3 color;
+
+    bool isVisible;
+
+    float cutOffangle;
+    float outerCutOff;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 // Binded in g_buffer::render()
@@ -24,6 +38,7 @@ uniform samplerCube depthCubeMap[MAX_LIGHTS];
 uniform vec3 viewPos;
 
 uniform float skyboxIntensity;
+uniform spotLight torch;
 
 float init_shadow(vec3 vPos, samplerCube depthCubeMap, vec3 lightPos) {
 
@@ -83,29 +98,65 @@ vec3 init_pointLight(light currentLight, vec3 normal, vec3 fragPos, vec3 albedo,
 	return lightColor;
 }
 
+vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 t1, vec3 t2){
+
+    vec3 lightDirection = normalize(sl.position - vPos);
+
+    float theta = dot(lightDirection, normalize(-sl.direction));
+
+    // Diffuse
+    float diff = max(dot(normal, lightDirection), 0.0);
+    vec3 diffuseLight = diff * t1 * sl.color;
+
+    return diffuseLight;
+
+    // Specular
+    vec3 viewDirection = normalize(viewPos - vPos);
+    vec3 reflectDirection = reflect(-lightDirection, normal);
+
+    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32.0);
+    vec3 specularLight = spec * t2 * sl.color;
+
+    // Attenuation
+    float fragDistance = length(sl.position - vPos);
+    float attenuation = 1.0 / (sl.constant + sl.linear*fragDistance + sl.quadratic*fragDistance*fragDistance);
+
+    // Smooth-Edge
+    float epsilon = sl.cutOffangle - sl.outerCutOff;
+    float intensity = clamp((theta - sl.outerCutOff) / epsilon, 0.0, 1.0);
+
+    return (attenuation * intensity * vec3(diffuseLight + specularLight));
+}
+
 void main() {
 
 	vec3 fragPos = texture(gPosition, vTexCords).rgb;
 	vec3 normal = texture(gNormal, vTexCords).rgb;
-	vec3 albedo = texture(gTexture, vTexCords).rgb;
-
+	vec3 albedo = texture(gTexture, vTexCords).rgb;	
+	
 	float specular = texture(gTexture, vTexCords).a;
-
+	
 	// Ambient Lighting
 	vec3 ambient = albedo * skyboxIntensity;
-
+	
 	vec3 finalColor = vec3(0.0);
 	vec3 lightColors[MAX_LIGHTS];
-
+	
 	for (int i = 0; i < lights_count; i++) {
-
+	
 		lightColors[i] = init_pointLight(lights[i], normal, fragPos, albedo, specular);
         lightColors[i] *= (1.0 - init_shadow(fragPos, depthCubeMap[i], lights[i].position));
 	}
-
+	
 	for (int i = 0; i < lights_count; i++) {
         finalColor += lightColors[i];
     }
 
+	if (torch.isVisible) {
+		finalColor += init_spotLight(torch, normal, fragPos, albedo, albedo);
+	}
+	
 	FragColor = vec4(ambient + finalColor, 1.0);
+
+	// FragColor = vec4(albedo, 1.0);
 }

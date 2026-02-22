@@ -215,7 +215,7 @@ int main(){
         // Rendering //
 
         // Rendering CubeMap Shadows
-        scene1.render_pointShadow();
+        // scene1.render_pointShadow();
 
         // Rendering Scene in FrameBuffer
         // glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
@@ -233,6 +233,7 @@ int main(){
         // Main Scene
         // scene1.render_with_pointLight();
         scene1.render_g_buffer();
+        scene2.render(scene1.getGbufferShader());       
 
         // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -240,7 +241,7 @@ int main(){
         // Rendering FrameBufferTexture
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        mainFrame->render();
+        // mainFrame->render();
 
         // Lighting Pass
         glDisable(GL_BLEND);
@@ -262,7 +263,7 @@ int main(){
         scene1.render_lights();
         scene1.render_transparent();
 
-        scene2.render();
+        // scene2.render();
 
         // Safety
         glUseProgram(0);

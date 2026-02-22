@@ -207,7 +207,7 @@ void shape2D::drawShadow() const {
 
 //-------------------------------------------------------------------------------------//
 
-shape::~shape() {
+specShape::~specShape() {
 
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -247,13 +247,70 @@ void shape::bindVertices(
     glBindVertexArray(0);
 }
 
-void shape::loadTexture(const char* diffusePath, const char* specularPath) {
+void shape::loadTexture(const char* diffusePath) {
+    shapeDiffuseTexture.load(diffusePath);
+}
+
+void shape::draw(const unsigned int& shader, const glm::mat4& model) const {
+
+    glUseProgram(shader);
+
+    setMat4(shader, "finalMatrix", camera::instance().getPerspective() * camera::instance().getView() * model);
+    setMat4(shader, "model", model);
+    setMat3(shader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model))));
+    setVec3(shader, "viewPos", camera::instance().getPos());
+
+    setMaterial(shader, "m1");
+    setSpotLight(shader, "s1", lights::lights::instance().flashlight);
+
+    setInt(shader, "texture1", 0);
+    setInt(shader, "texture2", 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, shapeDiffuseTexture.getID());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, shapeDiffuseTexture.getID());
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+    glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void shape::draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const {
+
+    glUseProgram(shader);
+
+    setMat4(shader, "projection", camera::instance().getPerspective());
+    setMat4(shader, "view", camera::instance().getView());
+    setMat4(shader, "model", model);
+    setMat3(shader, "normalModel", glm::transpose(glm::inverse(glm::mat3(model))));
+
+    setInt(shader, "texture1", 0);
+    setInt(shader, "texture2", 1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, shapeDiffuseTexture.getID());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, shapeDiffuseTexture.getID());
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (void*)(0 * sizeof(float)));
+    glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void specShape::loadTexture(const char* diffusePath, const char* specularPath) {
 
     shapeDiffuseTexture.load(diffusePath);
     shapeSpecularTexture.load(specularPath);
 }
 
-void shape::draw(const unsigned int& shader, const glm::mat4& model) const {
+void specShape::draw(const unsigned int& shader, const glm::mat4& model) const {
 
     glUseProgram(shader);
 
@@ -281,7 +338,7 @@ void shape::draw(const unsigned int& shader, const glm::mat4& model) const {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void shape::draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const {
+void specShape::draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const {
 
     glUseProgram(shader);
 

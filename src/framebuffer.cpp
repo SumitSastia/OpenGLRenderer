@@ -3,7 +3,14 @@
 #include <lights.h>
 #include <camera.h>
 
+unsigned int gfx::internal::screen::vbo = 0;
+unsigned int gfx::internal::screen::vao = 0;
+
 namespace frameBuffers {
+    
+    const unsigned int get_defaultVAO() {
+        return gfx::internal::screen::instance().vao;
+    }
 
     HDR_frame::HDR_frame(const int& frameWidth, const int& frameHeight) {
 
@@ -34,37 +41,6 @@ namespace frameBuffers {
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             std::cerr << "ERROR :: UNABLE TO COMPLETE HDR-FRAME-BUFFER!" << std::endl;
         }
-        else {
-
-            // Vertices Binding
-            const float vertices[] = {
-
-                // Position  // Cords
-                -1.0f, 1.0f, 0.0f, 1.0f,
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f,
-
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                 1.0f,-1.0f, 1.0f, 0.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f
-            };
-
-            glGenBuffers(1, &vbo);
-            glGenVertexArrays(1, &vao);
-
-            glBindVertexArray(vao);
-
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
-            glBindVertexArray(0);
-        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -88,7 +64,7 @@ namespace frameBuffers {
         setBool(shader, "normalRender", true);
         setMat4(shader, "model", glm::mat4(1.0f));
 
-        glBindVertexArray(vao);
+        glBindVertexArray(get_defaultVAO());
 
         glBindTexture(GL_TEXTURE_2D, texture_id);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -137,37 +113,6 @@ namespace frameBuffers {
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             std::cerr << "ERROR :: UNABLE TO COMPLETE BLOOM-FRAME-BUFFER!" << std::endl;
         }
-        else {
-
-            // Vertices Binding
-            const float vertices[] = {
-
-                // Position  // Cords
-                -1.0f, 1.0f, 0.0f, 1.0f,
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f,
-
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                 1.0f,-1.0f, 1.0f, 0.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f
-            };
-
-            glGenBuffers(1, &vbo);
-            glGenVertexArrays(1, &vao);
-
-            glBindVertexArray(vao);
-
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
-            glBindVertexArray(0);
-        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -202,7 +147,7 @@ namespace frameBuffers {
 
             glBindTexture(GL_TEXTURE_2D, first_itr ? colorBuffers[1] : _blur_frame.texture_buffers[!horizontal]);
 
-            glBindVertexArray(vao);
+            glBindVertexArray(get_defaultVAO());
             glDrawArrays(GL_TRIANGLES, 0, 6);
 
             horizontal = !horizontal;
@@ -218,7 +163,7 @@ namespace frameBuffers {
         setInt(shader, "screen", 0);
         setInt(shader, "bloom", 1);
 
-        glBindVertexArray(vao);
+        glBindVertexArray(get_defaultVAO());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
@@ -289,37 +234,6 @@ namespace frameBuffers {
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             std::cerr << "ERROR :: UNABLE TO COMPLETE DEFAULT-FRAME-BUFFER!" << std::endl;
         }
-        else {
-
-            // Vertices Binding
-            const float vertices[] = {
-
-                // Position  // Cords
-                -1.0f, 1.0f, 0.0f, 1.0f,
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f,
-
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                 1.0f,-1.0f, 1.0f, 0.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f
-            };
-
-            glGenBuffers(1, &vbo);
-            glGenVertexArrays(1, &vao);
-
-            glBindVertexArray(vao);
-
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
-            glBindVertexArray(0);
-        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -343,7 +257,7 @@ namespace frameBuffers {
         setBool(shader, "normalRender", true);
         setMat4(shader, "model", glm::mat4(1.0f));
 
-        glBindVertexArray(vao);
+        glBindVertexArray(get_defaultVAO());
 
         glBindTexture(GL_TEXTURE_2D, texture_id);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -399,6 +313,8 @@ namespace frameBuffers {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
         
         // Normal Buffer
@@ -433,37 +349,6 @@ namespace frameBuffers {
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             std::cout << "ERROR: G-Buffer incomplete!" << std::endl;
         }
-        else {
-
-            // Vertices Binding
-            const float vertices[] = {
-
-                // Position  // Cords
-                -1.0f, 1.0f, 0.0f, 1.0f,
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f,
-
-                 1.0f, 1.0f, 1.0f, 1.0f,
-                 1.0f,-1.0f, 1.0f, 0.0f,
-                -1.0f,-1.0f, 0.0f, 0.0f
-            };
-
-            glGenBuffers(1, &vbo);
-            glGenVertexArrays(1, &vao);
-
-            glBindVertexArray(vao);
-
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
-            glBindVertexArray(0);
-        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -481,7 +366,7 @@ namespace frameBuffers {
 
     void g_buffer::render() const {
 
-        glBindVertexArray(vao);
+        glBindVertexArray(get_defaultVAO());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
