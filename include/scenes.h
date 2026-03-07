@@ -98,12 +98,15 @@ namespace scenes {
 
 		void render_shadow(const unsigned int& shader) const;
 		void render_pointShadow() const;
-
+		
+		// Forward Rendering
 		void render_with_pointLight() const;
 
+		// Deferred Rendering
 		void render_lights() const;
 		void render_g_buffer() const;
 		void render_final(const frameBuffers::g_buffer* _g_buffer) const;
+		void renderSSAO(const frameBuffers::g_buffer* _g_buffer) const;
 
 		void destroy() const;
 	};

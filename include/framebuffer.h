@@ -117,12 +117,18 @@ namespace frameBuffers {
 		unsigned int gPosition, gNormal, gTexture;
 
 		unsigned int attachments[3];
-		unsigned int shader;
+		unsigned int shader, shaderSSAO;
 
 		g_buffer(const int& frameWidth, const int& frameHeight);
 
 		void init();
 		void render() const;
+		void renderSSAO() const;
+		void initSSAO() const;
+
+		int lerp(float a, float b, float f) const {
+			return (a + f * (b - a));
+		}
 
 		const unsigned int get_shader() const { return shader; }
 	};
@@ -131,5 +137,7 @@ namespace frameBuffers {
 
 		unsigned int fbo;
 		unsigned int texture_id;
+
+		ssao();
 	};
 }

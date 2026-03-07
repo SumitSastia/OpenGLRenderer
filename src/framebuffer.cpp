@@ -2,6 +2,7 @@
 #include <framebuffer.h>
 #include <lights.h>
 #include <camera.h>
+#include <random>
 
 unsigned int gfx::internal::screen::vbo = 0;
 unsigned int gfx::internal::screen::vao = 0;
@@ -362,6 +363,11 @@ namespace frameBuffers {
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/deferred.frag"
         );
+
+        shaderSSAO = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/ssao.frag"
+        );
     }
 
     void g_buffer::render() const {
@@ -378,5 +384,88 @@ namespace frameBuffers {
         glBindTexture(GL_TEXTURE_2D, gTexture);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    void g_buffer::initSSAO() const {
+
+        std::uniform_real_distribution <float> randomFloats(0.0, 1.0);
+        std::default_random_engine generator;
+        std::vector <glm::vec3> ssaoKernel;
+
+        for (unsigned int i = 0; i < 64; i++) {
+
+            glm::vec3 sample(
+                randomFloats(generator) * 2.0 - 1.0,
+                randomFloats(generator) * 2.0 - 1.0,
+                randomFloats(generator)
+            );
+
+            sample = glm::normalize(sample);
+            sample *= randomFloats(generator);
+
+            float scale = float(i) / 64.0f;
+            scale = lerp(0.1f, 1.0f, scale * scale);
+
+            sample *= scale;
+            ssaoKernel.push_back(sample);
+        }
+
+        std::vector <glm::vec3> ssaoNoise;
+
+        for (unsigned int i = 0; i < 16; i++) {
+
+            glm::vec3 noise(
+                randomFloats(generator) * 2.0 - 1.0,
+                randomFloats(generator) * 2.0 - 1.0,
+                0.0f
+            );
+
+            ssaoNoise.push_back(noise);
+        }
+
+        glUseProgram(shaderSSAO);
+
+        setMat4(shaderSSAO, "projection", camera::instance().getPerspective());
+
+        for (unsigned int i = 0; i < 64; i++) {
+            setVec3(shaderSSAO, ("samples[" + std::to_string(i) + "]").c_str(), ssaoKernel[i]);
+        }
+    }
+
+    void g_buffer::renderSSAO() const {
+
+        glUseProgram(shaderSSAO);
+
+        setInt(shaderSSAO, "gPosition", 0);
+        setInt(shaderSSAO, "gNormal", 1);
+        setInt(shaderSSAO, "gTexture", 2);
+
+        glBindVertexArray(get_defaultVAO());
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gPosition);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, gTexture);
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    ssao::ssao() {
+
+        glGenBuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+        glGenTextures(1, &texture_id);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WIN_W, WIN_H, 0, GL_RED, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }

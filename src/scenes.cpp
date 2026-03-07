@@ -1,5 +1,6 @@
 #include <scenes.h>
 #include <camera.h>
+#include <lights.h>
 #include <iostream>
 
 namespace scenes {
@@ -676,10 +677,22 @@ namespace scenes {
         setInt(shader, "gTexture", 2);
 
         setVec3(shader, "viewPos", camera::instance().getPos());
+        lights::lights::instance().update();
         lights::setSpotLight(shader, "torch", lights::lights::instance().flashlight);
 
-        _g_buffer->render();
-        
+        _g_buffer->render();  
+    }
+
+    void scene1::renderSSAO(const frameBuffers::g_buffer* _g_buffer) const {
+
+        const unsigned int shader = _g_buffer->shaderSSAO;
+
+        glUseProgram(shader);
+        setInt(shader, "gPosition", 0);
+        setInt(shader, "gNormal", 1);
+        setInt(shader, "gTexture", 2);
+
+        _g_buffer->renderSSAO();
     }
 
     void scene1::render_transparent() const {
@@ -738,7 +751,7 @@ namespace scenes {
         delete[] cubePositions;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
     void scene2::init() {
 

@@ -172,6 +172,9 @@ int main(){
 
     // G-Buffer
     frameBuffers::g_buffer* g_buffer = new frameBuffers::g_buffer(frameWidth, frameHeight);
+    frameBuffers::ssao* ssao_buffer = new frameBuffers::ssao();
+
+    g_buffer->initSSAO();
 
     // LOOP CONTROLLERS ---------------------------------------------------------------//
 
@@ -218,8 +221,8 @@ int main(){
         // scene1.render_pointShadow();
 
         // Rendering Scene in FrameBuffer
-        // glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, g_buffer->fbo);
+        // glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo); // Forward Renderer
+        glBindFramebuffer(GL_FRAMEBUFFER, g_buffer->fbo); // Deferred Renderer
 
         glViewport(0, 0, frameWidth, frameHeight);
         glEnable(GL_DEPTH_TEST);
@@ -231,9 +234,9 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Main Scene
-        // scene1.render_with_pointLight();
-        scene1.render_g_buffer();
-        scene2.render(scene1.getGbufferShader());       
+        // scene1.render_with_pointLight(); // Forward-Buffer
+        scene1.render_g_buffer(); // G-Buffer
+        // scene2.render(scene1.getGbufferShader());       
 
         // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -241,7 +244,7 @@ int main(){
         // Rendering FrameBufferTexture
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // mainFrame->render();
+        mainFrame->render();
 
         // Lighting Pass
         glDisable(GL_BLEND);
@@ -257,13 +260,12 @@ int main(){
             GL_NEAREST
         );
 
+        // Lightning Pass of Deferred Shading
         scene1.render_final(g_buffer);
-        
+
         glEnable(GL_DEPTH_TEST);
         scene1.render_lights();
         scene1.render_transparent();
-
-        // scene2.render();
 
         // Safety
         glUseProgram(0);

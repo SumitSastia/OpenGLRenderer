@@ -98,7 +98,7 @@ vec3 init_pointLight(light currentLight, vec3 normal, vec3 fragPos, vec3 albedo,
 	return lightColor;
 }
 
-vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 t1, vec3 t2){
+vec3 init_spotLight2(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1, vec3 t2){
 
     vec3 lightDirection = normalize(sl.position - vPos);
 
@@ -108,14 +108,12 @@ vec3 init_spotLight(spotLight sl, vec3 normal, vec3 vPos, vec3 t1, vec3 t2){
     float diff = max(dot(normal, lightDirection), 0.0);
     vec3 diffuseLight = diff * t1 * sl.color;
 
-    return diffuseLight;
-
     // Specular
     vec3 viewDirection = normalize(viewPos - vPos);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32.0);
-    vec3 specularLight = spec * t2 * sl.color;
+    vec3 specularLight = spec * t1 * sl.color;
 
     // Attenuation
     float fragDistance = length(sl.position - vPos);
@@ -153,10 +151,8 @@ void main() {
     }
 
 	if (torch.isVisible) {
-		finalColor += init_spotLight(torch, normal, fragPos, albedo, albedo);
+		finalColor += init_spotLight2(torch, normal, fragPos, viewPos, albedo, albedo);
 	}
 	
 	FragColor = vec4(ambient + finalColor, 1.0);
-
-	// FragColor = vec4(albedo, 1.0);
 }
