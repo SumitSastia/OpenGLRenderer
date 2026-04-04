@@ -25,7 +25,7 @@ namespace scenes {
 			gbufferShader,
 			gbufferInstanced,
 			gbufferPlanes
-			;
+		;
 
 		unsigned int
 			pointShadow_frame_shader;
@@ -113,12 +113,21 @@ namespace scenes {
 
 	class scene2 {
 
-		unsigned int textureCube_Shader;
+		unsigned int textureCube_Shader, gbufferPlanes;
+
+		// Light-Source
+		unsigned int lights_count;
+		std::vector <lights::lightSource*> lights;
+
+		// Floor
+		shape2D floor;
 
 		specShape wall;
 
-		glm::mat4 wall_model;
-		glm::mat4 cube_model;
+		glm::mat4 objectModel;
+		glm::mat4 floorModel;
+		glm::mat4 wallModel;
+		glm::mat4 wallModel2;
 
 	public:
 
@@ -131,7 +140,8 @@ namespace scenes {
 
 		void update(const float& delta_time);
 
-		void render(const unsigned int& shader) const;
+		void render() const;
+		void render_final(const frameBuffers::g_buffer* _g_buffer) const;
 
 		void destroy();
 	};

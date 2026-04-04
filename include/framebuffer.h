@@ -1,6 +1,8 @@
 #pragma once
 
 #include <shader.h>
+#include <iostream>
+#include <vector>
 
 #define shadowSize 1024
 
@@ -113,31 +115,31 @@ namespace frameBuffers {
 	// Deferred Shading
 	struct g_buffer {
 
+		// Deferred
 		unsigned int fbo, rbo;
 		unsigned int gPosition, gNormal, gTexture;
 
 		unsigned int attachments[3];
-		unsigned int shader, shaderSSAO;
+		unsigned int shader;
+
+		// SSAO
+		unsigned int ssao_fbo;
+		unsigned int ssaoColorBuffer, noiseTexture;
+		unsigned int ssaoShader;
+
+		std::vector <glm::vec3> ssaoKernel;
 
 		g_buffer(const int& frameWidth, const int& frameHeight);
 
 		void init();
+		void initSSAO();
 		void render() const;
 		void renderSSAO() const;
-		void initSSAO() const;
 
 		int lerp(float a, float b, float f) const {
 			return (a + f * (b - a));
 		}
 
 		const unsigned int get_shader() const { return shader; }
-	};
-
-	struct ssao {
-
-		unsigned int fbo;
-		unsigned int texture_id;
-
-		ssao();
 	};
 }

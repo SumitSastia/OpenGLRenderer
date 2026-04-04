@@ -308,6 +308,7 @@ namespace frameBuffers {
         glGenTextures(1, &gPosition);
         glGenTextures(1, &gNormal);
         glGenTextures(1, &gTexture);
+        glGenTextures(1, &noiseTexture);
 
         // Position Buffer
         glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -354,23 +355,48 @@ namespace frameBuffers {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
+        // SSAO Initialization
+
+        glGenFramebuffers(1, &ssao_fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);
+
+        glGenTextures(1, &ssaoColorBuffer);
+        glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WIN_W, WIN_H, 0, GL_RED, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cout << "SSAO FBO incomplete!" << std::endl;
+        }
+
         this->init();
+        this->initSSAO();
     }
 
     void g_buffer::init() {
 
         shader = createShader(
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/deferred.frag"
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/ssao.frag"
         );
 
-        shaderSSAO = createShader(
+        ssaoShader = createShader(
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/ssao.frag"
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/ssao_final.frag"
         );
     }
 
     void g_buffer::render() const {
+
+        glUseProgram(shader);
+
+        setInt(shader, "gPosition", 0);
+        setInt(shader, "gNormal", 1);
+        setInt(shader, "gTexture", 2);
+        setInt(shader, "ssaoTexture", 3);
 
         glBindVertexArray(get_defaultVAO());
 
@@ -383,14 +409,16 @@ namespace frameBuffers {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, gTexture);
 
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    void g_buffer::initSSAO() const {
+    void g_buffer::initSSAO() {
 
         std::uniform_real_distribution <float> randomFloats(0.0, 1.0);
         std::default_random_engine generator;
-        std::vector <glm::vec3> ssaoKernel;
 
         for (unsigned int i = 0; i < 64; i++) {
 
@@ -423,49 +451,44 @@ namespace frameBuffers {
             ssaoNoise.push_back(noise);
         }
 
-        glUseProgram(shaderSSAO);
-
-        setMat4(shaderSSAO, "projection", camera::instance().getPerspective());
-
-        for (unsigned int i = 0; i < 64; i++) {
-            setVec3(shaderSSAO, ("samples[" + std::to_string(i) + "]").c_str(), ssaoKernel[i]);
-        }
+        // Noise Buffer
+        glBindTexture(GL_TEXTURE_2D, noiseTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
     void g_buffer::renderSSAO() const {
 
-        glUseProgram(shaderSSAO);
+        glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);
+        glViewport(0, 0, WIN_W, WIN_H);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        setInt(shaderSSAO, "gPosition", 0);
-        setInt(shaderSSAO, "gNormal", 1);
-        setInt(shaderSSAO, "gTexture", 2);
+        glUseProgram(ssaoShader);
+
+        // Send Kernal Rotations
+        for (unsigned int i = 0; i < 64; i++) {
+            setVec3(ssaoShader, ("samples[" + std::to_string(i) + "]").c_str(), ssaoKernel[i]);
+        }
+
+        setMat4(ssaoShader, "projection", camera::instance().getPerspective());
+
+        setInt(ssaoShader, "gPosition", 0);
+        setInt(ssaoShader, "gNormal", 1);
+        setInt(ssaoShader, "noiseTexture", 2);
 
         glBindVertexArray(get_defaultVAO());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
-
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, gNormal);
-
         glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, gTexture);
+        glBindTexture(GL_TEXTURE_2D, noiseTexture);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-
-    ssao::ssao() {
-
-        glGenBuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-        glGenTextures(1, &texture_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WIN_W, WIN_H, 0, GL_RED, GL_FLOAT, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
-
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }

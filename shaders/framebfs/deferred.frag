@@ -133,26 +133,27 @@ void main() {
 	vec3 albedo = texture(gTexture, vTexCords).rgb;	
 	
 	float specular = texture(gTexture, vTexCords).a;
+    FragColor = vec4(albedo, 1.0);
 	
 	// Ambient Lighting
-	vec3 ambient = albedo * skyboxIntensity;
-	
-	vec3 finalColor = vec3(0.0);
-	vec3 lightColors[MAX_LIGHTS];
-	
-	for (int i = 0; i < lights_count; i++) {
-	
-		lightColors[i] = init_pointLight(lights[i], normal, fragPos, albedo, specular);
-        lightColors[i] *= (1.0 - init_shadow(fragPos, depthCubeMap[i], lights[i].position));
-	}
-	
-	for (int i = 0; i < lights_count; i++) {
-        finalColor += lightColors[i];
-    }
-
-	if (torch.isVisible) {
-		finalColor += init_spotLight2(torch, normal, fragPos, viewPos, albedo, albedo);
-	}
-	
-	FragColor = vec4(ambient + finalColor, 1.0);
+	// vec3 ambient = albedo * skyboxIntensity;
+	// 
+	// vec3 finalColor = vec3(0.0);
+	// vec3 lightColors[MAX_LIGHTS];
+	// 
+	// for (int i = 0; i < lights_count; i++) {
+	// 
+	// 	lightColors[i] = init_pointLight(lights[i], normal, fragPos, albedo, specular);
+    //     lightColors[i] *= (1.0 - init_shadow(fragPos, depthCubeMap[i], lights[i].position));
+	// }
+	// 
+	// for (int i = 0; i < lights_count; i++) {
+    //     finalColor += lightColors[i];
+    // }
+    // 
+	// if (torch.isVisible) {
+	// 	finalColor += init_spotLight2(torch, normal, fragPos, viewPos, albedo, albedo);
+	// }
+	// 
+	// FragColor = vec4(ambient + finalColor, 1.0);
 }

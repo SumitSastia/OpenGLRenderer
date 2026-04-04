@@ -116,6 +116,8 @@ namespace materials {
     const material chrome   { glm::vec3(0.25f), glm::vec3(0.4f), glm::vec3(0.774f), 76.8f };
 }
 
+
+
 void setBool(const unsigned int& shaderProgram, const char* target, const bool& value);
 
 void setInt(const unsigned int &shaderProgram, const char* target, const int &value);

@@ -19,4 +19,6 @@ void main() {
 
 	gTexture.rgb = texture(texture1, vTexCords).rgb;
 	gTexture.a = texture(texture1, vTexCords).r;
+
+	gTexture.rgb = vec3(0.9);
 }

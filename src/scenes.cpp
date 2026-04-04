@@ -376,7 +376,7 @@ namespace scenes {
 
             const std::vector <glm::mat4> shadowMatrices = {
 
-            shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+            shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3( 1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
             shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
             shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
             shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
@@ -634,11 +634,6 @@ namespace scenes {
 
     void scene1::render_g_buffer() const {
 
-        unsigned int shader = 0;
-
-        const glm::mat4& projection = camera::instance().getPerspective();
-        const glm::mat4& view = camera::instance().getView();
-
         // Object
         shapes::instance().cube.draw_gbuffer(gbufferShader, objectModel);
 
@@ -685,7 +680,7 @@ namespace scenes {
 
     void scene1::renderSSAO(const frameBuffers::g_buffer* _g_buffer) const {
 
-        const unsigned int shader = _g_buffer->shaderSSAO;
+        const unsigned int shader = _g_buffer->ssaoShader;
 
         glUseProgram(shader);
         setInt(shader, "gPosition", 0);
@@ -755,27 +750,43 @@ namespace scenes {
 
     void scene2::init() {
 
-        textureCube_Shader = createShader(
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/textureCube/texture2.vert",
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/textureCube/texture2.frag"
+        gbufferPlanes = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/gbuffer.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/gbuffer.frag"
         );
 
-        wall_model = glm::translate(glm::mat4(1.0f), glm::vec3(-7.5f, 0.0f, 0.0f));
-        wall_model = glm::scale(wall_model, glm::vec3(0.2f, 3.0f, 7.5f));
+        objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
-        cube_model = glm::translate(glm::mat4(1.0f), glm::vec3(-6.5, 0.0f, 0.0f));
+        floorModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f));
+        floorModel = glm::scale(floorModel, glm::vec3(25.0f));
 
-        wall = shapes::instance().cube;
+        wallModel = floorModel;
+        wallModel2 = floorModel;
 
-        wall.loadTexture(
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wall.png",
-            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/wall.png"
-        );
+        wallModel = glm::translate(wallModel, glm::vec3(0.0f, 0.0f, -0.5f));
+        wallModel2 = glm::translate(wallModel2, glm::vec3(-0.5f, 0.0f, 0.0f));
+        wallModel2 = glm::rotate(wallModel2, glm::radians(90.0f),glm::vec3(0.0f, 1.0f, 0.0f));
+
+        floorModel = glm::rotate(floorModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        // Floor
+        floor = shapes::instance().square;
+        floor.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/brickwall.jpg");
+
+        glm::mat4 lightModel {};
     }
 
-    void scene2::render(const unsigned int& shader) const {
+    void scene2::render() const {
 
-        wall.draw_gbuffer(shader, wall_model);
-        shapes::instance().cube.draw_gbuffer(shader, cube_model);
+        // Floor
+        floor.draw_gbuffer(gbufferPlanes, floorModel);
+        floor.draw_gbuffer(gbufferPlanes, wallModel);
+        floor.draw_gbuffer(gbufferPlanes, wallModel2);
+    }
+
+    void scene2::render_final(const frameBuffers::g_buffer* _g_buffer) const {
+        
+        _g_buffer->renderSSAO();
+        _g_buffer->render();
     }
 }
