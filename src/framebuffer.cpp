@@ -378,6 +378,11 @@ namespace frameBuffers {
 
     void g_buffer::init() {
 
+        defaultShader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/deferred.frag"
+        );
+
         shader = createShader(
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/ssao.frag"
@@ -387,6 +392,28 @@ namespace frameBuffers {
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/default_fb.vert",
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/ssao_final.frag"
         );
+    }
+
+    void g_buffer::renderDefault() const {
+
+        glUseProgram(defaultShader);
+
+        setInt(defaultShader, "gPosition", 0);
+        setInt(defaultShader, "gNormal", 1);
+        setInt(defaultShader, "gTexture", 2);
+
+        glBindVertexArray(get_defaultVAO());
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gPosition);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, gNormal);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, gTexture);
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     void g_buffer::render() const {
@@ -474,6 +501,7 @@ namespace frameBuffers {
         }
 
         setMat4(ssaoShader, "projection", camera::instance().getPerspective());
+        setMat4(ssaoShader, "view", camera::instance().getView());
 
         setInt(ssaoShader, "gPosition", 0);
         setInt(ssaoShader, "gNormal", 1);

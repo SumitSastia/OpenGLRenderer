@@ -773,20 +773,139 @@ namespace scenes {
         floor = shapes::instance().square;
         floor.loadTexture("C:/Users/sumit/Documents/GitHub/OpenGLRenderer/assets/textures/brickwall.jpg");
 
-        glm::mat4 lightModel {};
+        cubeModel0 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+        cubeModel0 = glm::scale(cubeModel0, glm::vec3(0.75f));
+
+        cubeModel1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.80f, 0.0f));
+        cubeModel1 = glm::scale(cubeModel1, glm::vec3(0.75f));
+
+        gbuffer3D = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer.frag"
+        );
+
+        light_shader = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.frag"
+        );
+
+        lights_count = 1;
+
+        glm::mat4 lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -1.0f));
+        lightModel = glm::scale(lightModel, glm::vec3(0.5f));
+
+        lights::lightSource* myLight = new lights::lightSource(lightModel);
+        myLight->setLightColor(colors::yellow);
+        myLight->setPosition(lightModel[3]);
+
+        lights.push_back(myLight);
+
+        light_frames.push_back(new frameBuffers::pointShadow_frame());
+
+        float near = 1.0f;
+        float far = 25.0f;
+
+        shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, near, far);
+
+        this->render_pointShadow();
     }
 
-    void scene2::render() const {
+    void scene2::render_pointShadow() const {
+
+        const unsigned int& shader = pointShadowFrame_shader;
+
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LESS);
+            glDisable(GL_CULL_FACE);
+
+            for (unsigned int i = 0; i < lights_count; i++) {
+
+                const unsigned int currentFrame = light_frames[i]->fbo;
+                const glm::vec3 lightPos = lights[i]->getPosition();
+
+                const std::vector <glm::mat4> shadowMatrices = {
+
+                    shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+                    shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f,0.0f,0.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+                    shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,0.0f, 1.0f)),
+                    shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,-1.0f,0.0f), glm::vec3(0.0f,0.0f,-1.0f)),
+                    shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f, 1.0f), glm::vec3(0.0f,-1.0f,0.0f)),
+                    shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f,0.0f,-1.0f), glm::vec3(0.0f,-1.0f,0.0f))
+                };
+
+                glBindFramebuffer(GL_FRAMEBUFFER, currentFrame);
+                glViewport(0, 0, shadowSize, shadowSize);
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                glUseProgram(shader);
+
+                for (unsigned int i = 0; i < 6; i++) {
+                    setMat4(shader, ("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowMatrices[i]);
+                }
+
+                setVec3(shader, "lightPos", lightPos);
+                setFloat(shader, "far_plane", 25.0f);
+
+                // Object
+                setMat4(shader, "model", cubeModel0);
+                shapes::instance().cube.drawShadow();
+            }
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
+    void scene2::render() {
 
         // Floor
-        floor.draw_gbuffer(gbufferPlanes, floorModel);
+        // floor.normal = glm::vec3(0.0f, 1.0f, 0.0f);
+        // floor.normal = glm::vec3(0.0f, 1.0f, 0.0f);
+        // floor.draw_gbuffer(gbufferPlanes, floorModel);
+
+        // floor.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+        // floor.draw_gbuffer(gbufferPlanes, wallModel);
+
+        // floor.normal = glm::vec3(1.0f, 0.0f, 0.0f);
+        // floor.draw_gbuffer(gbufferPlanes, wallModel2);
+
         floor.draw_gbuffer(gbufferPlanes, wallModel);
-        floor.draw_gbuffer(gbufferPlanes, wallModel2);
+
+        // Object
+        shapes::instance().cube.draw_gbuffer(gbuffer3D, cubeModel0);
+        shapes::instance().cube.draw_gbuffer(gbuffer3D, cubeModel1);
     }
 
     void scene2::render_final(const frameBuffers::g_buffer* _g_buffer) const {
         
-        _g_buffer->renderSSAO();
-        _g_buffer->render();
+        // _g_buffer->renderSSAO();
+        // _g_buffer->render();
+
+        const unsigned int shader = _g_buffer->get_defaultShader();
+
+        glUseProgram(shader);
+
+        setInt(shader, "lights_count", lights_count);
+        setFloat(shader, "far_plane", 25.0f);
+        setFloat(shader, "skyboxIntensity", 1.0);
+
+        for (unsigned int i = 0; i < lights_count; i++) {
+        
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, light_frames[i]->texture_id);
+        
+            setVec3(shader, ("lights[" + std::to_string(i) + "].position").c_str(), lights[i]->getPosition());
+            setVec3(shader, ("lights[" + std::to_string(i) + "].color").c_str(), lights[i]->getLightColor());
+            setInt(shader, ("depthCubeMap[" + std::to_string(i) + "]").c_str(), i);
+        }
+
+        setVec3(shader, "viewPos", camera::instance().getPos());
+        lights::lights::instance().update();
+        lights::setSpotLight(shader, "torch", lights::lights::instance().flashlight);
+
+        _g_buffer->renderDefault();
+  
+        // Light-Source
+        for (unsigned int i = 0; i < 1; i++) {
+            lights[i]->draw(light_shader);
+        }
     }
 }

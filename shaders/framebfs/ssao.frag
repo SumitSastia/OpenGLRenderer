@@ -129,8 +129,9 @@ vec3 init_spotLight2(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1
 
 void main() {
 
-	vec3 fragPos = texture(gPosition, vTexCords).rgb;
-	vec3 normal = texture(gNormal, vTexCords).rgb;
+	// vec3 fragPos = texture(gPosition, vTexCords).rgb;
+	// vec3 normal = texture(gNormal, vTexCords).rgb;
+
 	vec3 albedo = texture(gTexture, vTexCords).rgb;
     float ambientOcclusion = texture(ssaoTexture, vTexCords).r;
    
@@ -138,4 +139,7 @@ void main() {
 
     // FragColor = vec4(albedo, 1.0);
     FragColor = vec4(albedo * ambientOcclusion, 1.0);
+    // FragColor = vec4(normalize(fragPos) * 0.5 + 0.5, 1.0);
+    // FragColor = vec4(ambientOcclusion, 0.0, 0.0, 1.0);
+    // FragColor = vec4(vec3(-texture(gPosition, vTexCords).z * 0.1), 1.0);
 }

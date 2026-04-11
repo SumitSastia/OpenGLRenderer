@@ -24,7 +24,9 @@ struct shape2D {
     unsigned int indicesCount;
 
     texture shape2DTexture;
+    glm::vec3 normal;
 
+    shape2D() : normal(glm::vec3(0.0f, 0.0f, 1.0f)) {}
     ~shape2D();
 
     void bindVertices(

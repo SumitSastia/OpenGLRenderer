@@ -9,6 +9,7 @@ uniform sampler2D noiseTexture;
 
 uniform vec3 samples[64];
 uniform mat4 projection;
+uniform mat4 view;
 
 int kernelSize = 64;
 float radius = 0.5;
@@ -18,13 +19,13 @@ const vec2 noiseScale = vec2(1120.0/4.0, 700.0/4.0);
 
 void main() {
 	
-	vec3 fragPos = texture(gPosition, vTexCords).rgb;
-	vec3 normal = texture(gNormal, vTexCords).rgb;
-	vec3 randomVec = normalize(texture(noiseTexture, vTexCords * noiseScale).rgb);	
+	vec3 fragPos   = texture(gPosition, vTexCords).xyz;
+	vec3 normal    = normalize(texture(gNormal, vTexCords).xyz);
+	vec3 randomVec = normalize(texture(noiseTexture, vTexCords * noiseScale).xyz);	
 
-	vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+	vec3 tangent   = normalize(randomVec - normal * dot(randomVec, normal));
 	vec3 bitangent = cross(normal, tangent);
-	mat3 TBN = mat3(tangent, bitangent, normal);
+	mat3 TBN       = mat3(tangent, bitangent, normal);	
 
 	float occlusion = 0.0;
 
@@ -44,6 +45,9 @@ void main() {
 		occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
 	}
 
+	// occlusion /= kernelSize;
 	occlusion = 1.0 - (occlusion / kernelSize);
+
 	FragColor = occlusion;
+	// FragColor = TBN[2].x * 0.5 + 0.5;
 }

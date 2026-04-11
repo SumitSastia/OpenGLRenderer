@@ -180,10 +180,7 @@ void shape2D::draw_gbuffer(const unsigned int& shader, const glm::mat4& model) c
     setMat4(shader, "view", camera::instance().getView());
     setMat4(shader, "model", model);
 
-    glm::vec3 normal = glm::transpose(glm::inverse(glm::mat3(model))) * glm::vec3(0.0f, 0.0f, 1.0f);
-    normal = glm::normalize(normal);
-
-    setVec3(shader, "normal", normal);
+    setVec3(shader, "normal", glm::normalize(normal));
 
     setInt(shader, "texture1", 0);
 

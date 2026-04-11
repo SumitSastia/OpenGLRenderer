@@ -121,6 +121,7 @@ namespace frameBuffers {
 
 		unsigned int attachments[3];
 		unsigned int shader;
+		unsigned int defaultShader;
 
 		// SSAO
 		unsigned int ssao_fbo;
@@ -136,10 +137,13 @@ namespace frameBuffers {
 		void render() const;
 		void renderSSAO() const;
 
+		void renderDefault() const;
+
 		int lerp(float a, float b, float f) const {
 			return (a + f * (b - a));
 		}
 
 		const unsigned int get_shader() const { return shader; }
+		const unsigned int get_defaultShader() const { return defaultShader; }
 	};
 }

@@ -6,8 +6,8 @@ layout (location = 2) out vec4 gTexture;
 
 in vec3 vPos;
 in vec2 vTexCords;
+in vec3 vNormal;
 
-uniform vec3 normal;
 uniform sampler2D texture1;
 
 /***************************************************************************/
@@ -15,10 +15,10 @@ uniform sampler2D texture1;
 void main() {
 
 	gPosition = vec4(vPos, 1.0);
-	gNormal = vec4(normal, 1.0);
+	gNormal = vec4(vNormal, 1.0);
 
 	gTexture.rgb = texture(texture1, vTexCords).rgb;
 	gTexture.a = texture(texture1, vTexCords).r;
 
-	gTexture.rgb = vec3(0.9);
+	// gTexture.rgb = vec3(0.9);
 }

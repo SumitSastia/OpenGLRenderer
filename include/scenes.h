@@ -6,6 +6,40 @@
 
 namespace scenes {
 
+	class scene_base {
+
+	protected:
+
+		unsigned int light_shader; // For rendering Lights
+		unsigned int pointShadowFrame_shader; // For rendering Shadows
+
+		// Light-Source
+		unsigned int lights_count;
+		std::vector <lights::lightSource*> lights;
+		std::vector <frameBuffers::pointShadow_frame*> light_frames;
+
+	public:
+
+		scene_base() :
+			lights_count(0) {
+
+			light_shader = createShader(
+				"C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.vert",
+				"C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/light.frag"
+			);
+
+			pointShadowFrame_shader = createShader2(
+				"C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.vert",
+				"C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.geom",
+				"C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/pointShadow/shadow.frag"
+			);
+		}
+
+		virtual void init() {};
+		virtual void update() {};
+		virtual void render() const {};
+	};
+
 	class scene1 {
 
 		// Shaders
@@ -111,13 +145,9 @@ namespace scenes {
 		void destroy() const;
 	};
 
-	class scene2 {
+	class scene2 : public scene_base {
 
-		unsigned int textureCube_Shader, gbufferPlanes;
-
-		// Light-Source
-		unsigned int lights_count;
-		std::vector <lights::lightSource*> lights;
+		unsigned int textureCube_Shader, gbufferPlanes, gbuffer3D;
 
 		// Floor
 		shape2D floor;
@@ -128,6 +158,11 @@ namespace scenes {
 		glm::mat4 floorModel;
 		glm::mat4 wallModel;
 		glm::mat4 wallModel2;
+
+		glm::mat4 cubeModel0;
+		glm::mat4 cubeModel1;
+
+		glm::mat4 shadowProj;
 
 	public:
 
@@ -140,7 +175,8 @@ namespace scenes {
 
 		void update(const float& delta_time);
 
-		void render() const;
+		void render();
+		void render_pointShadow() const;
 		void render_final(const frameBuffers::g_buffer* _g_buffer) const;
 
 		void destroy();

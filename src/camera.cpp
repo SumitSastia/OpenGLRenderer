@@ -130,7 +130,7 @@ void camera::input_handler(GLFWwindow* window, float deltaTime){
     }
 
     if(glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)){
-        camSpeed = 10.0f;
+        camSpeed = 5.0f;
     }
     else{
         camSpeed = 1.0f;
