@@ -112,8 +112,9 @@ vec3 init_spotLight2(spotLight sl, vec3 normal, vec3 vPos, vec3 viewPos, vec3 t1
     vec3 viewDirection = normalize(viewPos - vPos);
     vec3 reflectDirection = reflect(-lightDirection, normal);
 
-    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32.0);
-    vec3 specularLight = spec * t1 * sl.color;
+    // float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32.0);
+    // vec3 specularLight = spec * t1 * sl.color;
+    vec3 specularLight = vec3(0.0);
 
     // Attenuation
     float fragDistance = length(sl.position - vPos);

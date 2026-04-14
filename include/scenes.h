@@ -58,7 +58,8 @@ namespace scenes {
 			pointShadowInstanced,
 			gbufferShader,
 			gbufferInstanced,
-			gbufferPlanes
+			gbufferPlanes,
+			shaderPBR
 		;
 
 		unsigned int
@@ -141,6 +142,7 @@ namespace scenes {
 		void render_g_buffer() const;
 		void render_final(const frameBuffers::g_buffer* _g_buffer) const;
 		void renderSSAO(const frameBuffers::g_buffer* _g_buffer) const;
+		void renderPBR() const;
 
 		void destroy() const;
 	};

@@ -91,6 +91,11 @@ namespace scenes {
             "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/planes/gbuffer.frag"
         );
 
+        shaderPBR = createShader(
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer.vert",
+            "C:/Users/sumit/Documents/GitHub/OpenGLRenderer/shaders/framebfs/gbuffer_pbr.frag"
+        );
+
         // World Coordinates
         objectModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 
@@ -632,6 +637,30 @@ namespace scenes {
         }
     }
 
+    void scene1::renderPBR() const {
+
+        const unsigned int& shader = shaderPBR;
+
+        glUseProgram(shader);
+
+        setMat4(shader, "projection", camera::instance().getPerspective());
+        setMat4(shader, "view", camera::instance().getView());
+        setMat4(shader, "model", cubeModel);
+        setMat3(shader, "normalModel", glm::transpose(glm::inverse(glm::mat3(cubeModel))));
+
+        cube1->bindTextures(shader);
+
+        setInt(shader, "light_count", 1);
+        setFloat(shader, "metallic", 0.1F);
+        setFloat(shader, "roughness", 0.2F);
+
+        setVec3(shader, "camPos", camera::instance().getPos());
+        setVec3(shader, "lightPosition[0]", lights[0]->getPosition());
+        setVec3(shader, "lightColor[0]", lights[0]->getLightColor());
+
+        cube1->draw_gbuffer(shader, cubeModel);
+    }
+
     void scene1::render_g_buffer() const {
 
         // Object
@@ -644,7 +673,8 @@ namespace scenes {
         floor.draw_gbuffer(gbufferPlanes, floorModel);
 
         // Model
-        cube1->draw_gbuffer(gbufferShader, cubeModel);
+        // cube1->draw_gbuffer(gbufferShader, cubeModel);
+        this->renderPBR();
 
     }
 

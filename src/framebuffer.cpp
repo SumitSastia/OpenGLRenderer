@@ -333,11 +333,19 @@ namespace frameBuffers {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gTexture, 0);
 
+        // Texture Buffer
+        glBindTexture(GL_TEXTURE_2D, gMaterial);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gMaterial, 0);
+
         attachments[0] = GL_COLOR_ATTACHMENT0;
         attachments[1] = GL_COLOR_ATTACHMENT1;
         attachments[2] = GL_COLOR_ATTACHMENT2;
+        attachments[3] = GL_COLOR_ATTACHMENT3;
 
-        glDrawBuffers(3, attachments);
+        glDrawBuffers(4, attachments);
 
         // Render Object
         glGenRenderbuffers(1, &rbo);

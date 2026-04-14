@@ -88,6 +88,8 @@ namespace models {
         void draw(const unsigned int& shader) const;
         void draw_gbuffer(const unsigned int& shader) const;
         void drawShadow() const;
+
+        void bindTextures(const unsigned int& shader) const;
     };
 
     class model3D {
@@ -117,5 +119,8 @@ namespace models {
         void draw(const unsigned int& shader, const glm::mat4& model) const;
         void draw_gbuffer(const unsigned int& shader, const glm::mat4& model) const;
         void drawShadow() const;
+
+        // Binds Textures of the Model into the Memory GL_TEXTURE0 and so on
+        void bindTextures(const unsigned int& shader) const;
     };
 }

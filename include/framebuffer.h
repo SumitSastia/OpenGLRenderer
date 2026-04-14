@@ -117,9 +117,9 @@ namespace frameBuffers {
 
 		// Deferred
 		unsigned int fbo, rbo;
-		unsigned int gPosition, gNormal, gTexture;
+		unsigned int gPosition, gNormal, gTexture, gMaterial;
 
-		unsigned int attachments[3];
+		unsigned int attachments[4];
 		unsigned int shader;
 		unsigned int defaultShader;
 

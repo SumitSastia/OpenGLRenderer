@@ -110,7 +110,20 @@ namespace models {
         glBindVertexArray(0);
     }
 
+    void mesh::bindTextures(const unsigned int& shader) const {
+
+        glUseProgram(shader);
+
+        setInt(shader, "texture1", 0);
+        setInt(shader, "texture2", 1);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures[0].id);
+    }
+
     void mesh::draw_gbuffer(const unsigned int& shader) const {
+
+        glUseProgram(shader);
 
         setInt(shader, "texture1", 0);
         setInt(shader, "texture2", 1);
@@ -300,6 +313,12 @@ namespace models {
 
         for (const auto& mesh_part : meshes) {
             mesh_part.drawShadow();
+        }
+    }
+
+    void model3D::bindTextures(const unsigned int& shader) const {
+        for (const auto& mesh_part : meshes) {
+            mesh_part.bindTextures(shader);
         }
     }
 }
