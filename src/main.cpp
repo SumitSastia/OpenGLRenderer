@@ -217,7 +217,7 @@ int main(){
         // Rendering //
 
         // Rendering CubeMap Shadows
-        // scene1.render_pointShadow();
+        scene1.render_pointShadow();
 
         // Rendering Scene in FrameBuffer
         // glBindFramebuffer(GL_FRAMEBUFFER, mainFrame->fbo); // Forward Renderer
@@ -234,8 +234,8 @@ int main(){
 
         // Main Scene
         // scene1.render_with_pointLight(); // Forward-Buffer
-        // scene1.render_g_buffer(); // G-Buffer
-        scene2.render();       
+        scene1.render_g_buffer(); // G-Buffer
+        // scene2.render();       
 
         // Rendering Stop
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -260,12 +260,12 @@ int main(){
         );
 
         // Lightning Pass of Deferred Shading
-        // scene1.render_final(g_buffer);
-        scene2.render_final(g_buffer);
+        scene1.render_final(g_buffer);
+        // scene2.render_final(g_buffer);
 
         glEnable(GL_DEPTH_TEST);
-        // scene1.render_lights();
-        // scene1.render_transparent();
+        scene1.render_lights();
+        scene1.render_transparent();
 
         // Safety
         glUseProgram(0);

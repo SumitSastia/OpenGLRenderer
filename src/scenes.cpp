@@ -108,8 +108,6 @@ namespace scenes {
         worldModels.push_back(&windowModel);
 
         // Light-Source
-        lights_count = 2;
-
         glm::mat4 lightModel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 1.5f, -3.0f));
         lightModel = glm::scale(lightModel, glm::vec3(0.5f));
 
@@ -126,6 +124,8 @@ namespace scenes {
 
         lights.push_back(myLight);
         lights.push_back(light2);
+
+        lights_count = 2;
 
         float near = 1.0f;
         float far = 25.0f;
@@ -650,12 +650,12 @@ namespace scenes {
 
     void scene1::render_final(const frameBuffers::g_buffer* _g_buffer) const {
 
-        const unsigned int shader = _g_buffer->get_shader();
+        const unsigned int shader = _g_buffer->get_defaultShader();
 
         glUseProgram(shader);
         setInt(shader, "lights_count", lights_count);
         setFloat(shader, "far_plane", 25.0f);
-        setFloat(shader, "skyboxIntensity", 0.8 * skyboxIntensity);
+        setFloat(shader, "skyboxIntensity", skyboxIntensity);
 
         for (unsigned int i = 0; i < lights_count; i++) {
 
@@ -667,15 +667,11 @@ namespace scenes {
             setInt(shader, ("depthCubeMap[" + std::to_string(i) + "]").c_str(), i);
         }
 
-        setInt(shader, "gPosition", 0);
-        setInt(shader, "gNormal", 1);
-        setInt(shader, "gTexture", 2);
-
         setVec3(shader, "viewPos", camera::instance().getPos());
         lights::lights::instance().update();
         lights::setSpotLight(shader, "torch", lights::lights::instance().flashlight);
 
-        _g_buffer->render();  
+        _g_buffer->renderDefault();  
     }
 
     void scene1::renderSSAO(const frameBuffers::g_buffer* _g_buffer) const {

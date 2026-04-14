@@ -133,10 +133,9 @@ void main() {
 	vec3 albedo = texture(gTexture, vTexCords).rgb;	
 	
 	float specular = texture(gTexture, vTexCords).a;
-    // FragColor = vec4(albedo, 1.0);
 	
 	// Ambient Lighting
-	vec3 ambient = 0.25 * albedo * skyboxIntensity;
+	vec3 ambient = albedo * skyboxIntensity;
 	
 	vec3 finalColor = vec3(0.0);
 	vec3 lightColors[MAX_LIGHTS];
