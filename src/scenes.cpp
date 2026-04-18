@@ -664,7 +664,7 @@ namespace scenes {
     void scene1::render_g_buffer() const {
 
         // Object
-        shapes::instance().cube.draw_gbuffer(gbufferShader, objectModel);
+        // shapes::instance().cube.draw_gbuffer(gbufferShader, objectModel);
 
         // Multiple Cubes
         shapes::instance().cubeInstanced.draw_gbuffer(gbufferInstanced, totalCubes);
@@ -674,7 +674,7 @@ namespace scenes {
 
         // Model
         // cube1->draw_gbuffer(gbufferShader, cubeModel);
-        this->renderPBR();
+        // this->renderPBR();
 
     }
 
@@ -730,6 +730,27 @@ namespace scenes {
         glUseProgram(shader);
         setPointLight(shader, "p1", myLight->getLight());
         cube1->draw(shader, cubeModel);*/
+
+        // Cube
+        shader = textureShader;
+        glUseProgram(shader);
+        setInt(shader, "lights_count", lights_count);
+
+        for (unsigned int i = 0; i < lights_count; i++) {
+
+            setInt(shader, ("depthCubeMap[" + std::to_string(i) + "]").c_str(), i);
+            setVec3(shader, ("lightPos[" + std::to_string(i) + "]").c_str(), lights[i]->getPosition());
+            setPointLight(shader, ("plights[" + std::to_string(i) + "]").c_str(), lights[i]->getLight());
+        }
+
+        setFloat(shader, "far_plane", 25.0f);
+        setVec3(shader, "viewPos", camera::instance().getPos());
+
+        setFloat(shader, "metallic", 0.1f);
+        setFloat(shader, "roughness", 0.3f);
+
+        setFloat(shader, "skyboxIntensity", skyboxIntensity);
+        shapes::instance().cube.draw(shader, objectModel);
 
         // Plane
         shader = pointShadowPlanes;
